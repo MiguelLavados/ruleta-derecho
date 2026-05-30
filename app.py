@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit st
 
 st.set_page_config(page_title="EXAMINADOR DE TEORÍA DEL DERECHO", layout="centered")
 
@@ -28,7 +28,7 @@ DATOS_EXAMEN = {
             },
             {
                 "sub": "1.2", "preg": "Respecto a las diferencias entre Derecho y Moral, ¿cuál es CORRECTA?",
-                "opciones": ["A) El Derecho es unilateral y la Moral es bilateral.", "B) El Derecho es coercible (fuerza estatal) mientras que la Moral es incoercible.", "C) Ambos ordenamientos regulan exclusivamente el fuero interno."],
+                "opciones": ["A) El Derecho is unilateral y la Moral es bilateral.", "B) El Derecho es coercible (fuerza estatal) mientras que la Moral es incoercible.", "C) Ambos ordenamientos regulan exclusivamente el fuero interno."],
                 "correcta": "B) El Derecho es coercible (fuerza estatal) mientras que la Moral es incoercible.",
                 "explicacion": "El Derecho cuenta con el aparato coactivo institucional del Estado."
             },
@@ -41,7 +41,7 @@ DATOS_EXAMEN = {
         ]
     },
     2: {
-        "titulo": "CÉDULA 2.- La Norma Jurídica. Characteristics. Estructura lógica.",
+        "titulo": "CÉDULA 2.- La Norma Jurídica. Características. Estructura lógica.",
         "preguntas": [
             {
                 "sub": "2.1", "preg": "¿Cuáles son las características esenciales de la norma jurídica?",
