@@ -2,18 +2,17 @@ import streamlit as st
 import random
 import time
 
-st.set_page_config(page_title="RELOJ COGNUSS 2 - EXAMINADOR IA", layout="centered")
+st.set_page_config(page_title="CUESTIONARIO DE TEORÍA DEL DERECHO", layout="centered")
 
-# Estilos CSS con márgenes amplios para evitar bloqueos visuales
+# Estilos CSS planos y limpios para lectura ejecutiva
 st.markdown(
     """
     <style>
-    .stApp { background-color: #FFFFFF; color: #0F1E36; font-family: "Segoe UI", sans-serif; }
-    .rect-banner { background-color: #0F1E36; color: white; padding: 20px; border-radius: 4px; text-align: center; margin-bottom: 20px; }
-    .rect-esfera { background-color: #0F1E36; color: #FFFFFF; border: 4px solid #2B4C7E; padding: 20px; border-radius: 8px; text-align: center; font-size: 32px; font-weight: bold; margin-bottom: 20px; }
-    .rect-minutero { background-color: #F5FAF6; border-left: 8px solid #2ECC71; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
-    .rect-horario { background-color: #F4F7FC; border-left: 8px solid #1A73E8; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
-    .rect-segundero { background-color: #FDF5F5; border-left: 8px solid #E74C3C; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
+    .stApp { background-color: #FFFFFF; color: #0F1E36; font-family: sans-serif; }
+    .banner-titulo { background-color: #0F1E36; color: white; padding: 20px; border-radius: 4px; text-align: center; margin-bottom: 25px; }
+    .card-cedula { background-color: #F5FAF6; border-left: 6px solid #2ECC71; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
+    .card-pregunta { background-color: #F4F7FC; border-left: 6px solid #1A73E8; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
+    .card-respuesta { background-color: #FDF5F5; border-left: 6px solid #E74C3C; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
     </style>
     """, 
     unsafe_allow_html=True
@@ -25,7 +24,7 @@ CEDULAS_TEXTO = [
     "CEDULA 3.- Vigencia, validez y eficacia del Derecho positivo. 3.1. Vigencia a) concepto b) momento de la vigencia. c) la derogación de la ley: concepto y clasificación. 3.2. Validez a) concepto b) fundamentos de la validez del Derecho y presupuestos últimos de su legitimidad: en qué consisten las dos principales doctrinas. 3.3. Eficacia: concepto.",
     "CEDULA 4.- La plenitud hermética del ordenamiento jurídico y las lagunas del Derecho. 4.1. Introducción constitucional: principio de inexcusabilidad. 4.2 Concepto de plenitud hermética del ordenamiento jurídico. 4.3. Casos en que se observan lagunas del Derecho; solución judicial. 4.4. Conflicto entre normas jurídicas positivas (del mismo nivel jerárquico y de diverso nivel jerárquico): criterios de solución judicial.",
     "CEDULA 5.- Fuentes del ordenamiento jurídico. 5.1. Concepto y tipos de fuente (materiales y formales) 5.2. Fuentes formales del Derecho: clasificación. 5.3. La ley: a) concepto b) elementos c) características d) efectos de la ley en cuanto al espacio e) efectos de la ley en cuanto al tiempo.",
-    "CEDULA 6.- La costumbre. 6.1. La costumbre a) concepto b) elements. 6.2. La costumbre en el Derecho Civil, el Derecho Comercial, el Derecho Internacional Público, el Derecho Penal y el Derecho Procesal.",
+    "CEDULA 6.- La costumbre. 6.1. La costumbre a) concepto b) elementos. 6.2. La costumbre en el Derecho Civil, el Derecho Comercial, el Derecho Internacional Público, el Derecho Penal y el Derecho Procesal.",
     "CEDULA 7.-La jurisprudencia y la doctrina, como fuentes formales del Derecho. 7.1. La jurisprudencia a) concepto b) la norma del Código Civil y la práctica de los tribunales chilenos. 7.2. La doctrina a) concepto b) la discusión sobre su carácter de fuente formal del Derecho.",
     "CEDULA 8. La Relación Jurídica. 8.1. a) concepto b) elementos 8.2. La persona, sujeto de la relación jurídica. La persona natural. Principio y fin de su existencia.",
     "CEDULA 9. La persona jurídica. 9.1. Concepto. 9.2. Tipos de personas jurídicas. a) de Derecho Público y b) de Derecho Privado. 9.3. Responsabilidad de las personas jurídicas: a) responsabilidad civil: contractual y extracontractual (delictual o cuasi delictual). Alcance de la responsabilidad de las personas jurídicas por actos de sus dependientes. 9.4. Responsabilidad penal de las personas jurídicas. LEY N° 21.595.",
@@ -36,7 +35,7 @@ CEDULAS_TEXTO = [
     "CEDULA 14. Bienes o cosas comerciables e incomerciables. 14.1. Cosas comerciables e incomerciables (subclasificación) . 14.2. Bienes nacionales de uso público (concesiones) y bienes fiscales (el Fisco)."
 ]
 
-PREGUNTAS_METODO = [
+PREGUNTAS_TEXTO = [
     "Explaye sobre el paralelo estructural entre el Orden Jurídico y el Orden Moral respecto a los criterios de Bilateralidad y Coercibilidad.",
     "Explique la estructura lógica interna de una norma jurídica ordinaria y la clasificación entre normas imperativas y permisivas.",
     "Describa la clasificación jurídica de la Derogación de la Ley en Chile y diferencie los conceptos de vigencia, validez y eficacia.",
@@ -44,7 +43,7 @@ PREGUNTAS_METODO = [
     "Establezca las diferencias entre Fuentes Materiales y Formales, y explaye sobre los efectos de la ley en el tiempo y el espacio.",
     "¿Cuál es el valor legal exacto de la costumbre dentro del Derecho Civil chileno en comparación al Derecho Comercial y Penal?",
     "Explique el alcance del Efecto Relativo de las sentencias judiciales (Art. 3 inc 2 CC) y el carácter formal de la doctrina.",
-    "Mencione los requisitos de existencia legal de la persona natural (Art. 74 CC) and analice los elementos de la relación jurídica.",
+    "Mencione los requisitos de existencia legal de la persona natural (Art. 74 CC) y analice los elementos de la relación jurídica.",
     "Diferencie las personas jurídicas de Derecho Público y Privado, y explique su responsabilidad penal según la Ley N° 21.595.",
     "Defina Derecho Real según el Artículo 577 del Código Civil y enumere las facultades que comprende el derecho de dominio.",
     "Explique en qué consiste la doctrina del Abuso del Derecho y diferencie las limitaciones intrínsecas de las extrínsecas.",
@@ -53,7 +52,7 @@ PREGUNTAS_METODO = [
     "Diferencie los Bienes Nacionales de Uso Público de los Bienes Fiscales respecto a su comerciabilidad y régimen de concesiones."
 ]
 
-RESPUESTAS_FINAS = [
+RESPUESTAS_TEXTO = [
     "El Derecho es BILATERAL y COERCIBLE (uso legítimo de la fuerza estatal). La Moral es UNILATERAL e INCOERCIBLE (cumplimiento espontáneo).",
     "Imperativas mandan/prohíben absolutamente (orden público); Permisivas conceden facultades lícitas. Estructura: Supuesto y Consecuencia.",
     "Derogación: Expresa/Tácita, Total/Parcial. Vigencia: fuerza obligatoria publicada. Validez: legalidad formal. Eficacia: aplicación real.",
@@ -70,21 +69,26 @@ RESPUESTAS_FINAS = [
     "Bienes de Uso Público pertenecen a toda la nación y son incomerciables (calles). Fiscales son patrimonio privado del Estado y comerciables."
 ]
 
-st.markdown('<div class="rect-banner"><h1>6️⃣ PRUEBA DE TEORÍA DEL DERECHO</h1><h2>14 PREGUNTAS — RELOJ COGNUSS 2 - EXAMINADOR IA</h2></div>', unsafe_allow_html=True)
+st.markdown('<div class="banner-titulo"><h1>CUESTIONARIO DE TEORÍA DEL DERECHO</h1><p>TEMARIO COMPLETO LITERAL JURÍDICO</p></div>', unsafe_allow_html=True)
 
-# Un selector nativo de números del 1 al 14 actúa de forma inmediata y automática sin riesgo de bloqueos de código
-cedula_seleccionada = st.selectbox(
-    "🎯 SELECCIONE O GIRE EL NÚMERO DE CÉDULA PARA ACTIVAR EL EXAMEN:",
+# Selector nativo estable y directo
+seleccion = st.selectbox(
+    "ELIJA EL NÚMERO DE CÉDULA PARA EXAMINAR:",
     options=[None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-    format_func=lambda x: f"CÉDULA {x:02d}" if x is not None else "--- SELECCIONE ---"
+    format_func=lambda x: f"CÉDULA {x:02d}" if x is not None else "--- SELECCIONE UNA OPCIÓN ---"
 )
 
-if cedula_seleccionada is not None:
-    idx = cedula_seleccionada - 1
+if seleccion is not None:
+    idx = seleccion - 1
     
-    st.markdown(f'<div class="rect-esfera">🎯 RELOJ MARCA: CÉDULA {cedula_seleccionada:02d}</div>', unsafe_allow_html=True)
+    # 1. Desglose literal completo de la Cédula
+    st.markdown(f'<div class="card-cedula"><b>📋 CONTENIDO LITERAL COMPLETO DEL TEMARIO:</b><br><span style="font-size:14px; line-height:1.4;">{CEDULAS_TEXTO[idx]}</span></div>', unsafe_allow_html=True)
     
-    # 1. MINUTERO
-    st.markdown(f'<div class="rect-minutero"><b>🟢 MINUTERO (CONTEXTO LITERAL COMPLETO):</b><br><span style="font-size:14px; line-height:1.5; color:#0F1E36;">{CEDULAS_TEXTO[idx]}</span></div>', unsafe_allow_html=True)
+    # 2. Pregunta formulada
+    st.markdown(f'<div class="card-pregunta"><b>❓ PREGUNTA ACADÉMICA:</b><br><span style="font-size:16px; font-weight:bold;">{PREGUNTAS_TEXTO[idx]}</span></div>', unsafe_allow_html=True)
     
-    # 2. HORARIO
+    # 3. Respuesta doctrinal explayada
+    st.markdown(f'<div class="card-respuesta"><b>🎯 RESPUESTA DOCTRINAL OFICIAL:</b><br><span style="font-size:15px; line-height:1.4;">{RESPUESTAS_TEXTO[idx]}</span></div>', unsafe_allow_html=True)
+    
+    # Sistema interactivo estable de alternativas
+    st.write("---")
