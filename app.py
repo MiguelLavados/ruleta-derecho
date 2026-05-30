@@ -76,4 +76,41 @@ SUBPREGUNTAS_POOL = {
     6: [
         {"sub": "6.1", "preg": "Defina el concepto de costumbre jurídica y desglose sus dos elementos constitutivos.", "ok": "Repetición constante de conductas. Elementos: Material (práctica uniforme) y Espiritual (convicción de obligatoriedad / Opinio Iuris)."
 }]
-}      
+}     
+
+
+import streamlit as st
+import random
+
+# Inicializar estados de la ruleta si no existen
+if "cedula_activa" not in st.session_state:
+    st.session_state.cedula_activa = None
+if "pregunta_activa" not in st.session_state:
+    st.session_state.pregunta_activa = None
+if "mostrar_respuesta" not in st.session_state:
+    st.session_state.mostrar_respuesta = False
+
+st.write("---")
+
+# Botón principal para girar la ruleta
+if st.button("🎰 ¡GIRAR RULETA!", use_container_width=True):
+    # Elegir una cédula al azar
+    st.session_state.cedula_activa = random.choice(list(SUBPREGUNTAS_POOL.keys()))
+    # Elegir una pregunta al azar de esa cédula
+    st.session_state.pregunta_activa = random.choice(SUBPREGUNTAS_POOL[st.session_state.cedula_activa])
+    st.session_state.mostrar_respuesta = False
+
+# Si ya se giró la ruleta, mostrar la pregunta seleccionada
+if st.session_state.cedula_activa and st.session_state.pregunta_activa:
+    st.success(f"### 📍 CÉDULA SELECCIONADA: {st.session_state.cedula_activa}")
+    
+    p = st.session_state.pregunta_activa
+    st.info(f"**Pregunta {p['sub']}:** {p['preg']}")
+    
+    # Botón para revelar la respuesta
+    if st.button("👁️ Mostrar Respuesta Correcta"):
+        st.session_state.mostrar_respuesta = True
+        
+    if st.session_state.mostrar_respuesta:
+        st.warning(f"**Respuesta:** {p['ok']}")
+
