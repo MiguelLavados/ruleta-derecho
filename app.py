@@ -11,7 +11,7 @@ if datetime.now() > FECHA_LIMITE:
 
 st.set_page_config(page_title="MÉTODO COGNUSS 2 - Reloj", layout="wide")
 
-# Estilos CSS Limpios con el diseño exacto de la diapositiva (Fondo Claro, Azul y Púrpura)
+# Estilos CSS Limpios con el diseño de la diapositiva (Fondo Claro, Azul y Púrpura)
 st.markdown(
     """
     <style>
@@ -90,20 +90,20 @@ CONOCIMIENTO_CEDULARIO = {
     8: {"tema": "LA RELACIÓN JURÍDICA", "pregunta": "Mencione los tres requisitos de existencia legal de la persona natural conforme al artículo 74 del Código Civil.", "correcta": "1. Que la criatura nazca viva; 2. Que se separe completamente de su madre; 3. Haber sobrevivido a la separación un momento siquiera."},
     9: {"tema": "LA PERSONA JURÍDICA", "pregunta": "¿Cómo se subclasifican las personas jurídicas de Derecho Privado según sus fines?", "correcta": "Se subclasifican en entidades Con fines de lucro (Sociedades Comerciales como S.A., S.R.L., SpA) y entidades Sin fines de lucro (Corporaciones y Fundaciones)."},
     10: {"tema": "DERECHOS REALES Y PERSONALES", "pregunta": "Defina el concepto legal de Derecho Real según lo estipulado en el Artículo 577 del Código Civil.", "correcta": "Es el derecho que tenemos sobre una cosa sin respecto a determinada persona, naciendo de la concurrencia de un Título y un Modo de Adquirir."},
-    11: {"tema": "LÍMITES Y ABUSO DEL DERECHO", "pregunta": " ¿Cuándo ocurre técnicamente el fenómeno del Abuso del Derecho?", "correcta": "Ocurre cuando un sujeto ejerce un derecho legal legítimo, pero de una manera desviada, con dolo, negligencia o con el único fin de causar daño a otra persona."},
+    11: {"tema": "LÍMITES AND ABUSO DEL DERECHO", "pregunta": " ¿Cuándo ocurre técnicamente el fenómeno del Abuso del Derecho?", "correcta": "Ocurre cuando un sujeto ejerce un derecho legal legítimo, pero de una manera desviada, con dolo, negligencia o con el único fin de causar daño a otra persona."},
     12: {"tema": "LOS BIENES (O COSAS) - CLASIFICACIÓN", "pregunta": "¿Qué define a los bienes muebles por anticipación regulados en el artículo 571 del Código Civil?", "correcta": "Son productos de los inmuebles y cosas accesorias a ellos que se consideran muebles, aun antes de su separación, para el efecto de constituir un derecho sobre ellos."},
     13: {"tema": "RÉGIMEN JURÍDICO DE LOS BIENES", "pregunta": "Compare la formalidad de venta exigida para un bien mueble frente a un bien inmueble.", "correcta": "La venta de bienes muebles es meramente consensual (acuerdo simple), mientras que la de inmuebles es solemne y exige obligatoriamente ser otorgada por Escritura Pública (Art. 1801 CC)."},
     14: {"tema": "BIENES COMERCIABLES E INCOMERCIABLES", "pregunta": "Diferencie los Bienes Nacionales de Uso Público de los Bienes Fiscales respecto a su comerciabilidad.", "correcta": "Los de Uso Público son strictly incomerciables, inalienables e imprescriptibles; los Bienes Fiscales son comerciables internamente y el Estado puede venderlos o arrendarlos."}
 }
 
 if "posiciones_reloj" not in st.session_state:
-    st.session_state.posiciones_reloj = list(range(1, 15))
+    st.session_state.posiciones_reloj = list(range(1, 14))
 if "cedula_activa" not in st.session_state:
     st.session_state.cedula_activa = None
 if "evaluacion" not in st.session_state:
     st.session_state.evaluacion = None
 
-# Banner Superior igual a la diapositiva
+# Banner Superior
 st.markdown(
     """
     <div class='header-banner'>
@@ -128,13 +128,13 @@ with col1:
     else:
         st.success("🎉 ¡Excelente! Completaste el recorrido del reloj de 14 horas.")
         if st.button("♻️ Reiniciar Esfera"):
-            st.session_state.posiciones_reloj = list(range(1, 15))
+            st.session_state.posiciones_reloj = list(range(1, 14))
             st.session_state.cedula_activa = None
             st.rerun()
 
     st.write("")
     html_esfera = "<div>"
-    for pos in range(1, 15):
+    for pos in range(1, 14):
         if pos == st.session_state.cedula_activa:
             html_esfera += f"<div class='circle-slot slot-activa'>{pos}</div>"
         elif pos not in st.session_state.posiciones_reloj:
@@ -156,6 +156,6 @@ with col2:
         
         st.write("**¿Respondiste correctamente en voz alta?**")
         b1, b2 = st.columns(2)
-        with b1:
-            if st.button("👍 SÍ, CORRECTA"): st.session_state.evaluacion = "OK"
-        with b2:
+        if b1.button("👍 SÍ, CORRECTA"):
+            st.session_state.evaluacion = "OK"
+        if b2.button("👎 REQUIERE REPASO"):
