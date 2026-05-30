@@ -1,18 +1,39 @@
 import streamlit as st
 import random
 import time
+from datetime import datetime
 
-st.set_page_config(page_title="RELOJ COGNUSS 2 - EXAMINADOR IA", layout="wide")
+# 1. CONTROL DE CADUCIDAD REQUERIDO
+FECHA_LIMITE = datetime(2026, 6, 30, 23, 59, 59)
+if datetime.now() > FECHA_LIMITE:
+    st.error('❌ LA LICENCIA DE ESTA APLICACIÓN HA CADUCADO. CONTACTE AL ADMINISTRADOR.')
+    st.stop()
 
-# Estilos CSS de la infografía oficial para estructurar Minutero, Horario y Segundero
-st.markdown('<style>.stApp { background-color: #FFFFFF; color: #0F1E36; font-family: "Segoe UI", sans-serif; padding-bottom: 80px; } .banner-superior { background-color: #0F1E36; color: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; } .esfera-total { background-color: #0F1E36; color: #FFFFFF; border: 10px solid #2B4C7E; border-radius: 50%; width: 280px; height: 280px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0px 8px 20px rgba(0,0,0,0.15); } .box-minutero { background-color: #F5FAF6; border-left: 6px solid #2ECC71; padding: 18px; margin-bottom: 15px; border-radius: 4px; } .box-horario { background-color: #F4F7FC; border-left: 6px solid #1A73E8; padding: 18px; margin-bottom: 15px; border-radius: 4px; } .box-segundero { background-color: #FDF5F5; border-left: 6px solid #E74C3C; padding: 18px; margin-bottom: 15px; border-radius: 4px; } .desvanecer-texto { animation: fadeOut 35s forwards; font-size: 15px; color: #111111; line-height: 1.5; } @keyframes fadeOut { 0% { opacity: 1; } 85% { opacity: 0.1; } 100% { opacity: 0; display: none; } } div.stButton > button { background-color: #0F1E36 !important; color: white !important; font-weight: bold !important; }</style>', unsafe_allow_html=True)
+st.set_page_config(page_title="RELOJ COGNUSS 2 - EXAMINADOR IA", layout="centered")
 
-# Listas lineales independientes para evitar de forma absoluta errores de llaves abiertas
+# Estilos CSS para las Ventanas Rectangulares del Minutero, Horario y Segundero
+st.markdown(
+    """
+    <style>
+    .stApp { background-color: #FFFFFF; color: #0F1E36; font-family: "Segoe UI", sans-serif; }
+    .rect-banner { background-color: #0F1E36; color: white; padding: 20px; border-radius: 4px; text-align: center; margin-bottom: 20px; }
+    .rect-esfera { background-color: #0F1E36; color: #FFFFFF; border: 4px solid #2B4C7E; padding: 20px; border-radius: 8px; text-align: center; font-size: 32px; font-weight: bold; margin-bottom: 20px; }
+    .rect-minutero { background-color: #F5FAF6; border-left: 8px solid #2ECC71; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
+    .rect-horario { background-color: #F4F7FC; border-left: 8px solid #1A73E8; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
+    .rect-segundero { background-color: #FDF5F5; border-left: 8px solid #E74C3C; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
+    .desvanecer-texto { animation: fadeOut 35s forwards; font-size: 15px; color: #111111; line-height: 1.5; }
+    @keyframes fadeOut { 0% { opacity: 1; } 85% { opacity: 0.1; } 100% { opacity: 0; display: none; } }
+    div.stButton > button { background-color: #0F1E36 !important; color: white !important; font-weight: bold !important; width: 100%; padding: 12px; }
+    </style>
+    """, 
+    unsafe_allow_html=True
+)
+
 CEDULAS_TEXTO = [
     "CEDULA 1.- El Derecho y la Moral. Normas de uso y trato social. 1.1. La norma moral, características. 1.2. Derecho y Moral: diferencias entre ambos órdenes. 1.3. Normas de uso y trato social: a) concepto. b) características y diferencias con la norma jurídica.",
     "CEDULA 2.-La norma jurídica. 2.1. Características. 2.2. Clasificación entre normas jurídicas imperativas y permisivas. 2.3. Estructura lógica de la norma jurídica",
     "CEDULA 3.- Vigencia, validez y eficacia del Derecho positivo. 3.1. Vigencia a) concepto b) momento de la vigencia. c) la derogación de la ley: concepto y clasificación. 3.2. Validez a) concepto b) fundamentos de la validez del Derecho y presupuestos últimos de su legitimidad: en qué consisten las dos principales doctrinas. 3.3. Eficacia: concepto.",
-    "CEDULA 4.- La plenitud hermética del ordenamiento jurídico y las lagunas del Derecho. 4.1. Introducción constitucional: principio de inexcusabilidad. 4.2 Concepto de plenitud hermética del ordenamiento jurídico. 4.3. Casos en que se observan lagunas del Derecho; solución judicial. 4.4. Conflicto entre normas jurídicas positivas (del mismo nivel jerárquico y de diverso nivel jerárquico): criterios de solución judicial.",
+    "CEDULA 4.- La plenitud hermética del ordenamiento jurídico and las lagunas del Derecho. 4.1. Introducción constitucional: principio de inexcusabilidad. 4.2 Concepto de plenitud hermética del ordenamiento jurídico. 4.3. Casos en que se observan lagunas del Derecho; solución judicial. 4.4. Conflicto entre normas jurídicas positivas (del mismo nivel jerárquico y de diverso nivel jerárquico): criterios de solución judicial.",
     "CEDULA 5.- Fuentes del ordenamiento jurídico. 5.1. Concepto y tipos de fuente (materiales y formales) 5.2. Fuentes formales del Derecho: clasificación. 5.3. La ley: a) concepto b) elementos c) características d) efectos de la ley en cuanto al espacio e) efectos de la ley en cuanto al tiempo.",
     "CEDULA 6.- La costumbre. 6.1. La costumbre a) concepto b) elementos. 6.2. La costumbre en el Derecho Civil, el Derecho Comercial, el Derecho Internacional Público, el Derecho Penal y el Derecho Procesal.",
     "CEDULA 7.-La jurisprudencia y la doctrina, como fuentes formales del Derecho. 7.1. La jurisprudencia a) concepto b) la norma del Código Civil y la práctica de los tribunales chilenos. 7.2. La doctrina a) concepto b) la discusión sobre su carácter de fuente formal del Derecho.",
@@ -25,7 +46,7 @@ CEDULAS_TEXTO = [
     "CEDULA 14. Bienes o cosas comerciables e incomerciables. 14.1. Cosas comerciables e incomerciables (subclasificación) . 14.2. Bienes nacionales de uso público (concesiones) y bienes fiscales (el Fisco)."
 ]
 
-PREGUNTAS_MÉTODO = [
+PREGUNTAS_METODO = [
     "Explaye sobre el paralelo estructural entre el Orden Jurídico y el Orden Moral respecto a los criterios de Bilateralidad y Coercibilidad.",
     "Explique la estructura lógica interna de una norma jurídica ordinaria y la clasificación entre normas imperativas y permisivas.",
     "Describa la clasificación jurídica de la Derogación de la Ley en Chile y diferencie los conceptos de vigencia, validez y eficacia.",
@@ -63,9 +84,8 @@ if 'posicion' not in st.session_state:
     st.session_state.posicion = None
 if 'modo' not in st.session_state:
     st.session_state.modo = None
+if 'alts_ordenadas' not in st.session_state:
+    st.session_state.alts_ordenadas = []
 
-st.markdown('<div class="banner-superior"><h1>6️⃣ PRUEBA DE TEORÍA DEL DERECHO</h1><h2>14 PREGUNTAS — RELOJ COGNUSS 2 - EXAMINADOR IA</h2></div>', unsafe_allow_html=True)
+st.markdown('<div class="rect-banner"><h1>6️⃣ PRUEBA DE TEORÍA DEL DERECHO</h1><h2>14 PREGUNTAS — RELOJ COGNUSS 2 - EXAMINADOR IA</h2></div>', unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([0.8, 1, 1.2])
-
-with col1:
