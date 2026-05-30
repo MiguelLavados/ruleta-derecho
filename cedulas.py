@@ -50,7 +50,7 @@ CEDULARIO_COMPLETO = {
     7: {
         'cedula_full': 'CÉDULA 7.- La jurisprudencia y la doctrina, como fuentes formales del Derecho. 7.1. La jurisprudencia a) concepto b) la norma del Código Civil y la práctica de los tribunales chilenos. 7.2. La doctrina a) concepto b) la discusión sobre su carácter de fuente formal del Derecho.',
         'items': [
-            {'sub': '7.1', 'pregunta': 'Explique el concepto de jurisprudencia y el alcance del Efecto Relativo de las sentencias (Art. 3 inc 2 CC).', 'ok': 'Hábito de fallar de los tribunales. El Art 3 CC fija el efecto relativo: las sentencias solo obligan a las partes que intervinieron en el juicio.'},
+            {'sub': '7.1', 'pregunta': 'Explique el concepto de jurisprudencia y el alcance del Efecto Relativo de las sentencias (Art. 3 inc 2 CC).', 'ok': 'Jurisprudencia es el hábito de fallar de los tribunales. El Art 3 CC fija el efecto relativo: las sentencias solo obligan a las partes que intervinieron en el juicio.'},
             {'sub': '7.2', 'pregunta': 'Analice el concepto de doctrina y discuta su carácter como fuente formal del Derecho.', 'ok': 'Estudios científicos de juristas. En Chile carece de fuerza obligatoria vinculante, actuando como fuente auxiliar de interpretación.'}
         ]
     },
@@ -58,11 +58,11 @@ CEDULARIO_COMPLETO = {
         'cedula_full': 'CÉDULA 8.- La Relación Jurídica. 8.1. a) concepto b) elementos 8.2. La persona, sujeto de la relación jurídica. La persona natural. Principio y fin de su existencia.',
         'items': [
             {'sub': '8.1', 'pregunta': 'Defina relación jurídica e identifique sus elementos constitutivos.', 'ok': 'Vínculo regulado por el Derecho entre sujetos. Elementos: Sujeto activo, Sujeto pasivo, Objeto (prestación) y Vínculo Jurídico.'},
-            {'sub': '8.2', 'pregunta': 'Mencione y explique las condiciones simultáneas requeridas para el principio de existencia legal de la persona natural (Art. 74 CC).', 'ok': 'Exige tres requisitos concurrentes: 1) Que la criatura nazca viva; 2) Que se separe completamente de su madre; y 3) Haber sobrevivido un momento.'}
+            {'sub': '8.2', 'pregunta': 'Mencione y explique las condiciones simultáneas requeridas para el principio de existencia legal de la persona natural (Art. 74 CC).', 'ok': 'Exige tres requisitos concurrentes: 1) Que la criatura nazca viva; 2) Que se separe completamente de su madre; y 3) Haber sobrevivido a dicha separación un momento.'}
         ]
     },
     9: {
-        'cedula_full': 'CÉDULA 9.- La persona jurídica. 9.1. Concepto. 9.2. Tipos de personas jurídicas. a) de Derecho Público y b) de Derecho Privado. 9.3. Responsabilidad de las personas jurídicas: a) responsabilidad civil: contractual y extracontractual. 9.4. Responsabilidad penal de las personas jurídicas. LEY N° 21.595.',
+        'cedula_full': 'CÉDULA 9.- La persona jurídica. 9.1. Concepto. 9.2. Tipos de personas jurídicas. a) de Derecho Público y b) de Derecho Privado. 9.3. Responsabilidad de las personas jurídicas. 9.4. Responsabilidad penal de las personas jurídicas. LEY N° 21.595.',
         'items': [
             {'sub': '9.1', 'pregunta': 'Defina el concepto de persona jurídica según el ordenamiento civil.', 'ok': 'Ente ficticio capaz de ejercer derechos, contraer obligaciones civiles y ser representado judicial y extrajudicialmente (Art 545 CC).'},
             {'sub': '9.2', 'pregunta': '¿Cómo se subclasifican las personas jurídicas de Derecho Privado según sus fines estructurales?', 'ok': 'Se dividen en entidades Con fines de lucro (Sociedades Comerciales) y Sin fines de lucro (Corporaciones y Fundaciones de beneficencia).'},
