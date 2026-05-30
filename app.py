@@ -81,7 +81,7 @@ st.markdown(
 # Base de datos oficial alineada con el Cedulario de la diapositiva
 CONOCIMIENTO_CEDULARIO = {
     1: {"tema": "DERECHO Y MORAL", "pregunta": "¿Cuál es la diferencia estructural entre el Orden Jurídico y el Orden Moral respecto a la Bilateralidad/Unilateralidad?", "correcta": "El Derecho es Bilateral (concede facultades a terceros para exigir el cumplimiento), mientras que la Moral es Unilateral (impone deberes al sujeto sin otorgar derechos correlativos a otra persona)."},
-    2: {"tema": "NORMA JURÍDICA", "pregunta": "¿Qué distingue a las Normas Imperativas de las Permisivas ante el margen de la voluntad particular?", "correcta": "Las Normas Imperativas no pueden ser modificadas ni anuladas por acuerdo de particulares (absolutas), mientras que las Permisivas otorgan una opción donde el sujeto decide si ejerce el derecho o renuncia a él."},
+    2: {"tema": "NORMA JURÍDICA", "pregunta": "¿Qué distingue a las Normas Imperativas de las Permisivas ante el margen de la voluntad particular?", "correcta": "Las Normas Imperativas no pueden ser modificadas ni aunadas por acuerdo de particulares (absolutas), mientras que las Permisivas otorgan una opción donde el sujeto decide si ejerce el derecho o renuncia a él."},
     3: {"tema": "VIGENCIA, VALIDEZ Y EFICACIA", "pregunta": "¿Cuál es la diferencia entre una derogación legal de tipo Total y una de tipo Parcial?", "correcta": "La Derogación Total deja sin efecto la totalidad del cuerpo legal preexistente, mientras que la Parcial elimina solo algunas disposiciones específicas manteniendo el resto de la ley antigua vigente."},
     4: {"tema": "PLENITUD HERMÉTICA Y LAGUNAS DEL DERECHO", "pregunta": "¿Qué mandata el principio de inexcusabilidad consagrado en el art. 76 de la Constitución a los jueces?", "correcta": "Obliga a los jueces a resolver los conflictos sometidos a su conocimiento, incluso si no existe una ley expresa que regule el caso, debiendo fallar utilizando los principios generales del derecho."},
     5: {"tema": "FUENTES DEL ORDENAMIENTO JURÍDICO", "pregunta": "Defina la diferencia de naturaleza entre las Fuentes Materiales y las Fuentes Formales.", "correcta": "Las Fuentes Materiales son hechos de la realidad social (metajurídicos) que determinan el contenido; las Fuentes Formales son actos jurídicos normativos institucionales con fuerza obligatoria."},
@@ -90,14 +90,14 @@ CONOCIMIENTO_CEDULARIO = {
     8: {"tema": "LA RELACIÓN JURÍDICA", "pregunta": "Mencione los tres requisitos de existencia legal de la persona natural conforme al artículo 74 del Código Civil.", "correcta": "1. Que la criatura nazca viva; 2. Que se separe completamente de su madre; 3. Haber sobrevivido a la separación un momento siquiera."},
     9: {"tema": "LA PERSONA JURÍDICA", "pregunta": "¿Cómo se subclasifican las personas jurídicas de Derecho Privado según sus fines?", "correcta": "Se subclasifican en entidades Con fines de lucro (Sociedades Comerciales como S.A., S.R.L., SpA) y entidades Sin fines de lucro (Corporaciones y Fundaciones)."},
     10: {"tema": "DERECHOS REALES Y PERSONALES", "pregunta": "Defina el concepto legal de Derecho Real según lo estipulado en el Artículo 577 del Código Civil.", "correcta": "Es el derecho que tenemos sobre una cosa sin respecto a determinada persona, naciendo de la concurrencia de un Título y un Modo de Adquirir."},
-    11: {"tema": "LÍMITES AND ABUSO DEL DERECHO", "pregunta": " ¿Cuándo ocurre técnicamente el fenómeno del Abuso del Derecho?", "correcta": "Ocurre cuando un sujeto ejerce un derecho legal legítimo, pero de una manera desviada, con dolo, negligencia o con el único fin de causar daño a otra persona."},
+    11: {"tema": "LÍMITES Y ABUSO DEL DERECHO", "pregunta": " ¿Cuándo ocurre técnicamente el fenómeno del Abuso del Derecho?", "correcta": "Ocurre cuando un sujeto ejerce un derecho legal legítimo, pero de una manera desviada, con dolo, negligencia o con el único fin de causar daño a otra persona."},
     12: {"tema": "LOS BIENES (O COSAS) - CLASIFICACIÓN", "pregunta": "¿Qué define a los bienes muebles por anticipación regulados en el artículo 571 del Código Civil?", "correcta": "Son productos de los inmuebles y cosas accesorias a ellos que se consideran muebles, aun antes de su separación, para el efecto de constituir un derecho sobre ellos."},
     13: {"tema": "RÉGIMEN JURÍDICO DE LOS BIENES", "pregunta": "Compare la formalidad de venta exigida para un bien mueble frente a un bien inmueble.", "correcta": "La venta de bienes muebles es meramente consensual (acuerdo simple), mientras que la de inmuebles es solemne y exige obligatoriamente ser otorgada por Escritura Pública (Art. 1801 CC)."},
     14: {"tema": "BIENES COMERCIABLES E INCOMERCIABLES", "pregunta": "Diferencie los Bienes Nacionales de Uso Público de los Bienes Fiscales respecto a su comerciabilidad.", "correcta": "Los de Uso Público son strictly incomerciables, inalienables e imprescriptibles; los Bienes Fiscales son comerciables internamente y el Estado puede venderlos o arrendarlos."}
 }
 
 if "posiciones_reloj" not in st.session_state:
-    st.session_state.posiciones_reloj = list(range(1, 14))
+    st.session_state.posiciones_reloj = list(range(1, 15))
 if "cedula_activa" not in st.session_state:
     st.session_state.cedula_activa = None
 if "evaluacion" not in st.session_state:
@@ -128,13 +128,13 @@ with col1:
     else:
         st.success("🎉 ¡Excelente! Completaste el recorrido del reloj de 14 horas.")
         if st.button("♻️ Reiniciar Esfera"):
-            st.session_state.posiciones_reloj = list(range(1, 14))
+            st.session_state.posiciones_reloj = list(range(1, 15))
             st.session_state.cedula_activa = None
             st.rerun()
 
     st.write("")
     html_esfera = "<div>"
-    for pos in range(1, 14):
+    for pos in range(1, 15):
         if pos == st.session_state.cedula_activa:
             html_esfera += f"<div class='circle-slot slot-activa'>{pos}</div>"
         elif pos not in st.session_state.posiciones_reloj:
@@ -154,8 +154,8 @@ with col2:
         st.markdown(f"<div class='box-horario'><b style='color: #7B1FA2;'>🕐 HORARIO (PREGUNTA):</b><br><b>TEMA:</b> {item['tema']}<br><br><i>{item['pregunta']}</i></div>", unsafe_allow_html=True)
         st.markdown(f"<div class='box-segundero'><b style='color: #2E7D32;'>🎯 SEGUNDERO (RESPUESTA FINA):</b><br>{item['correcta']}</div>", unsafe_allow_html=True)
         
-        st.write("**¿Respondiste correctamente en voz alta?**")
-        b1, b2 = st.columns(2)
-        if b1.button("👍 SÍ, CORRECTA"):
+        st.write("**¿Respondiste correctamente?**")
+        if st.button("👍 MARCAR COMO CORRECTA"):
             st.session_state.evaluacion = "OK"
-        if b2.button("👎 REQUIERE REPASO"):
+        if st.button("👎 MARCAR PARA REPASO"):
+            st.session_state.evaluacion = "REPASO"
