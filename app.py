@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 import datetime
 
 # --- Caducidad de la aplicación ---
@@ -15,20 +16,21 @@ with st.sidebar:
     st.caption("🛠️ **Soporte Técnico:**\nMétodo Cognuss II\nMiguel López Lavados")
 
 # ---------------- DATOS DEL EXAMEN ----------------
-# Aquí se definen todas las cédulas con sus preguntas y respuestas.
-# Para simplificar, muestro solo un ejemplo de cada cédula. 
-# Tú puedes ampliar con todas las preguntas del PDF siguiendo la misma estructura.
+# Aquí debes copiar todas las preguntas de tu PDF en formato de 4 alternativas.
+# Ejemplo de Cédula 1:
 
 DATOS_EXAMEN = {
     1: {
-        "titulo": "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
+        "titulo": "CÉDULA 1.- El Derecho y la Moral",
         "preguntas": [
             {
                 "sub": "1.1",
                 "preg": "¿Características de la norma moral?",
                 "opciones": [
                     "A) Autónoma, interior, unilateral, incoercible.",
-                    "B) Heterónoma, exterior, bilateral, coercible."
+                    "B) Heterónoma, exterior, bilateral, coercible.",
+                    "C) Exterior, bilateral, coercible.",
+                    "D) Interior, autónoma, coercible."
                 ],
                 "correcta": "A) Autónoma, interior, unilateral, incoercible.",
                 "explicacion": "Regula el fuero interno y no usa la fuerza."
@@ -38,101 +40,63 @@ DATOS_EXAMEN = {
                 "preg": "¿Diferencia formal entre Derecho y Moral?",
                 "opciones": [
                     "A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.",
-                    "B) Ambos son autónomos e interiores."
+                    "B) Ambos son autónomos e interiores.",
+                    "C) El Derecho es autónomo y unilateral.",
+                    "D) La Moral es coercible y bilateral."
                 ],
                 "correcta": "A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.",
                 "explicacion": "El Derecho cuenta con la fuerza coactiva del Estado."
             }
         ]
     },
-    2: {
-        "titulo": "CÉDULA 2.- La Norma Jurídica. Características. Estructura lógica.",
-        "preguntas": [
-            {
-                "sub": "2.1",
-                "preg": "¿Características de la norma jurídica?",
-                "opciones": [
-                    "A) Heterónoma, exterior, bilateral, coercible.",
-                    "B) Autónoma, interior, unilateral, incoercible."
-                ],
-                "correcta": "A) Heterónoma, exterior, bilateral, coercible.",
-                "explicacion": "Emana de autoridad externa y es imponible por la fuerza."
-            },
-            {
-                "sub": "2.2",
-                "preg": "¿Normas imperativas vs permisivas?",
-                "opciones": [
-                    "A) Ordenan o prohíben de forma absoluta.",
-                    "B) Conceden facultad legítima para actuar o no."
-                ],
-                "correcta": "A) Ordenan o prohíben de forma absoluta.",
-                "explicacion": "Las imperativas no pueden ser modificadas; las permisivas otorgan opción."
-            }
-        ]
-    },
-    3: {
-        "titulo": "CÉDULA 3.- Vigencia, Validez y Eficacia de las Normas Jurídicas.",
-        "preguntas": [
-            {
-                "sub": "3.1",
-                "preg": "¿Tipos de derogación de la ley?",
-                "opciones": [
-                    "A) Expresa, tácita, total o parcial.",
-                    "B) Solo por mutuo acuerdo."
-                ],
-                "correcta": "A) Expresa, tácita, total o parcial.",
-                "explicacion": "La derogación puede ser explícita o por incompatibilidad."
-            }
-        ]
-    },
-    # --- Continúa rellenando las cédulas 4 a 14 con las preguntas del PDF ---
+    # --- Aquí debes continuar con las cédulas 2 a 14 usando el mismo formato ---
 }
 
 # ---------------- ESTADO DE SESIÓN ----------------
 if "cedula" not in st.session_state:
-    st.session_state.cedula = None
-if "respuestas" not in st.session_state:
-    st.session_state.respuestas = {}
-if "evaluado" not in st.session_state:
-    st.session_state.evaluado = False
+    st.session_state.cedula = 1
+if "pregunta_idx" not in st.session_state:
+    st.session_state.pregunta_idx = 0
 
-# ---------------- SELECCIÓN DE CÉDULA ----------------
+# ---------------- NAVEGACIÓN ----------------
 st.write("---")
-st.write("### 👨‍🏫 SELECCIÓN DIRECTA DE CÉDULA")
+st.write("### 👨‍🏫 Selección de Cédula")
 
 cols = st.columns(5)
 for idx, i in enumerate(range(1, 15)):
     with cols[idx % 5]:
         if st.button(f"Cédula {i}", key=f"btn_{i}"):
             st.session_state.cedula = i
-            st.session_state.evaluado = False
+            st.session_state.pregunta_idx = 0
 
-# ---------------- MOSTRAR PREGUNTAS ----------------
-if st.session_state.cedula:
-    cedula = DATOS_EXAMEN[st.session_state.cedula]
+cedula = DATOS_EXAMEN.get(st.session_state.cedula, None)
+
+if cedula and cedula["preguntas"]:
+    pregunta = cedula["preguntas"][st.session_state.pregunta_idx]
+
     st.subheader(cedula["titulo"])
+    st.write(f"{pregunta['sub']} {pregunta['preg']}")
 
-    for pregunta in cedula["preguntas"]:
-        respuesta = st.radio(
-            f"{pregunta['sub']} {pregunta['preg']}",
-            pregunta["opciones"],
-            key=f"resp_{pregunta['sub']}"
-        )
-        st.session_state.respuestas[pregunta['sub']] = respuesta
+    # Alternativas
+    respuesta = st.radio("Selecciona una opción:", pregunta["opciones"], key=f"radio_{pregunta['sub']}")
 
-    if st.button("Evaluar respuestas"):
-        st.session_state.evaluado = True
+    # Respuesta escrita
+    texto = st.text_area("Escribe tu respuesta:", key=f"texto_{pregunta['sub']}")
 
-    if st.session_state.evaluado:
-        st.write("### 📊 Resultados")
-        correctas = 0
-        total = len(cedula["preguntas"])
-        for pregunta in cedula["preguntas"]:
-            sub = pregunta["sub"]
-            resp = st.session_state.respuestas.get(sub, None)
-            if resp == pregunta["correcta"]:
-                st.success(f"{sub}: Correcto ✅ - {pregunta['explicacion']}")
-                correctas += 1
-            else:
-                st.error(f"{sub}: Incorrecto ❌ - {pregunta['explicacion']}")
-        st.info(f"Resultado final: {correctas}/{total} correctas")
+    # Botón para mostrar respuesta correcta
+    if st.button("Ver respuesta"):
+        placeholder = st.empty()
+        placeholder.success(f"✅ Respuesta correcta: {pregunta['correcta']}\n\nℹ️ {pregunta['explicacion']}")
+        time.sleep(25)
+        placeholder.empty()
+
+    # Navegación entre preguntas
+    col1, col2 = st.columns(2)
+    if col1.button("⬅️ Anterior"):
+        if st.session_state.pregunta_idx > 0:
+            st.session_state.pregunta_idx -= 1
+    if col2.button("➡️ Siguiente"):
+        if st.session_state.pregunta_idx < len(cedula["preguntas"]) - 1:
+            st.session_state.pregunta_idx += 1
+else:
+    st.warning("⚠️ Esta cédula aún no tiene preguntas cargadas.")
