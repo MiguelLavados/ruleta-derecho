@@ -1,6 +1,10 @@
 import streamlit as st
 import random
+import time
 from datetime import datetime
+
+# Importación segura desde el archivo local de base de datos
+from cedulas import CEDULARIO_COMPLETO
 
 # CONTROL DE CADUCIDAD REQUERIDO (30 de Junio de 2026)
 FECHA_LIMITE = datetime(2026, 6, 30, 23, 59, 59)
@@ -10,7 +14,6 @@ if datetime.now() > FECHA_LIMITE:
 
 st.set_page_config(page_title="COGNUSS 2 - TEORÍA DEL DERECHO", layout="wide")
 
-# Estilos CSS de ventanas rectangulares secuenciales limpias e institucionales
 st.markdown(
     """
     <style>
@@ -26,59 +29,126 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown('<div class="rect-banner"><h1>COGNUSS 2 - TEORÍA DEL DERECHO</h1><p>SISTEMA INTERACTIVO DE EVALUACIÓN ACADÉMICA</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="rect-banner"><h1>COGNUSS 2 - TEORÍA DEL DERECHO</h1><p>MÉTODO COGNUSS II - PROFESOR JAIME ESPONDA & MIGUEL LÓPEZ LAVADOS</p></div>', unsafe_allow_html=True)
 
-# Base de datos indexada jerárquicamente con las 14 cédulas y todas sus subpreguntas literales
-CEDULARIO_COMPLETO = {
-    1: {
-        'cedula_full': 'CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social. 1.1. La norma moral, características. 1.2. Derecho y Moral: diferencias entre ambos órdenes. 1.3. Normas de uso y trato social: a) concepto. b) características y diferencias con la norma jurídica.',
-        'items': [
-            {'sub': '1.1', 'pregunta': 'Explaye sobre la norma moral y describa detalladamente sus características esenciales.', 'ok': 'La norma moral regula la conducta humana orientada al bien. Es unilateral, interior, incoercible y autónoma.'},
-            {'sub': '1.2', 'pregunta': 'Establezca detalladamente las diferencias fundamentales entre el orden del Derecho y el orden de la Moral.', 'ok': 'El Derecho regula la conducta externa mediante la bilateralidad y coercibilidad estatal. La Moral opera en el fuero interno mediante la unilateralidad e incoercibilidad.'},
-            {'sub': '1.3', 'pregunta': 'Defina las normas de uso y trato social, sus características y diferencias estructurales con la norma jurídica.', 'ok': 'Son prescripciones de conducta social de carácter exterior, incoercibles y heterónomas. Carecen de coacción institucional estatal a diferencia del Derecho.'}
-        ]
-    },
-    2: {
-        'cedula_full': 'CÉDULA 2.- La norma jurídica. 2.1. Características. 2.2. Clasificación entre normas jurídicas imperativas y permisivas. 2.3. Estructura lógica de la norma jurídica.',
-        'items': [
-            {'sub': '2.1', 'pregunta': 'Analice y explaye las características esenciales de la norma jurídica.', 'ok': 'Es bilateral (correlativa), exterior (regula actos materiales), coercible (admite el uso legítimo de la fuerza estatal) y heterónoma (dictada por una voluntad externa).'},
-            {'sub': '2.2', 'pregunta': 'Explique la clasificación de normas jurídicas imperativas frente a las permisivas en el ordenamiento civil.', 'ok': 'Las imperativas mandan o prohíben absolutamente limitando la autonomía de particulares; las permisivas conceden una facultad o derecho subjetivo lícito.'},
-            {'sub': '2.3', 'pregunta': 'Describa la estructura lógica interna de una norma jurídica ordinaria.', 'ok': 'Se compone formalmente mediante un juicio hipotético estructurado en: un Supuesto de Hecho (hipótesis condicional) y una Consecuencia Jurídica (efecto o sanción).'}
-        ]
-    },
-    3: {
-        'cedula_full': 'CÉDULA 3.- Vigencia, validez y eficacia del Derecho positivo. 3.1. Vigencia a) concepto b) momento de la vigencia. c) la derogación de la ley: concepto y clasificación. 3.2. Validez a) concepto b) fundamentos de la validez del Derecho y presupuestos últimos de su legitimidad: en qué consisten las dos principales doctrinas. 3.3. Eficacia: concepto.',
-        'items': [
-            {'sub': '3.1', 'pregunta': 'Defina vigencia, momento de inicio y la clasificación jurídica de la derogación legal en Chile.', 'ok': 'Vigencia es la fuerza obligatoria tras la publicación. Derogación es la pérdida de esta; puede ser expresa o tácita, total o parcial.'},
-            {'sub': '3.2', 'pregunta': 'Explique el concepto de validez y los fundamentos de legitimidad según el Iusnaturalismo y el Iuspositivismo.', 'ok': 'Validez es conformidad con las normas jerárquicas superiores. El Iusnaturalismo fundamenta la legitimidad en la justicia/moral; el Iuspositivismo en la legalidad formal.'},
-            {'sub': '3.3', 'pregunta': 'Defina detalladamente el concepto técnico de eficacia dentro del Derecho positivo.', 'ok': 'Es una condición fáctica: representa el grado efectivo de cumplimiento, observancia y aplicación real de la norma por parte de sus destinatarios y tribunales.'}
-        ]
-    },
-    4: {
-        'cedula_full': 'CÉDULA 4.- La plenitud hermética del ordenamiento jurídico y las lagunas del Derecho. 4.1. Introducción constitucional: principio de inexcusabilidad. 4.2 Concepto de plenitud hermética del ordenamiento jurídico. 4.3. Casos en que se observan lagunas del Derecho; solución judicial. 4.4. Conflicto entre normas jurídicas positivas (del mismo nivel jerárquico y de diverso nivel jerárquico): criterios de solución judicial.',
-        'items': [
-            {'sub': '4.1', 'pregunta': 'Explique el Principio de Inexcusabilidad consagrado en el Artículo 76 de la Constitución.', 'ok': 'Establece que reclamada la intervención de los tribunales en forma legal y en negocios de su competencia, no pueden excusarse de fallar ni aun por falta de ley.'},
-            {'sub': '4.2', 'pregunta': 'Defina el concepto doctrinal de la plenitud hermética del ordenamiento jurídico.', 'ok': 'Es el postulado que afirma que el sistema legal es completo y cerrado, conteniendo las herramientas normativas o de integración para resolver todo conflicto.'},
-            {'sub': '4.3', 'pregunta': 'Identifique cuándo se observan lagunas del Derecho y cuál es su solución por medio de la integración.', 'ok': 'Hay lagunas ante un vacío legal. El juez integra el ordenamiento aplicando jerárquicamente la analogía jurídica, la equidad natural y los principios generales.'},
-            {'sub': '4.4', 'pregunta': 'Detalle los criterios de solución judicial ante el conflicto entre normas jurídicas positivas de igual y diverso nivel.', 'ok': 'Se aplican los principios clásicos: Jerarquía (ley superior deroga inferior), Temporalidad (ley posterior deroga anterior) y Especialidad (ley especial prima sobre general).'}
-        ]
-    },
-    5: {
-        'cedula_full': 'CÉDULA 5.- Fuentes del ordenamiento jurídico. 5.1. Concepto y tipos de fuente (materiales y formales) 5.2. Fuentes formales del Derecho: clasificación. 5.3. La ley: a) concepto b) elementos c) características d) efectos de la ley en cuanto al espacio e) efectos de la ley en cuanto al tiempo.',
-        'items': [
-            {'sub': '5.1', 'pregunta': 'Establezca la diferencia entre Fuentes Materiales y Fuentes Formales del Derecho.', 'ok': 'Materiales son factores reales (sociales, políticos, morales) que determinan el contenido. Formales son los modos técnico-institucionales de manifestación obligatoria.'},
-            {'sub': '5.2', 'pregunta': 'Mencione la clasificación general de las Fuentes Formales.', 'ok': 'Se clasifican principalmente en Ley (potestad legislativa), Costumbre, Jurisprudencia (fallos de tribunales) y la Doctrina (estudios de juristas).'},
-            {'sub': '5.3', 'pregunta': 'Explaye sobre el concepto de ley, sus elementos, características y sus efectos en el tiempo y el espacio.', 'ok': 'Declaración de la voluntad soberana (Art 1 CC). Es universal y obligatoria. En el espacio rige la territorialidad; en el tiempo, la irretroactividad (Art 9 CC).'}
-        ]
-    },
-    6: {
-        'cedula_full': 'CÉDULA 6.- La costumbre. 6.1. La costumbre a) concepto b) elementos. 6.2. La costumbre en el Derecho Civil, el Derecho Comercial, el Derecho Internacional Público, el Derecho Penal y el Derecho Procesal.',
-        'items': [
-            {'sub': '6.1', 'pregunta': 'Defina el concepto de costumbre jurídica y desglose sus dos elementos constitutivos.', 'ok': 'Es la repetición constante de una conducta por el grupo social. Elementos: Material (repetición generalizada) y Espiritual (convicción de obligatoriedad / Opinio Iuris).'},
-            {'sub': '6.2', 'pregunta': 'Analice el valor legal de la costumbre en las distintas ramas del Derecho chileno.', 'ok': 'En Civil: solo según la ley (Art 2 CC). En Comercial: en silencio de ley (Art 4 CCom). En Penal: rechazada absolutamente por el principio de legalidad formal.'}
-        ]
-    },
-    7: {
-        'cedula_full': 'CÉDULA 7.- La jurisprudencia y la doctrina, como fuentes formales del Derecho. 7.1. La jurisprudencia a) concepto b) la norma del Código Civil y la práctica de los tribunales chilenos. 7.2. La doctrina a) concepto b) la discusión sobre su carácter de fuente formal del Derecho.',
-        'items': [
-            {'sub': '7.1', 'pregunta': 'Explique el concepto de jurisprudencia y el alcance del Efecto Relativo de las sentencias (Art. 3 inc 2 CC).', 'ok': 'Jurisprudencia es el hábito de fallar de los tribunales. El Art 3 CC fija el efecto relativo: las sentencias solo obligan a las partes que intervinieron en el juicio.'},
+if 'cedula_seleccionada' not in st.session_state:
+    st.session_state.cedula_seleccionada = None
+if 'item_index' not in st.session_state:
+    st.session_state.item_index = 0
+if 'modo_examen' not in st.session_state:
+    st.session_state.modo_examen = None
+if 'score_correctas' not in st.session_state:
+    st.session_state.score_correctas = 0
+if 'score_totales' not in st.session_state:
+    st.session_state.score_totales = 0
+if 'opciones_mezcladas' not in st.session_state:
+    st.session_state.opciones_mezcladas = []
+
+st.write("### 📂 Selector de Cédulas del Balotario Oficial")
+fila1 = st.columns(7)
+fila2 = st.columns(7)
+
+for i in range(1, 8):
+    if fila1[i-1].button(f"Cédula {i:02d}"):
+        st.session_state.cedula_seleccionada = i
+        st.session_state.item_index = 0
+        st.session_state.modo_examen = None
+        st.session_state.opciones_mezcladas = []
+        st.rerun()
+
+for i in range(8, 15):
+    if fila2[i-8].button(f"Cédula {i:02d}"):
+        st.session_state.cedula_seleccionada = i
+        st.session_state.item_index = 0
+        st.session_state.modo_examen = None
+        st.session_state.opciones_mezcladas = []
+        st.rerun()
+
+st.write("---")
+
+if st.session_state.cedula_seleccionada is not None:
+    c_id = st.session_state.cedula_seleccionada
+    data_cedula = CEDULARIO_COMPLETO[c_id]
+    lista_sub = data_cedula['items']
+    sub_idx = st.session_state.item_index
+    
+    if sub_idx < len(lista_sub):
+        sub_pregunta_actual = lista_sub[sub_idx]
+        
+        st.markdown(f'<div class="rect-cedula"><b>🟢 ENUNCIADO COMPLETO DE LA CÉDULA:</b><br><b>{data_cedula["cedula_full"]}</b></div>', unsafe_allow_html=True)
+        st.write(f"### 📋 Evaluando Subpregunta {sub_pregunta_actual['sub']} de la Cédula:")
+        
+        if st.session_state.modo_examen is None:
+            st.write("**Seleccione la vía de respuesta que desea tomar para este ítem:**")
+            col_o, col_a = st.columns(2)
+            if col_o.button("🗣️ VÍA ESCRITO / ORAL (Voz Alta)"):
+                st.session_state.modo_examen = "ORAL"
+                st.rerun()
+            if col_a.button("📝 VÍA CUATRO ALTERNATIVAS"):
+                st.session_state.modo_examen = "ALTS"
+                distractores = [
+                    "Constituye un mandato de orden moral puramente interno e incoercible que carece de sanción estatal.",
+                    "Es una disposición de derecho adjetivo transitoria que fue derogada expresamente por la judicatura.",
+                    "Norma civil reglamentaria que posee efectos de extraterritorialidad sin requerir declaración."
+                ]
+                opciones_mezcla = [sub_pregunta_actual['ok']] + distractores
+                random.shuffle(opciones_mezcla)
+                st.session_state.opciones_mezcladas = opciones_mezcla
+                st.rerun()
+        else:
+            st.markdown(f'<div class="rect-pregunta"><b>🔵 PREGUNTA FORMULADA:</b><br><span style="font-size:15px; font-weight:bold;">"{sub_pregunta_actual["pregunta"]}"</span></div>', unsafe_allow_html=True)
+            
+            if st.session_state.modo_examen == "ORAL":
+                st.markdown(f'<div class="rect-respuesta"><b>🎯 RESPUESTA CORRECTA OFICIAL (SE DIFUMINA EN 25 SEGUNDOS):</b><br><p class="desvanecer-texto">{sub_pregunta_actual["ok"]}</p></div>', unsafe_allow_html=True)
+                
+                c_ok, c_bad = st.columns(2)
+                if c_ok.button("👍 RESPONDÍ BIEN"):
+                    st.session_state.score_correctas += 1
+                    st.session_state.score_totales += 1
+                    st.session_state.item_index += 1
+                    st.session_state.modo_examen = None
+                    st.rerun()
+                if c_bad.button("👎 REQUIERO REPASO"):
+                    st.session_state.score_totales += 1
+                    st.session_state.item_index += 1
+                    st.session_state.modo_examen = None
+                    st.rerun()
+                    
+            elif st.session_state.modo_examen == "ALTS":
+                opcion_sel = st.radio("Seleccione la opción correcta de la lista (sin premarcar):", st.session_state.opciones_mezcladas, index=None, key=f"radio_{c_id}_{sub_idx}")
+                
+                if st.button('📥 ENVIAR RESPUESTA ACADÉMICA'):
+                    if opcion_sel == sub_pregunta_actual['ok']:
+                        st.success("🎯 ¡BIEN! Doctrina legal validada con éxito.")
+                        st.session_state.score_correctas += 1
+                    else:
+                        st.error(f"❌ MAL. La respuesta correcta oficial es:\n\n{sub_pregunta_actual['ok']}")
+                    time.sleep(2.5)
+                    st.session_state.score_totales += 1
+                    st.session_state.item_index += 1
+                    st.session_state.modo_examen = None
+                    st.session_state.opciones_mezcladas = []
+                    st.rerun()
+    else:
+        st.success(f"🎉 ¡Cédula {c_id:02d} completada!")
+        st.markdown("### 📊 Cartola y Evaluación Final del Examen")
+        if st.session_state.score_totales > 0:
+            porcentaje = (st.session_state.score_correctas / st.session_state.score_totales) * 100
+            nota_final = 4.0 + ((porcentaje - 60) / 40) * 3.0 if porcentaje >= 60 else 1.0 + (porcentaje / 60) * 3.0
+            st.metric(label="NOTA ESTIMADA EN ESCALA JURÍDICA USS", value=f"{nota_final:.1f}")
+            st.info(f"Ítems Totales: {st.session_state.score_totales} | Correctas: {st.session_state.score_correctas}")
+        
+        if st.button("🔄 REINICIAR CONTADORES Y VOLVER A INTERROGAR"):
+            st.session_state.cedula_seleccionada = None
+            st.session_state.item_index = 0
+            st.session_state.score_correctas = 0
+            st.session_state.score_totales = 0
+            st.rerun()
+else:
+    st.info("Por favor, pinche cualquiera de las 14 Cédulas en la botonera superior.")
+
+st.write("---")
+st.markdown("### 🗂️ *Propiedad Intelectual & Créditos*")
+st.write("• **Profesor Titular:** Dr. Jaime Esponda")
+st.write("• **Desarrollador & Alumno:** Miguel López Lavados")
+st.write("• **IA:** Agente Colaborador Integrado")
