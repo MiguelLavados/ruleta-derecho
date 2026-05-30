@@ -1,4 +1,4 @@
-import streamlit st
+import streamlit as st
 
 st.set_page_config(page_title="EXAMINADOR DE TEORÍA DEL DERECHO", layout="centered")
 
