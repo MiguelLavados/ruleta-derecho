@@ -54,7 +54,7 @@ CEDULARIO_MÉTODO_COGNUSS = {
     },
     7: {
         'cedula': 'CEDULA 7.- La jurisprudencia y la doctrina, como fuentes formales del Derecho.',
-        'concepto': 'La jurisprudencia: concepto, la norma del Código Civil y la práctica de los tribunales chilenos. La doctrina y la discusión sobre su carácter.',
+        'concepto': 'La jurisprudencia: concepto, la norma del Código Civil and la práctica de los tribunales chilenos. La doctrina y la discusión sobre su carácter.',
         'pregunta': 'Explique el alcance del Efecto Relativo de las sentencias judiciales en Chile conforme al artículo 3° inciso 2° del Código Civil.',
         'fina': 'Las sentencias judiciales dictadas por los tribunales chilenos poseen fuerza obligatoria de manera estricta y exclusiva respecto de las partes que intervinieron en ese litigio específico. En Chile no rige el precedente obligatorio automático anglosajón, por lo que los fallos no sientan ley general.'
     },
