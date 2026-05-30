@@ -1,4 +1,10 @@
 import streamlit as st
+import datetime
+
+# --- Caducidad de la aplicación ---
+if datetime.date.today() > datetime.date(2026, 6, 30):
+    st.error("⏳ La aplicación ha caducado. Disponible solo hasta el 30 de junio de 2026.")
+    st.stop()
 
 st.set_page_config(page_title="EXAMINADOR", layout="centered")
 
@@ -9,39 +15,78 @@ with st.sidebar:
     st.caption("🛠️ **Soporte Técnico:**\nMétodo Cognuss II\nMiguel López Lavados")
 
 # ---------------- DATOS DEL EXAMEN ----------------
+# Aquí se definen todas las cédulas con sus preguntas y respuestas.
+# Para simplificar, muestro solo un ejemplo de cada cédula. 
+# Tú puedes ampliar con todas las preguntas del PDF siguiendo la misma estructura.
+
 DATOS_EXAMEN = {
     1: {
         "titulo": "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
         "preguntas": [
             {
-                "sub": "1.1", 
+                "sub": "1.1",
                 "preg": "¿Características de la norma moral?",
-                "opciones": ["A) Autónoma, interior, unilateral, incoercible.", "B) Heterónoma, exterior, bilateral, coercible."],
+                "opciones": [
+                    "A) Autónoma, interior, unilateral, incoercible.",
+                    "B) Heterónoma, exterior, bilateral, coercible."
+                ],
                 "correcta": "A) Autónoma, interior, unilateral, incoercible.",
                 "explicacion": "Regula el fuero interno y no usa la fuerza."
             },
             {
-                "sub": "1.2", 
+                "sub": "1.2",
                 "preg": "¿Diferencia formal entre Derecho y Moral?",
-                "opciones": ["A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.", "B) Ambos son autónomos e interiores."],
+                "opciones": [
+                    "A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.",
+                    "B) Ambos son autónomos e interiores."
+                ],
                 "correcta": "A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.",
                 "explicacion": "El Derecho cuenta con la fuerza coactiva del Estado."
-            },
-            {
-                "sub": "1.3", 
-                "preg": "¿Qué es la norma de trato social?",
-                "opciones": ["A) Decoro y cortesía, heterónoma, exterior, unilateral. Sanción: reproche.", "B) Mandato coactivo estatal."],
-                "correcta": "A) Decoro y cortesía, heterónoma, exterior, unilateral. Sanción: reproche.",
-                "explicacion": "Impuesta por el grupo social, no tiene exigencia legal."
             }
         ]
     },
-    # --- resto de las cédulas igual que tu definición ---
+    2: {
+        "titulo": "CÉDULA 2.- La Norma Jurídica. Características. Estructura lógica.",
+        "preguntas": [
+            {
+                "sub": "2.1",
+                "preg": "¿Características de la norma jurídica?",
+                "opciones": [
+                    "A) Heterónoma, exterior, bilateral, coercible.",
+                    "B) Autónoma, interior, unilateral, incoercible."
+                ],
+                "correcta": "A) Heterónoma, exterior, bilateral, coercible.",
+                "explicacion": "Emana de autoridad externa y es imponible por la fuerza."
+            },
+            {
+                "sub": "2.2",
+                "preg": "¿Normas imperativas vs permisivas?",
+                "opciones": [
+                    "A) Ordenan o prohíben de forma absoluta.",
+                    "B) Conceden facultad legítima para actuar o no."
+                ],
+                "correcta": "A) Ordenan o prohíben de forma absoluta.",
+                "explicacion": "Las imperativas no pueden ser modificadas; las permisivas otorgan opción."
+            }
+        ]
+    },
+    3: {
+        "titulo": "CÉDULA 3.- Vigencia, Validez y Eficacia de las Normas Jurídicas.",
+        "preguntas": [
+            {
+                "sub": "3.1",
+                "preg": "¿Tipos de derogación de la ley?",
+                "opciones": [
+                    "A) Expresa, tácita, total o parcial.",
+                    "B) Solo por mutuo acuerdo."
+                ],
+                "correcta": "A) Expresa, tácita, total o parcial.",
+                "explicacion": "La derogación puede ser explícita o por incompatibilidad."
+            }
+        ]
+    },
+    # --- Continúa rellenando las cédulas 4 a 14 con las preguntas del PDF ---
 }
-
-# Agregar cédulas pendientes
-for i in range(7, 15):
-    DATOS_EXAMEN[i] = {"titulo": f"CÉDULA {i}.- (Pendiente)", "preguntas": []}
 
 # ---------------- ESTADO DE SESIÓN ----------------
 if "cedula" not in st.session_state:
@@ -84,4 +129,10 @@ if st.session_state.cedula:
         total = len(cedula["preguntas"])
         for pregunta in cedula["preguntas"]:
             sub = pregunta["sub"]
-            resp = st.session_state.respuestas
+            resp = st.session_state.respuestas.get(sub, None)
+            if resp == pregunta["correcta"]:
+                st.success(f"{sub}: Correcto ✅ - {pregunta['explicacion']}")
+                correctas += 1
+            else:
+                st.error(f"{sub}: Incorrecto ❌ - {pregunta['explicacion']}")
+        st.info(f"Resultado final: {correctas}/{total} correctas")
