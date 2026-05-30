@@ -74,4 +74,6 @@ SUBPREGUNTAS_POOL = {
         {"sub": "5.3", "preg": "Explaye sobre el concepto de ley, sus elementos, características y sus efectos en el tiempo y el espacio.", "ok": "Declaración de la voluntad soberana (Art 1 CC). Territorial en el espacio (Art 14 CC) e irretroactiva en el tiempo (Art 9 CC)."}
     ],
     6: [
-        {"sub": "6.1", "preg": "Defina el concepto de costumbre jurídica y desglose sus dos elementos constitutivos.", "ok": "Repetición constante de conductas. Elementos: Material (práctica uniforme) y Espiritual (convicción de obligatoriedad / Opinio Iuris)."},
+        {"sub": "6.1", "preg": "Defina el concepto de costumbre jurídica y desglose sus dos elementos constitutivos.", "ok": "Repetición constante de conductas. Elementos: Material (práctica uniforme) y Espiritual (convicción de obligatoriedad / Opinio Iuris)."
+}]
+}      
