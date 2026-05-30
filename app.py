@@ -9,82 +9,34 @@ if datetime.now() > FECHA_LIMITE:
     st.error('❌ LA LICENCIA DE ESTA APLICACIÓN HA CADUCADO. CONTACTE AL ADMINISTRADOR.')
     st.stop()
 
-st.set_page_config(page_title='MÉTODO COGNUSS 2 - Reloj del Conocimiento', layout='wide')
+st.set_page_config(page_title='RELOJ COGNUSS 2 - EXAMINADOR IA', layout='wide')
 
-# Estilos CSS Limpios con comillas simples para evitar SyntaxError
-st.markdown('<style>.stApp { background-color: #FFFFFF; color: #0B1E36; font-family: Arial, sans-serif; } .header-banner { background-color: #0B1E36; color: #FFFFFF; padding: 18px; border-radius: 8px; text-align: center; margin-bottom: 20px; } .box-minutero { background-color: #E8F0FE; border-left: 5px solid #1A73E8; padding: 15px; border-radius: 4px; margin-bottom: 12px; font-size:15px; } .box-horario { background-color: #F3E5F5; border-left: 5px solid #7B1FA2; padding: 15px; border-radius: 4px; margin-bottom: 12px; font-size:15px; } .box-segundero { background-color: #E8F5E9; border-left: 5px solid #2E7D32; padding: 15px; border-radius: 4px; margin-bottom: 12px; font-size:15px; } .reloj-display { background-color: #0B1E36; color: #FFFFFF; padding: 30px; border-radius: 50%; width: 200px; height: 200px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 8px solid #7B1FA2; box-shadow: 0px 8px 15px rgba(0,0,0,0.2); } .desvanecer-respuesta { animation: fadeOutEffect 35s forwards; font-weight: bold; color: #2E7D32; } @keyframes fadeOutEffect { 0% { opacity: 1; } 90% { opacity: 0.1; } 100% { opacity: 0; display: none; } }</style>', unsafe_allow_html=True)
+# Estilos CSS de Alta Relojería basados fielmente en la infografía Cognuss 2
+st.markdown('<style>.stApp { background-color: #F4F6F9; color: #0B1E36; font-family: "Segoe UI", Arial, sans-serif; } .header-cognuss { background-color: #0B1E36; color: #FFFFFF; padding: 20px; border-radius: 6px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); } .header-cognuss h1 { font-size: 26px !important; letter-spacing: 2px; color: #FFFFFF !important; margin: 0; font-weight: bold; } .header-cognuss p { font-size: 13px; color: #D4AF37; margin: 5px 0 0 0; letter-spacing: 1px; } .box-minutero-full { background-color: #FFFFFF; border-top: 5px solid #2ECC71; padding: 20px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); } .box-horario-full { background-color: #FFFFFF; border-top: 5px solid #1A73E8; padding: 20px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); } .box-segundero-full { background-color: #FFFFFF; border-top: 5px solid #E74C3C; padding: 20px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); } .reloj-esfera-uss { background-color: #0B1E36; color: #FFFFFF; padding: 20px; border-radius: 50%; width: 360px; height: 360px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 10px solid #D4AF37; box-shadow: 0px 10px 25px rgba(0,0,0,0.3); } .desvanecer-respuesta { animation: fadeOutEffect 35s forwards; font-size: 16px; color: #2C3E50; line-height: 1.6; } @keyframes fadeOutEffect { 0% { opacity: 1; } 85% { opacity: 0.1; } 100% { opacity: 0; display: none; } }</style>', unsafe_allow_html=True)
 
-# Base de datos basada exactamente en el Cedulario USS
-CEDULARIO_COMPLETO = {
+# Base de datos indexada con el Cedulario USS y explayada con detalle doctrinal
+CEDULARIO_OFICIAL = {
     1: {
-        'titulo': 'CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.',
+        'cedula': 'CEDULA 1.- El Derecho y la Moral. Normas de uso y trato social.',
         'subpreguntas': [
-            {'id': '1.1', 'texto': 'Explique las características principales de la norma moral.', 'correcta': 'Es unilateral, interior, incoercible y autónoma.', 'distractores': ['Es bilateral, exterior, coercible y heterónoma.', 'Es coercible, bilateral, interior y heterónoma.', 'Es unilateral, exterior, coercible y autónoma.']},
-            {'id': '1.2', 'texto': 'Detalle las diferencias fundamentales entre el orden del Derecho y el orden de la Moral.', 'correcta': 'El Derecho es bilateral y coercible; la Moral es unilateral e incoercible.', 'distractores': ['El Derecho es puramente interior; la Moral regula la coacción del Estado.', 'El Derecho es unilateral; la Moral posee plena fuerza coercitiva estatal.', 'No existen diferencias estructurales ni de coercibilidad entre ambos.']},
-            {'id': '1.3', 'texto': 'Defina el concepto de normas de uso y trato social, sus características y diferencias con la norma jurídica.', 'correcta': 'Son prescripciones de conducta social, exteriores, incoercibles y heterónomas. Carecen de coacción estatal.', 'distractores': ['Son normas escritas dictadas por los tribunales de justicia chilenos.', 'Tienen exactamente la misma estructura obligatoria y punitiva que una ley civil.', 'Son mandatos interiores, autónomos e impuestos por el propio individuo.']}
+            {'id': '1.1', 'texto': 'Explaye sobre la norma moral y describa detalladamente el alcance de sus características esenciales.', 'correcta': 'La norma moral regula la conducta humana orientada al bien. Es UNILATERAL (frente al sujeto obligado no existe un tercero facultado para exigir el cumplimiento), INTERIOR (atiende a los motivos rectores del obrar y la pureza del acto), INCOERCIBLE (su cumplimiento debe ser espontáneo y carece de sanción física impuesta por el Estado) y AUTÓNOMA (el propio individuo la reconoce y se la autoimpone de manera libre).', 'distractores': ['Es bilateral, puesto que otorga facultades correlativas y multas estatales por desobedecerla.', 'Es un mandato puramente heterónomo dictado de manera externa y coercible por el Congreso Nacional.', 'Es una regla exterior que solo sanciona resultados sin medir la pureza e intención del acto humano.']},
+            {'id': '1.2', 'texto': 'Establezca detalladamente las diferencias estructurales entre el orden del Derecho y el orden de la Moral.', 'correcta': 'El Derecho regula la conducta intersubjetiva externa mediante la BILATERALIDAD (concede facultades recíprocas) y la COERCIBILIDAD (posibilidad legítima de aplicar la fuerza estatal para asegurar su cumplimiento). En contraposición, la Moral opera en el fuero interno (UNILATERALIDAD) y carece de mecanismos forzados de coacción física (INCOERCIBILIDAD).', 'distractores': ['Ambos órdenes comparten de forma exacta la coacción y sanción punitiva estatal bajo tutela judicial.', 'El Derecho es puramente interior y autónomo, mientras que la Moral es enteramente exterior y heterónoma.', 'La diferencia radica únicamente en el espacio de aplicación territorial, manteniendo idénticas estructuras jurídicas.']},
+            {'id': '1.3', 'texto': 'Explaye sobre las normas de uso y trato social: concepto, características esenciales y diferencias estructurales con la norma jurídica.', 'correcta': 'Son directrices de conducta (decoro, cortesía) de carácter EXTERIOR (importa el cumplimiento del acto formal) e INCOERCIBLE (la sanción es el reproche social o la exclusión del grupo, pero nunca la fuerza pública). Son HETERÓNOMAS (impuestas por el grupo social). A diferencia de la norma jurídica, carecen de un aparato institucional coercible para forzar su cumplimiento.', 'distractores': ['Son normas dictadas bajo ley solemne que el juez aplica de forma coercible en los juicios civiles.', 'Tienen rango constitucional y conllevan multas recaudadas formalmente por la Tesorería General.', 'Son mandatos completamente internos y autónomos que el individuo jamás externaliza frente a su entorno social.']}
         ]
     },
     2: {
-        'titulo': 'CÉDULA 2.- La norma jurídica.',
+        'cedula': 'CEDULA 2.- La norma jurídica.',
         'subpreguntas': [
-            {'id': '2.1', 'texto': 'Mencione y explique las características esenciales de la norma jurídica.', 'correcta': 'Es bilateral, exterior, coercible y heterónoma.', 'distractores': ['Es unilateral, interior, incoercible y autónoma.', 'Es autónoma, puramente interior, obligatoria y coercible.', 'Es unilateral, exterior, coercible y autónoma.']},
-            {'id': '2.2', 'texto': 'Explique la clasificación entre normas jurídicas imperativas y permisivas.', 'correcta': 'Las imperativas ordenan o prohíben de forma absoluta; las permisivas conceden una facultad o derecho.', 'distractores': ['Las imperativas otorgan consejos morales; las permisivas obligan a pagar multas.', 'Ambas categorías carecen de fuerza legal formal dentro de Chile.', 'Las imperativas permiten la renuncia libre; las permisivas imponen sanciones de cárcel.']},
-            {'id': '2.3', 'texto': 'Describa la estructura lógica interna de una norma jurídica ordinaria.', 'correcta': 'Se compone de un supuesto de hecho (condición) y una consecuencia jurídica (sanción o efecto).', 'distractores': ['Se compone únicamente de un preámbulo histórico y una sugerencia moral.', 'Consiste en un mandato unilateral dictado sin condiciones previas.', 'Está formada solo por principios generales intangibles sin sanción asociada.']}
+            {'id': '2.1', 'texto': 'Analice y explaye de forma técnica las características esenciales de la norma jurídica.', 'correcta': 'Es BILATERAL (establece una correlación entre deberes de un sujeto y derechos de otro), EXTERIOR (valora primariamente el comportamiento manifestado), COERCIBLE (ante el incumplimiento, se activa la potestad del Estado para forzar la sanción) y HETERÓNOMA (es creada por una voluntad ajena y superior al sujeto obligado, debiendo este acatarla).', 'distractores': ['Es una pauta puramente interior, incoercible, autónoma y desligada de la fuerza pública estatal.', 'Se caracteriza por ser unilateral y autónoma, naciendo exclusivamente del fuero íntimo del ciudadano.', 'Es una regla que no admite coacción y cuya validez depende exclusivamente del agrado individual del sujeto.']},
+            {'id': '2.2', 'texto': 'Explique técnicamente la clasificación entre normas jurídicas imperativas y permisivas.', 'correcta': 'Las IMPERATIVAS mandan o prohíben de forma absoluta, limitando la autonomía de la voluntad; las PERMISIVAS conceden una facultad o derecho subjetivo a su titular, otorgándole un marco de libertad lícita para decidir de manera voluntaria si ejerce la acción o renuncia a ella.', 'distractores': ['Las imperativas aconsejan conductas y las permisivas imponen castigos de presidio mayor en su grado máximo.', 'Son categorías en desuso que carecen de aplicación formal dentro de los Códigos chilenos actuales.', 'Las imperativas posibilitan la libre modificación por acuerdo de particulares y las permisivas lo prohíben de plano.']},
+            {'id': '2.3', 'texto': 'Describa exhaustivamente la estructura lógica de la norma jurídica.', 'correcta': 'Se estructura formalmente mediante un Juicio Hipotético compuesto por dos elementos correlativos: 1) El Supuesto de Hecho (la hipótesis que prevé un hecho social determinado) y 2) La Consecuencia Jurídica (el efecto legal, sanción o derecho que se activa obligatoriamente al verificarse el supuesto).', 'distractores': ['Es una estructura lineal simple que carece de hipótesis previa y opera solo como un compendio de consejos.', 'Se compone exclusivamente de un relato descriptivo histórico que no impone sanciones ni efectos obligatorios.', 'Consiste en un mandato unilateral donde la consecuencia se produce sin necesidad de un supuesto previo.']}
         ]
     },
     3: {
-        'titulo': 'CÉDULA 3.- Vigencia, validez y eficacia del Derecho positivo.',
+        'cedula': 'CEDULA 3.- Vigencia, validez y eficacia del Derecho positivo.',
         'subpreguntas': [
-            {'id': '3.1', 'texto': 'Defina vigencia, su momento de inicio y la clasificación de la derogación de la ley.', 'correcta': 'Fuerza obligatoria tras su publicación. Puede ser expresa o tácita, total o parcial.', 'distractores': ['Es el desuso prolongado de la norma legal por razones de justicia.', 'Es la conformidad valórica con los derechos humanos universales.', 'Es el período de discusión parlamentaria previo a la aprobación de la ley.']},
-            {'id': '3.2', 'texto': 'Explique el concepto de validez y los fundamentos de legitimidad de las dos principales doctrinas jurídicas.', 'correcta': 'Conformidad con normas superiores. Iusnaturalismo (justicia/moral) e Iuspositivismo (forma/órganos estatales).', 'distractores': ['Validez comercial. Iusnaturalismo (leyes físicas) e Iuspositivismo (acuerdos privados).', 'Es el desuso de la ley. Doctrinas contractuales y sociológicas del conflicto.', 'La obligatoriedad derivada del plebiscito popular directo exclusivamente.']},
-            {'id': '3.3', 'texto': 'Explique el concepto técnico de eficacia dentro del Derecho positivo.', 'correcta': 'Es el grado efectivo de cumplimiento y aplicación real de la norma por sus destinatarios y tribunales.', 'distractores': ['Es la firma del Presidente de la República que ratifica el texto.', 'Es el proceso técnico de redacción lingüística sin errores sintácticos.', 'Es la velocidad con la que el Congreso aprueba un proyecto urgente.']}
+            {'id': '3.1', 'texto': 'Explaye sobre el concepto de vigencia, el momento preciso de su inicio y la clasificación jurídica de la derogación de la ley.', 'correcta': 'Vigencia es la fuerza obligatoria actual de una ley tras su publicación en el Diario Oficial. La derogación es la pérdida de esta vigencia y se clasifica en: EXPRESA (la nueva ley lo declara explícitamente) o TÁCITA (la nueva ley es incompatible con la anterior), y puede ser TOTAL (anula toda la ley vieja) o PARCIAL (anula solo ciertos artículos).', 'distractores': ['Es el desuso o costumbre de no aplicar una norma por considerarla injusta.', 'Se produce solo en el momento de la aprobación del proyecto en la Cámara de Diputados.', 'La derogación es siempre total y se produce exclusivamente mediante la vía del plebiscito popular.']},
+            {'id': '3.2', 'texto': 'Analice el concepto de validez, los fundamentos del Derecho y en qué consisten las dos principales doctrinas respecto a su legitimidad.', 'correcta': 'Validez significa que la norma ha sido creada por la autoridad competente y según los procedimientos legales. El IUSNATURALISMO sostiene que la validez deriva de la conformidad de la norma con principios morales y de justicia superiores; el IUSPOSITIVISMO afirma que deriva exclusivamente de su correcta creación formal por los órganos estatales.', 'distractores': ['La validez depende únicamente del volumen de ciudadanos que decidan obedecer la norma voluntariamente.', 'Doctrinas contractuales que afirman que la validez nace solo de contratos comerciales privados.', 'Es el desuso de la norma. El Iusnaturalismo defiende la ley del mercado y el Iuspositivismo la tradición oral.']},
+            {'id': '3.3', 'texto': 'Defina detalladamente el concepto técnico de eficacia dentro del Derecho positivo.', 'correcta': 'Eficacia es una cualidad fáctica del Derecho: representa el grado de efectivo acatamiento, observancia y aplicación práctica de la norma jurídica por parte de los ciudadanos a quienes va dirigida y por los tribunales encargados de hacerla cumplir.', 'distractores': ['Es la firma del Presidente de la República en el decreto de promulgación del texto.', 'Es la técnica lingüística y gramatical empleada por el legislador para evitar contradicciones escritas.', 'Representa el plazo de tiempo que toma el Congreso para tramitar una ley de urgencia.']}
         ]
     },
-    4: {
-        'titulo': 'CÉDULA 4.- La plenitud hermética del ordenamiento jurídico y las lagunas del Derecho.',
-        'subpreguntas': [
-            {'id': '4.1', 'texto': 'Explique el Principio de Inexcusabilidad desde su perspectiva constitucional.', 'correcta': 'Consagrado en el Art. 76 CPR: obliga a los jueces a resolver prestigiosos litigios aun a falta de ley expresa.', 'distractores': ['Permite a los jueces excusarse de fallar si el caso carece de regulación.', 'Obliga al Congreso a redactar leyes exprés en menos de 30 días.', 'Faculta a las partes a anular el juicio si no encuentran un artículo exacto.']},
-            {'id': '4.2', 'texto': 'Defina el concepto de plenitud hermética del ordenamiento jurídico.', 'correcta': 'Postulado doctrinal que afirma que el sistema jurídico contiene soluciones para todo conflicto social.', 'distractores': ['Es el secreto absoluto bajo el cual se mantienen las deliberaciones judiciales.', 'Significa que las leyes nunca pueden ser modificadas ni derogadas por el poder legislativo.', 'Norma que prohíbe la entrada de influencias o tratados de derecho internacional.']},
-            {'id': '4.3', 'texto': 'Identifique en qué casos se observan lagunas del Derecho y cuál es su solución judicial.', 'correcta': 'Vacíos legales por omisión técnica. El juez integra usando analogía, equidad y principios generales.', 'distractores': ['Falta de presupuesto judicial. Se soluciona mediante decretos de emergencia.', 'Contradicción total entre dos códigos. Se soluciona archivando la causa sin dictar fallo.', 'Omisión de firmas en el diario oficial. Se soluciona republicando el texto.']}
-        ]
-    }
-}
-
-if 'cedula_activa' not in st.session_state:
-    st.session_state.cedula_activa = None
-if 'subpregunta_index' not in st.session_state:
-    st.session_state.subpregunta_index = 0
-if 'respuestas_correctas' not in st.session_state:
-    st.session_state.respuestas_correctas = 0
-if 'total_respondidas' not in st.session_state:
-    st.session_state.total_respondidas = 0
-if 'modalidad' not in st.session_state:
-    st.session_state.modalidad = None
-if 'alternativas_mezcladas' not in st.session_state:
-    st.session_state.alternativas_mezcladas = []
-
-st.markdown('<div class="header-banner"><h1>MÉTODO COGNUSS 2: EL RELOJ JURÍDICO DEL CONOCIMIENTO</h1><h3>EXAMEN DE INTRODUCCIÓN AL DERECHO — UNIVERSIDAD SAN SEBASTIÁN</h3></div>', unsafe_allow_html=True)
-
-col_izq, col_der = st.columns([1, 1.1])
-
-with col_izq:
-    st.subheader('🎡 Esfera Esférica del Reloj')
-    
-    texto_reloj = f'{st.session_state.cedula_activa:02d}' if st.session_state.cedula_activa else '--'
-    sub_texto = 'CÉDULA ACTIVA' if st.session_state.cedula_activa else 'RELOJ DETENIDO'
-        
-    st.markdown(f'<div class="reloj-display"><span style="font-size: 14px; color: #A0AAB2; font-weight: bold; letter-spacing: 2px;">{sub_texto}</span><span style="font-size: 64px; font-weight: bold; color: #FFFFFF; font-family: monospace; margin: 10px 0;">{texto_reloj}</span><span style="font-size: 12px; color: #7B1FA2; font-weight: bold;">MÉTODO COGNUSS II</span></div>', unsafe_allow_html=True)
-    
-    st.write('')
-    if st.button('🔄 HACER GIRAR LA ESFERA DEL RELOJ'):
-        st.session_state.modalidad = None
-        st.session_state.subpregunta_index = 0
-        
-        placeholder_anim = st.empty()
-        for i in range(10):
-            numero_aleatorio = random.randint(1, 14)
-            placeholder_anim.markdown(f'<h3 style="text-align:center; color:#7B1FA2;">⏱️ GIRANDO REVOLVER... POSICIÓN: {numero_aleatorio}</h3>', unsafe_allow_html=True)
-            time.sleep(0.08)
-        placeholder_anim.empty()
-        
-        st.session_state.cedula_activa = random.randint(1, 4)
