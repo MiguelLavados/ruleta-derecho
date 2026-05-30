@@ -1,27 +1,53 @@
 import streamlit as st
-import time
 import datetime
 
-# --- Caducidad de la aplicación ---
+# =====================================================
+# CONFIGURACIÓN INICIAL
+# =====================================================
+
+st.set_page_config(
+    page_title="EXAMINADOR",
+    layout="centered"
+)
+
+# =====================================================
+# CADUCIDAD
+# =====================================================
+
 if datetime.date.today() > datetime.date(2026, 6, 30):
-    st.error("⏳ La aplicación ha caducado. Disponible solo hasta el 30 de junio de 2026.")
+    st.error(
+        "⏳ La aplicación ha caducado. Disponible solo hasta el 30 de junio de 2026."
+    )
     st.stop()
 
-st.set_page_config(page_title="EXAMINADOR", layout="centered")
+# =====================================================
+# ENCABEZADO
+# =====================================================
 
-st.markdown("<h2 style='text-align: center;'>EXAMINADOR DE TEORÍA DEL DERECHO</h2>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: center;'>Profesor Jaime Esponda</h4>", unsafe_allow_html=True)
+st.markdown(
+    "<h2 style='text-align:center;'>EXAMINADOR DE TEORÍA DEL DERECHO</h2>",
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    "<h4 style='text-align:center;'>Profesor Jaime Esponda</h4>",
+    unsafe_allow_html=True
+)
 
 with st.sidebar:
-    st.caption("🛠️ **Soporte Técnico:**\nMétodo Cognuss II\nMiguel López Lavados")
+    st.markdown("### ℹ️ Información")
+    st.caption(
+        "Método Cognuss II\n\n"
+        "Desarrollado por Miguel López Lavados"
+    )
 
-# ---------------- DATOS DEL EXAMEN ----------------
-# Aquí debes copiar todas las preguntas de tu PDF en formato de 4 alternativas.
-# Ejemplo de Cédula 1:
+# =====================================================
+# BASE DE DATOS DEL EXAMEN
+# =====================================================
 
 DATOS_EXAMEN = {
     1: {
-        "titulo": "CÉDULA 1.- El Derecho y la Moral",
+        "titulo": "CÉDULA 1 - EL DERECHO Y LA MORAL",
         "preguntas": [
             {
                 "sub": "1.1",
@@ -33,70 +59,235 @@ DATOS_EXAMEN = {
                     "D) Interior, autónoma, coercible."
                 ],
                 "correcta": "A) Autónoma, interior, unilateral, incoercible.",
-                "explicacion": "Regula el fuero interno y no usa la fuerza."
+                "explicacion": (
+                    "La norma moral regula el fuero interno "
+                    "y no utiliza fuerza coactiva."
+                )
             },
             {
                 "sub": "1.2",
                 "preg": "¿Diferencia formal entre Derecho y Moral?",
                 "opciones": [
-                    "A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.",
+                    "A) El Derecho es coercible y bilateral; "
+                    "la Moral es incoercible y unilateral.",
                     "B) Ambos son autónomos e interiores.",
                     "C) El Derecho es autónomo y unilateral.",
                     "D) La Moral es coercible y bilateral."
                 ],
-                "correcta": "A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.",
-                "explicacion": "El Derecho cuenta con la fuerza coactiva del Estado."
+                "correcta": (
+                    "A) El Derecho es coercible y bilateral; "
+                    "la Moral es incoercible y unilateral."
+                ),
+                "explicacion": (
+                    "El Derecho cuenta con la posibilidad "
+                    "de aplicar coerción mediante el Estado."
+                )
             }
         ]
     },
-    # --- Aquí debes continuar con las cédulas 2 a 14 usando el mismo formato ---
+
+    2: {
+        "titulo": "CÉDULA 2",
+        "preguntas": []
+    },
+
+    3: {
+        "titulo": "CÉDULA 3",
+        "preguntas": []
+    },
+
+    4: {
+        "titulo": "CÉDULA 4",
+        "preguntas": []
+    },
+
+    5: {
+        "titulo": "CÉDULA 5",
+        "preguntas": []
+    },
+
+    6: {
+        "titulo": "CÉDULA 6",
+        "preguntas": []
+    },
+
+    7: {
+        "titulo": "CÉDULA 7",
+        "preguntas": []
+    },
+
+    8: {
+        "titulo": "CÉDULA 8",
+        "preguntas": []
+    },
+
+    9: {
+        "titulo": "CÉDULA 9",
+        "preguntas": []
+    },
+
+    10: {
+        "titulo": "CÉDULA 10",
+        "preguntas": []
+    },
+
+    11: {
+        "titulo": "CÉDULA 11",
+        "preguntas": []
+    },
+
+    12: {
+        "titulo": "CÉDULA 12",
+        "preguntas": []
+    },
+
+    13: {
+        "titulo": "CÉDULA 13",
+        "preguntas": []
+    },
+
+    14: {
+        "titulo": "CÉDULA 14",
+        "preguntas": []
+    }
 }
 
-# ---------------- ESTADO DE SESIÓN ----------------
+# =====================================================
+# ESTADO DE SESIÓN
+# =====================================================
+
 if "cedula" not in st.session_state:
     st.session_state.cedula = 1
+
 if "pregunta_idx" not in st.session_state:
     st.session_state.pregunta_idx = 0
 
-# ---------------- NAVEGACIÓN ----------------
-st.write("---")
-st.write("### 👨‍🏫 Selección de Cédula")
+# =====================================================
+# SELECCIÓN DE CÉDULA
+# =====================================================
+
+st.divider()
+st.subheader("📚 Selección de Cédula")
 
 cols = st.columns(5)
-for idx, i in enumerate(range(1, 15)):
+
+for idx, numero in enumerate(range(1, 15)):
     with cols[idx % 5]:
-        if st.button(f"Cédula {i}", key=f"btn_{i}"):
-            st.session_state.cedula = i
+        if st.button(
+            f"Cédula {numero}",
+            use_container_width=True,
+            key=f"cedula_{numero}"
+        ):
+            st.session_state.cedula = numero
             st.session_state.pregunta_idx = 0
+            st.rerun()
 
-cedula = DATOS_EXAMEN.get(st.session_state.cedula, None)
+# =====================================================
+# CARGAR CÉDULA
+# =====================================================
 
-if cedula and cedula["preguntas"]:
-    pregunta = cedula["preguntas"][st.session_state.pregunta_idx]
+cedula = DATOS_EXAMEN.get(st.session_state.cedula)
 
-    st.subheader(cedula["titulo"])
-    st.write(f"{pregunta['sub']} {pregunta['preg']}")
+if not cedula:
+    st.error("No existe la cédula seleccionada.")
+    st.stop()
 
-    # Alternativas
-    respuesta = st.radio("Selecciona una opción:", pregunta["opciones"], key=f"radio_{pregunta['sub']}")
+if len(cedula["preguntas"]) == 0:
+    st.warning(
+        "⚠️ Esta cédula aún no tiene preguntas cargadas."
+    )
+    st.stop()
 
-    # Respuesta escrita
-    texto = st.text_area("Escribe tu respuesta:", key=f"texto_{pregunta['sub']}")
+# =====================================================
+# PREGUNTA ACTUAL
+# =====================================================
 
-    # Botón para mostrar respuesta correcta
-    if st.button("Ver respuesta"):
-        placeholder = st.empty()
-        placeholder.success(f"✅ Respuesta correcta: {pregunta['correcta']}\n\nℹ️ {pregunta['explicacion']}")
-        time.sleep(25)
-        placeholder.empty()
+indice = st.session_state.pregunta_idx
+total = len(cedula["preguntas"])
 
-    # Navegación entre preguntas
-    col1, col2 = st.columns(2)
-    if col1.button("⬅️ Anterior"):
+pregunta = cedula["preguntas"][indice]
+
+# =====================================================
+# PROGRESO
+# =====================================================
+
+st.subheader(cedula["titulo"])
+
+st.write(
+    f"**Pregunta {indice + 1} de {total}**"
+)
+
+st.progress((indice + 1) / total)
+
+st.markdown("---")
+
+st.write(
+    f"### {pregunta['sub']} - {pregunta['preg']}"
+)
+
+# =====================================================
+# RESPUESTA MULTIPLE CHOICE
+# =====================================================
+
+respuesta = st.radio(
+    "Seleccione una alternativa:",
+    pregunta["opciones"],
+    key=f"radio_{st.session_state.cedula}_{indice}"
+)
+
+# =====================================================
+# RESPUESTA DESARROLLADA
+# =====================================================
+
+st.text_area(
+    "Respuesta desarrollada (opcional):",
+    height=120,
+    key=f"texto_{st.session_state.cedula}_{indice}"
+)
+
+# =====================================================
+# BOTÓN CORREGIR
+# =====================================================
+
+if st.button("✅ Corregir respuesta"):
+
+    if respuesta == pregunta["correcta"]:
+        st.success("Correcto.")
+    else:
+        st.error("Incorrecto.")
+
+    st.info(
+        f"Respuesta correcta:\n\n"
+        f"{pregunta['correcta']}"
+    )
+
+    st.warning(
+        f"Explicación:\n\n"
+        f"{pregunta['explicacion']}"
+    )
+
+# =====================================================
+# NAVEGACIÓN
+# =====================================================
+
+st.markdown("---")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button(
+        "⬅️ Anterior",
+        use_container_width=True
+    ):
         if st.session_state.pregunta_idx > 0:
             st.session_state.pregunta_idx -= 1
-    if col2.button("➡️ Siguiente"):
-        if st.session_state.pregunta_idx < len(cedula["preguntas"]) - 1:
+            st.rerun()
+
+with col2:
+    if st.button(
+        "➡️ Siguiente",
+        use_container_width=True
+    ):
+        if st.session_state.pregunta_idx < total - 1:
             st.session_state.pregunta_idx += 1
-else:
-    st.warning("⚠️ Esta cédula aún no tiene preguntas cargadas.")
+            st.rerun()
