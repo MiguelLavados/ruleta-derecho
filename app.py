@@ -37,7 +37,7 @@ CONOCIMIENTO_CEDULARIO = {
     7: {"titulo": "CÉDULA 7.- Jurisprudencia y Doctrina", "pregunta": "Explique el alcance del Efecto Relativo de las sentencias judiciales chilenas según el artículo 3° inciso 2° del Código Civil.", "correcta": "Las sentencias judiciales solo poseen fuerza obligatoria respecto de las partes que intervinieron en ese juicio específico. En Chile no existe el precedente obligatorio automático."},
     8: {"titulo": "CÉDULA 8.- La Relación Jurídica", "pregunta": "¿Cuáles son las 3 condiciones simultáneas requeridas para el principio de existencia legal de la persona natural (Art. 74 CC)?", "correcta": "1. Separación completa de la madre; 2. Que los lazos del cordón sean cortados; 3. Haber sobrevivido un momento siquiera a dicha separación."},
     9: {"titulo": "CÉDULA 9.- La Persona Jurídica", "pregunta": "¿Cómo se subclasifican las personas jurídicas de Derecho Privado según sus fines?", "correcta": "Se subclasifican en entidades Con fines de lucro (Sociedades Comerciales como S.A., S.R.L., SpA) y entidades Sin fines de lucro (Corporaciones y Fundaciones)."},
-    10: {"titulo": "CÉDULA 10.- Derechos Reales y Personales", "pregunta": "Defina el concepto legal de Derecho Real según lo estipulado en el Artículo 577 del Código Civil.", "correcta": "Es el derecho que tenemos sobre una cosa sin respecto a determinada persona, naciendo de la concurrencia de un Título y un Modo de Adquirir."},
+    10: {"titulo": "CÉDULA 10.- Derechos Reales y Personales", "pregunta": "Defina el concepton legal de Derecho Real según lo estipulado en el Artículo 577 del Código Civil.", "correcta": "Es el derecho que tenemos sobre una cosa sin respecto a determinada persona, naciendo de la concurrencia de un Título y un Modo de Adquirir."},
     11: {"titulo": "CÉDULA 11.- Límites de los Derechos Subjetivos", "pregunta": "¿Cuándo ocurre técnicamente el fenómeno del Abuso del Derecho?", "correcta": "Ocurre cuando un sujeto ejerce un derecho legal legítimo, pero de una manera desviada, con dolo, negligencia o con el único fin de causar daño a otra persona."},
     12: {"titulo": "CÉDULA 12.- Los Bienes y su Clasificación", "pregunta": "¿Qué define a los bienes muebles por anticipación regulados en el artículo 571 del Código Civil?", "correcta": "Son productos de los inmuebles y cosas accesorias a ellos que se consideran muebles, aun antes de su separación, para el efecto de constituir un derecho sobre ellos."},
     13: {"titulo": "CÉDULA 13.- Régimen Jurídico de los Bienes", "pregunta": "Compare la formalidad de venta exigida para un bien mueble frente a un bien inmueble.", "correcta": "La venta de bienes muebles es meramente consensual (acuerdo simple), mientras que la de inmuebles es solemne y exige obligatoriamente ser otorgada por Escritura Pública (Art. 1801 CC)."},
@@ -59,8 +59,8 @@ st.title("⏳ RELOJ DEL CONOCIMIENTO: AUTOESTUDIO JURÍDICO")
 st.text("ENTORNO EVALUATIVO ACTIVO - UNIVERSIDAD SAN SEBASTIÁN")
 st.text("==========================================================================================")
 
-# Estructuración de las ventanas en pantalla (Izquierda: Ruleta | Derecha: Ventana de Interrogación)
-col_izq, col_der = st.columns([1, 1])
+# Estructuración de las ventanas en pantalla
+col_izq, col_der = st.columns(2)
 
 with col_izq:
     st.header("🎡 Estado de la Ruleta (14 Posiciones)")
@@ -74,7 +74,6 @@ with col_izq:
             
             with st.spinner("Girando componentes del reloj..."):
                 time.sleep(0.6)
-                # Selección aleatoria sin repetición
                 seleccionada = random.choice(st.session_state.posiciones_ruleta)
                 st.session_state.posiciones_ruleta.remove(seleccionada)
                 st.session_state.cedula_activa = seleccionada
@@ -96,7 +95,8 @@ with col_izq:
             salida_visual += f" 🚫[USADA] "
         else:
             salida_visual += f" 🔘[POS {pos:02d}] "
-        if pos == 7: salida_visual += "\n\n"
+        if pos == 7: 
+            salida_visual += "\n\n"
     st.text(salida_visual)
 
 with col_der:
@@ -114,10 +114,15 @@ with col_der:
         placeholder_cronometro = st.empty()
         placeholder_respuesta = st.empty()
         
-        # Bucle de conteo de 25 segundos exactos para lectura
-        for t in range(25, -1, -1):
-            placeholder_cronometro.markdown(f"<div class='timer-digital'>⏱️ LECTURA EN VOZ ALTA: {t:02d}s</div>", unsafe_allow_html=True)
-            placeholder_respuesta.markdown(
-                f"""
-                <div class='card-respuesta'>
-                    <span style='color: #66fcf1; font-weight: bold;'>[RESPUESTA CORRECTA OFICIAL]</span><br>
+        placeholder_cronometro.markdown("<div class='timer-digital'>⏱️ LECTURA EN VOZ ALTA ACTIVA</div>", unsafe_allow_html=True)
+        placeholder_respuesta.markdown(
+            f"""
+            <div class='card-respuesta'>
+                <span style='color: #66fcf1; font-weight: bold;'>[RESPUESTA CORRECTA OFICIAL]</span><br>
+                <p style='font-size: 16px; color: #ffffff; margin-top: 5px;'>{datos['correcta']}</p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+        
+        # Botonera académica de registro de desempeño
