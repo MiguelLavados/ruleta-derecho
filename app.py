@@ -1,14 +1,22 @@
 import streamlit as st
 import random
 import time
+from datetime import datetime
 
-st.set_page_config(layout="centered")
+# CONTROL DE CADUCIDAD REQUERIDO (30 de Junio de 2026)
+FECHA_LIMITE = datetime(2026, 6, 30, 23, 59, 59)
+if datetime.now() > FECHA_LIMITE:
+    st.error("❌ LA LICENCIA DE ESTA APLICACIÓN HA CADUCADO (30 DE JUNIO DE 2026).")
+    st.stop()
 
-# Estilos CSS limpios para ventanas rectangulares secuenciales
+st.set_page_config(page_title="COGNUSS 2 - TEORÍA DEL DERECHO", layout="centered")
+
+# Estilos CSS de ventanas rectangulares secuenciales limpias
 st.markdown(
     """
     <style>
     .stApp { background-color: #FFFFFF; color: #0F1E36; font-family: sans-serif; }
+    .rect-banner { background-color: #0F1E36; color: white; padding: 20px; border-radius: 4px; text-align: center; margin-bottom: 20px; }
     .rect-cedula { background-color: #F5FAF6; border-left: 8px solid #2ECC71; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
     .rect-pregunta { background-color: #F4F7FC; border-left: 8px solid #1A73E8; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
     .rect-respuesta { background-color: #FDF5F5; border-left: 8px solid #E74C3C; padding: 20px; margin-bottom: 15px; border-radius: 4px; }
@@ -54,11 +62,9 @@ PREGUNTAS = [
 ]
 
 RESPUESTAS = [
-    "Derecho es Bilateral (concede facultades a terceros), Exterior (ejecución material), Heterónomo (dictado por el Estado) y Coercible (admite fuerza pública). Moral es Unilateral (impone deberes sin facultades), Interior (pureza de intención), Autónomo (conciencia libre) e Incoercible (sanción interna). Normas de uso social: origen difuso en la sociedad, sanción es el rechazo social.",
+    "Derecho es Bilateral (concede facultades a terceros), Exterior (ejecución material), Heterónomo (dictado por el Estado) y Coercible (admite fuerza pública). Moral es Unilateral (impone deberes sin facultades), Interior (pureza de intención), Autónomo (conciencia libre) e Incoercible (sanción interna). Normas de uso social: origen de la norma en la sociedad civil de forma difusa, sanción es el rechazo social.",
     "Imperativas (y Prohibitivas): ordenan o prohíben absolutamente; no modificables por particulares; infracción causa nulidad absoluta o cárcel. Permisivas (o Facultativas): conceden una aptitud legítima u opción renunciable; no existe infracción si el sujeto opta por no usar la facultad legal.",
     "Derogación: Expresa (declaración explícita), Tácita (incompatibilidad), Total (elimina toda la ley), Parcial (elimina algunos incisos). Validez Iusnaturalista: se funda en la justicia material y principios morales universales; la Iuspositivista en la legalidad formal del órgano competente y proceso regular.",
     "Inexcusabilidad (Art. 76 inc. 2° CPR): obliga a jueces a resolver conflictos aun sin ley expresa. Plenitud Hermética considera al sistema cerrado y completo. Las lagunas (vacíos legales) se integran mediante analogía, equidad y principios generales; las antinomias se resuelven por jerarquía, especialidad y temporalidad.",
     "Fuentes Materiales: factores sociales/morales que determinan el contenido. Formales: procedimientos con fuerza obligatoria. Espacio: Territorialidad (Art. 14 CC), obliga a todos los habitantes del territorio nacional. Tiempo: Irretroactividad (Art. 9 CC), la ley solo dispone para el futuro.",
     "Costumbre es la repetición constante con convicción de necesidad jurídica (Opinio Iuris). Elementos: Objetivo (práctica general uniforme) y Subjetivo (creencia de obligatoriedad). Derecho Civil: solo según la ley (Art. 2 CC). Comercial: en silencio de la ley (Art. 4 CCom). Penal: no tiene valor alguno por legalidad estricta.",
-    "Jurisprudencia: principios unificados de sentencias de tribunales superiores; tiene Efecto Relativo (Art. 3° inc. 2° CC), solo obliga a las partes en litigio (no hay stare decisis). Doctrina: estudios científicos de juristas; no es fuente formal, su fuerza es persuasiva y científica.",
-    "Relación Jurídica es el vínculo entre sujeto activo (facultad) y pasivo (deber) sobre una prestación, surgido de un hecho jurídico. Existencia Legal (Art. 74 CC): requiere nacer vivo, separación completa de la madre (corte del cordón umbilical) y haber sobrevivido un momento siquiera.",
