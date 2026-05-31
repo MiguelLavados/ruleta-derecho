@@ -15,9 +15,13 @@ with st.sidebar:
 
 st.divider()
 
-if "sel_cedula" not in st.session_state: st.session_state["sel_cedula"] = 1
-if "p_idx" not in st.session_state: st.session_state["p_idx"] = 0
-if "historial_notas" not in st.session_state: st.session_state["historial_notas"] = {}
+# INICIALIZACIÓN DE ESTADOS
+if "sel_cedula" not in st.session_state:
+    st.session_state["sel_cedula"] = 1
+if "p_idx" not in st.session_state:
+    st.session_state["p_idx"] = 0
+if "historial_notas" not in st.session_state:
+    st.session_state["historial_notas"] = {}
 
 TITULOS = {
     1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
@@ -78,17 +82,33 @@ DATOS_EXAMEN = {
 
 st.write("### 👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)")
 
+# BOTONERA RECTIFICADA SIN COMILLAS INTERNAS ERRÓNEAS
 b1, b2, b3, b4, b5 = st.columns(5)
 with b1:
-    if st.button("Cédula 1", use_container_width=True): st.session_state["sel_cedula"] = 1; st.session_state["p_idx"] = 0; st.session_state["corregido"] = False; st.rerun()
+    if st.button("Cédula 1", use_container_width=True):
+        st.session_state["sel_cedula"] = 1
+        st.session_state["p_idx"] = 0
+        st.rerun()
 with b2:
-    if st.button("Cédula 2", use_container_width=True): st.session_state["sel_cedula"] = 2; st.session_state["p_idx"] = 0; st.session_state["corregido"] = False; st.rerun()
+    if st.button("Cédula 2", use_container_width=True):
+        st.session_state["sel_cedula"] = 2
+        st.session_state["p_idx"] = 0
+        st.rerun()
 with b3:
-    if st.button("Cédula 3", use_container_width=True): st.session_state["sel_cedula"] = 3; st.session_state["p_idx = 0"]; st.session_state["corregido"] = False; st.rerun()
+    if st.button("Cédula 3", use_container_width=True):
+        st.session_state["sel_cedula"] = 3
+        st.session_state["p_idx"] = 0
+        st.rerun()
 with b4:
-    if st.button("Cédula 4", use_container_width=True): st.session_state["sel_cedula"] = 4; st.session_state["p_idx"] = 0; st.session_state["corregido"] = False; st.rerun()
+    if st.button("Cédula 4", use_container_width=True):
+        st.session_state["sel_cedula"] = 4
+        st.session_state["p_idx"] = 0
+        st.rerun()
 with b5:
-    if st.button("Cédula 5", use_container_width=True): st.session_state["sel_cedula"] = 5; st.session_state["p_idx"] = 0; st.session_state["corregido"] = False; st.rerun()
+    if st.button("Cédula 5", use_container_width=True):
+        st.session_state["sel_cedula"] = 5
+        st.session_state["p_idx"] = 0
+        st.rerun()
 
 st.write("---")
 
@@ -104,6 +124,8 @@ st.progress((idx + 1) / total_p)
 st.markdown(f"#### Subpunto {p_act['sub']}: {p_act['preg']}")
 
 clave_corr = f"corr_{c_actual}_{idx}"
-if clave_corr not in st.session_state: st.session_state[clave_corr] = None
+if clave_corr not in st.session_state:
+    st.session_state[clave_corr] = None
 
 seleccion = st.radio("Seleccione la respuesta del alumno:", options=p_act["opts"], index=None, key=f"ev_{c_actual}_{idx}")
+
