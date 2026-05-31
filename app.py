@@ -4,7 +4,7 @@ import datetime
 st.set_page_config(page_title="EXAMINADOR", layout="centered")
 
 if datetime.date.today() > datetime.date(2026, 6, 30):
-    st.error("⏳ Licencia caducada. Disponible hasta el 30 de junio de 2026.")
+    st.error("La aplicación ha caducado.")
     st.stop()
 
 st.markdown("<h1 style='text-align:center; color: #1E3A8A;'>EXAMINADOR DE TEORÍA DEL DERECHO</h1>", unsafe_allow_html=True)
@@ -112,7 +112,7 @@ DATOS_EXAMEN = {
         "preguntas": [
             {
                 "sub": "5.1", 
-                "preg": "¿Cuál es el paralelo técnico entre las Fuentes Materiales y las Fuentes Formales?",
+                "preg": "Cuál es el paralelo técnico entre las Fuentes Materiales y las Fuentes Formales?",
                 "opciones": [
                     "A) Materiales son factores de la realidad social; Formales son los procedimientos institucionales obligatorios.",
                     "B) Materiales son leyes publicadas; Formales son hechos reales espontáneos."
@@ -130,7 +130,6 @@ if "corregido_ok" not in st.session_state: st.session_state.corregido_ok = False
 
 st.write("### 👨‍🏫 PANEL DEL PROFESOR: EVALUACIÓN DE PREGUNTAS (CÉDULAS 1 A 5)")
 
-# BOTONERA RECONFIGURADA PARA DESPLEGAR LAS 5 OPCIONES DE UNA VEZ
 b1, b2, b3, b4, b5 = st.columns(5)
 with b1:
     if st.button("Cédula 1", use_container_width=True):
@@ -186,5 +185,7 @@ if st.session_state.sel_cedula in DATOS_EXAMEN:
     
     st.text_area("Anotaciones adicionales del examen oral:", height=70, key=f"notes_{st.session_state.sel_cedula}_{idx}")
     
+    # ESTRUCTURA PLANA TOTALMENTE INMUNE A ERRORES DE IDENTACIÓN
     if st.button("📝 Corregir e Inyectar Sanción", use_container_width=True):
         if seleccion is None:
+            st.warning("Por favor, marque una alternativa antes de calificar.")
