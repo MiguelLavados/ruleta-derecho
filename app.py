@@ -36,7 +36,7 @@ DATOS_EXAMEN = {
             },
             {
                 "sub": "1.3", 
-                "preg": "Según la naturaleza de la sanción, ¿cómo se diferencia un uso social de una norma jurídica?",
+                "preg": "Según la naturaleza de la sanción, ¿como se diferencia un uso social de una norma jurídica?",
                 "opciones": [
                     "A) El uso social acarrea rechazo, reprobación o aislamiento; la norma jurídica conlleva un castigo institucional (multa, cárcel).",
                     "B) El uso social es escrito y tipificado; la norma jurídica es difusa e imprecisa según la época."
@@ -145,14 +145,27 @@ if "corregido_ok" not in st.session_state: st.session_state.corregido_ok = False
 
 st.write("### 👨‍🏫 PANEL DEL PROFESOR: EVALUACIÓN DE PREGUNTAS (CÉDULAS 1 A 5)")
 
-# BOTONERA DIRECTA Y FORMAL
+# BOTONERA DIRECTA EN FILAS SEPARADAS PARA EVITAR ERRORES DE INDENTACIÓN
 b1, b2, b3, b4, b5 = st.columns(5)
 with b1:
-    if st.button("Cédula 1", use_container_width=True): st.session_state.sel_cedula = 1; st.session_state.p_idx = 0; st.session_state.corregido_ok = False; st.rerun()
+    if st.button("Cédula 1", use_container_width=True):
+        st.session_state.sel_cedula = 1
+        st.session_state.p_idx = 0
+        st.session_state.corregido_ok = False
+        st.rerun()
 with b2:
-    if st.button("Cédula 2", use_container_width=True): st.session_state.sel_cedula = 2; st.session_state.p_idx = 0; st.session_state.corregido_ok = False; st.rerun()
+    if st.button("Cédula 2", use_container_width=True):
+        st.session_state.sel_cedula = 2
+        st.session_state.p_idx = 0
+        st.session_state.corregido_ok = False
+        st.rerun()
 with b3:
-    if st.button("Cédula 3", use_container_width=True): st.session_state.sel_cedula = 3; st.session_state.p_idx = 0; st.session_state.corregido_ok = False; st.rerun()
+    if st.button("Cédula 3", use_container_width=True):
+        st.session_state.sel_cedula = 3
+        st.session_state.p_idx = 0
+        st.session_state.corregido_ok = False
+        st.rerun()
 with b4:
-    if st.button("Cédula 4", use_container_width=True): st.session_state.sel_cedula = 4; st.session_state.p_idx = 0; st.session_state.corregido_ok = False; st.rerun()
-with b5:
+    if st.button("Cédula 4", use_container_width=True):
+        st.session_state.sel_cedula = 4
+        st.session_state.p_idx = 0
