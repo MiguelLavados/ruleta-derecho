@@ -3,22 +3,17 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# 1. ESTILOS CSS GLOBALES
+# 1. ESTILOS CSS LIMPIOS (Sin botones basura que ocultar)
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
     .cuadro-cedula { background-color: #E8F5E9; padding: 20px; border-radius: 5px; border-left: 5px solid #2E7D32; color: #1B5E20; font-size: 20px; font-weight: bold; margin-bottom: 20px;}
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
-    
-    /* Ocultamiento absoluto de los gatilladores del teclado */
-    div[key="btn_js_ant"] { display: none !important; position: absolute; top: -9999px; }
-    div[key="btn_js_sig"] { display: none !important; position: absolute; top: -9999px; }
-    div[key="btn_js_ent"] { display: none !important; position: absolute; top: -9999px; }
 </style>
 """, unsafe_allow_html=True)
 
-# 2. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS
+# 2. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS CHILENAS REALES
 DATOS_CEDULAS = {
     1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
     2: "CÉDULA 2.- Fuentes del Derecho y la Ley.",
@@ -28,10 +23,19 @@ DATOS_CEDULAS = {
 }
 
 SUBPREGUNTAS = {
-    1: [{"enunciado": "¿Cuál es la principal sanción ante el incumplimiento de una norma jurídica?", "alternativas": ["A) El remordimiento de conciencia.", "B) La exclusión social del grupo.", "C) La coacción del Estado (sanción legal organizada)."], "correcta": 2}],
-    2: [{"enunciado": "¿Qué tipo de fuente del derecho corresponde a la jurisprudencia?", "alternativas": ["A) Fuente formal material.", "B) Fuente formal indirecta.", "C) Fuente histórica."], "correcta": 1}],
-    3: [{"enunciado": "La interpretación de la ley realizada por el legislador se denomina:", "alternativas": ["A) Interpretación doctrinal.", "B) Interpretación auténtica o legal.", "C) Interpretación judicial."], "correcta": 1}],
-    4: [{"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su aprobación en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}],
+    1: [
+        {"enunciado": "¿Cuál es la principal sanción ante el incumplimiento de una norma jurídica?", "alternativas": ["A) El remordimiento de conciencia.", "B) La exclusión social del grupo.", "C) La coacción del Estado (sanción legal organizada)."], "correcta": 2},
+        {"enunciado": "Las normas de uso y trato social se caracterizan por ser:", "alternativas": ["A) Unilaterales y de incoercibilidad.", "B) Bilaterales y exigibles judicialmente.", "C) Dictadas por el Congreso Nacional."], "correcta": 0}
+    ],
+    2: [
+        {"enunciado": "¿Qué tipo de fuente del derecho corresponde a la jurisprudencia?", "alternativas": ["A) Fuente formal material.", "B) Fuente formal indirecta.", "C) Fuente histórica."], "correcta": 1}
+    ],
+    3: [
+        {"enunciado": "La interpretación de la ley realizada por el legislador se denomina:", "alternativas": ["A) Interpretación doctrinal.", "B) Interpretación auténtica o legal.", "C) Interpretación judicial."], "correcta": 1}
+    ],
+    4: [
+        {"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su aprobación en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}
+    ],
     5: [
         {"enunciado": "¿Cuándo comienza legalmente la personalidad de una persona natural según el Código Civil?", "alternativas": ["A) Al momento de la concepción.", "B) Al nacer, esto es, al separarse completamente de la madre y sobrevivir un momento siquiera.", "C) A los 18 años de edad."], "correcta": 1},
         {"enunciado": "La existencia natural de la persona humana comienza con:", "alternativas": ["A) El nacimiento.", "B) La inscripción en el Registro Civil.", "C) La concepción."], "correcta": 2}
@@ -48,47 +52,48 @@ if "pregunta_index" not in st.session_state:
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 4. FUNCIONES DE PERSISTENCIA Y REGISTRO EN TIEMPO REAL
-def guardar_respuesta_inmediata():
-    idx = st.session_state.pregunta_index
-    clave_radio = f"radio_preg_{st.session_state.cedula_actual}_{idx}"
-    if clave_radio in st.session_state:
-        st.session_state.respuestas_alumno[idx] = st.session_state.get(clave_radio)
-
-# 5. LOGICA DE NAVEGACIÓN ASOCIADA A LOS ACCIONADORES REALES
-def click_anterior():
-    if st.session_state.fase == "SELECCION_CEDULA":
-        st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
-    elif st.session_state.fase == "SUBPREGUNTAS":
-        if st.session_state.pregunta_index > 0:
-            st.session_state.pregunta_index -= 1
-        else:
-            st.session_state.fase = "SELECCION_CEDULA"
-            st.session_state.pregunta_index = 0
-
-def click_siguiente():
-    if st.session_state.fase == "SELECCION_CEDULA":
+# 4. RECEPTOR DE COMANDOS DE TECLADO DESDE EL COMPONENTE WEB JS
+# Recibe las pulsaciones de teclas guardadas en la URL de forma totalmente transparente
+query_params = st.query_params
+if "tecla" in query_params:
+    tecla_pulsada = query_params["tecla"]
+    st.query_params.clear() # Limpiar la cola inmediatamente para que no se duplique el comando
+    
+    # Lógica de navegación pura en Python (Sin clics fantasmas)
+    if tecla_pulsada == "backspace":
+        if st.session_state.fase == "SELECCION_CEDULA":
+            st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
+        elif st.session_state.fase == "SUBPREGUNTAS":
+            if st.session_state.pregunta_index > 0:
+                st.session_state.pregunta_index -= 1
+            else:
+                st.session_state.fase = "SELECCION_CEDULA"
+                st.session_state.pregunta_index = 0
+                
+    elif tecla_pulsada == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
         st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
-    elif st.session_state.fase == "SUBPREGUNTAS":
-        preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
-        if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
-            st.session_state.pregunta_index += 1
-        else:
-            st.session_state.fase = "EVALUACION_TERMINADA"
+        
+    elif tecla_pulsada == "enter":
+        if st.session_state.fase == "SELECCION_CEDULA":
+            st.session_state.fase = "SUBPREGUNTAS"
+            st.session_state.pregunta_index = 0
+            st.session_state.respuestas_alumno = {}
+        elif st.session_state.fase == "SUBPREGUNTAS":
+            preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
+            if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
+                st.session_state.pregunta_index += 1
+            else:
+                st.session_state.fase = "EVALUACION_TERMINADA"
 
-def click_enter_cedula():
-    if st.session_state.fase == "SELECCION_CEDULA":
-        st.session_state.fase = "SUBPREGUNTAS"
-        st.session_state.pregunta_index = 0
-        st.session_state.respuestas_alumno = {}
+# Pasar la fase actual de la App a una etiqueta HTML oculta leída por JS
+st.markdown(f'<div id="estado-fase" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-# DATA-ANCHOR SEGURO PARA EL JAVASCRIPT
-st.markdown(f'<div id="fase-app" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-# 6. INTERFAZ GRÁFICA SUPERIOR
+# 5. INTERFAZ GRÁFICA SUPERIOR
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
 
+# Pestañas de Cédulas superiores
 cols_superiores = st.columns(5)
 for i in range(1, 6):
     tipo_boton = "primary" if st.session_state.cedula_actual == i else "secondary"
@@ -102,7 +107,8 @@ st.write("---")
 contenido_cedula = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
 st.markdown(f'<div class="cuadro-cedula">📍 {contenido_cedula}</div>', unsafe_allow_html=True)
 
-# 7. ZONA DE EXAMEN DINÁMICA
+
+# 6. MÓDULOS DE RENDERIZADO DE EVALUACIÓN
 if st.session_state.fase == "SUBPREGUNTAS":
     lista_preguntas = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
     idx = st.session_state.pregunta_index
@@ -114,17 +120,17 @@ if st.session_state.fase == "SUBPREGUNTAS":
     st.markdown(f'<div class="cuadro-pregunta">❓ {pregunta_data["enunciado"]}</div>', unsafe_allow_html=True)
     st.write("")
     
+    # Recuperar índice si ya respondió antes
     opcion_guardada = st.session_state.respuestas_alumno.get(idx, None)
-    clave_radio_dinamico = f"radio_preg_{st.session_state.cedula_actual}_{idx}"
     
     seleccion = st.radio(
         "Selecciona la alternativa correcta:",
         options=range(len(pregunta_data["alternativas"])),
         format_func=lambda x: pregunta_data["alternativas"][x],
         index=opcion_guardada,
-        key=clave_radio_dinamico,
-        on_change=guardar_respuesta_inmediata
+        key=f"radio_actual_{st.session_state.cedula_actual}_{idx}"
     )
+    # Guardar en memoria inmediatamente al cambiar de opción
     st.session_state.respuestas_alumno[idx] = seleccion
 
 elif st.session_state.fase == "EVALUACION_TERMINADA":
@@ -140,8 +146,9 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
     total_p = len(lista_preguntas)
     malas = total_p - buenas
     
+    # Fórmula de nota estándar chilena al 60% de exigencia
     if total_p > 0:
-        porcentaje = whites = buenas / total_p
+        porcentaje = buenas / total_p
         if porcentaje >= 0.6:
             nota = 4.0 + (porcentaje - 0.6) * (3.0 / 0.4)
         else:
@@ -154,36 +161,35 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
     c2.metric("Preguntas Incorrectas", f"❌ {malas}")
     c3.metric("Nota Obtenida", f"🎓 {nota:.1f}")
     
-    if st.button("Reiniciar Cédula / Volver", type="primary", key="btn_reiniciar"):
+    if st.button("Reiniciar Cédula / Volver", type="primary"):
         st.session_state.fase = "SELECCION_CEDULA"
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 8. BOTONES TÉCNICOS POR KEY (Invisibles)
-st.button("InvisibleAnt", key="btn_js_ant", on_click=click_anterior)
-st.button("InvisibleSig", key="btn_js_sig", on_click=click_siguiente)
-st.button("InvisibleEnt", key="btn_js_ent", on_click=click_enter_cedula)
 
-# 9. SCRIPT DE JAVASCRIPT PROTEGIDO DENTRO DE PARÉNTESIS NATIVOS (Cero fallos de sintaxis)
-js_teclado = (
+# 7. INYECCIÓN DE CAPTURA DE TECLADO INLINE DIRECTO (Cero fallos de sintaxis)
+# Se encarga de capturar las teclas y notificarlas directo a la URL de forma asíncrona
+js_captura_limpia = (
     '<script>'
     'const doc = window.parent.document;'
     'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }'
     'window.parent._keyHandler = function(e) {'
-    '  const botones = Array.from(doc.querySelectorAll("button"));'
-    '  const btnAnt = botones.find(b => b.innerText.includes("InvisibleAnt"));'
-    '  const btnSig = botones.find(b => b.innerText.includes("InvisibleSig"));'
-    '  const btnEnt = botones.find(b => b.innerText.includes("InvisibleEnt"));'
-    '  const contenedorFase = doc.getElementById("fase-app");'
-    '  const faseActual = contenedorFase ? contenedorFase.getAttribute("data-fase") : "SELECCION_CEDULA";'
+    '  const elFase = doc.getElementById("estado-fase");'
+    '  const faseActual = elFase ? elFase.getAttribute("data-fase") : "SELECCION_CEDULA";'
     '  if (e.key === "Backspace" || e.key === " " || e.key === "Enter") {'
     '    if (doc.activeElement && doc.activeElement.type === "radio" && e.key !== "Enter") { return; }'
     '    e.preventDefault();'
-    '    if (e.key === "Backspace" && btnAnt) { btnAnt.click(); }'
-    '    else if (e.key === " " && faseActual === "SELECCION_CEDULA" && btnSig) { btnSig.click(); }'
-    '    else if (e.key === "Enter") {'
-    '      if (faseActual === "SELECCION_CEDULA" && btnEnt) { btnEnt.click(); }'
-    '      else if (faseActual === "SUBPREGUNTAS" && btnSig) { btnSig.click(); }'
+    '    let comando = "";'
+    '    if (e.key === "Backspace") { comando = "backspace"; }'
+    '    else if (e.key === " " && faseActual === "SELECCION_CEDULA") { comando = "espacio"; }'
+    '    else if (e.key === "Enter") { comando = "enter"; }'
+    '    if (comando !== "") {'
+    '      const url = new URL(window.parent.location.href);'
+    '      url.searchParams.set("tecla", comando);'
+    '      window.parent.history.replaceState({}, "", url.toString());'
+    '      const btnRefresh = doc.querySelector(".stActionButton");'
+    '      if (btnRefresh) { btnRefresh.click(); }'
+    '      else { window.parent.location.reload(); }'
     '    }'
     '  }'
     '};'
@@ -191,4 +197,3 @@ js_teclado = (
     '</script>'
 )
 
-st.components.v1.html(js_teclado, height=0)
