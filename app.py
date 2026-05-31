@@ -1,166 +1,133 @@
 import streamlit as st
-import datetime
 
 st.set_page_config(page_title="EXAMINADOR", layout="centered")
 
-if datetime.date.today() > datetime.date(2026, 6, 30):
-    st.error("La aplicación ha caducado.")
-    st.stop()
-
-st.markdown("<h1 style='text-align:center; color: #1E3A8A;'>EXAMINADOR DE TEORÍA DEL DERECHO</h1>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align:center; color: #4B5563;'>Profesor Jaime Esponda</h3>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align:center; color: #1E3A8A;'>EXAMINADOR DE TEORÍA DEL DERECHO</h2>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align:center; color: #4B5563;'>Profesor Jaime Esponda</h4>", unsafe_allow_html=True)
 
 with st.sidebar:
-    st.markdown("### ℹ️ Credenciales")
-    st.caption("Método Cognuss II\n\nDesarrollado por Miguel López Lavados")
+    st.caption("🛠️ **Soporte Técnico:**\nMétodo Cognuss II\nMiguel López Lavados")
 
 st.divider()
 
-DATOS_EXAMEN = {
-    1: {
-        "titulo": "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
-        "preguntas": [
-            {
-                "sub": "1.1", "preg": "La norma moral, características esenciales.",
-                "opciones": ["A) Unilateral, Interior, Autónoma, Incoercible.", "B) Bilateral, Exterior, Heterónoma, Coercible."],
-                "correcta": "A) Unilateral, Interior, Autónoma, Incoercible.",
-                "explicacion": "Regula el fuero interno del sujeto y no otorga derechos."
-            },
-            {
-                "sub": "1.2", "preg": "Derecho y Moral: diferencias entre ambos órdenes.",
-                "opciones": [
-                    "A) El Derecho es Coercible y Bilateral; la Moral es Incoercible.",
-                    "B) El Derecho es de fuero puramente interno y autónomo."
-                ],
-                "correcta": "A) El Derecho es Coercible y Bilateral; la Moral es Incoercible.",
-                "explicacion": "El Derecho admite el uso de la fuerza pública coactiva estatal."
-            },
-            {
-                "sub": "1.3 a)", "preg": "Normas de uso y trato social: concepto.",
-                "opciones": [
-                    "A) Pautas de decoro y cortesía dictadas por la sociedad civil.",
-                    "B) Mandatos imperativos escritos de forma parlamentaria."
-                ],
-                "correcta": "A) Pautas de decoro y cortesía dictadas por la sociedad civil.",
-                "explicacion": "Consisten en costumbres urbanas variables y no tipificadas."
-            },
-            {
-                "sub": "1.3 b)", "preg": "Normas de uso y trato social: diferencias.",
-                "opciones": [
-                    "A) Usos sociales acarrean rechazo; las jurídicas castigo estatal.",
-                    "B) Los usos confieren acciones legales directas ante tribunales."
-                ],
-                "correcta": "A) Usos sociales acarrean rechazo; las jurídicas castigo estatal.",
-                "explicacion": "La norma jurídica impone multas, privación de libertad o embargos."
-            }
-        ]
+# MENÚ DIRECTO PARA EL PROFESOR
+st.subheader("📚 Panel de Interrogación Directa")
+cedula_sel = st.selectbox(
+    "Seleccione el Subpunto del Cedulario Oficial a evaluar:",
+    [
+        "--- Elija un Subpunto ---",
+        "1.1. La norma moral, características.",
+        "1.2. Derecho y Moral: diferencias entre ambos órdenes.",
+        "1.3. Normas de uso y trato social: concepto y diferencias.",
+        "2.1. La norma jurídica: Características.",
+        "2.2. Clasificación entre normas imperativas y permisivas.",
+        "2.3. Estructura lógica de la norma jurídica.",
+        "3.1. Vigencia: concepto, momento y derogación de la ley.",
+        "3.2. Validez: concepto y las dos principales doctrinas.",
+        "3.3. Eficacia: concepto fáctico sociológico.",
+        "4.1. Introducción constitucional: principio de inexcusabilidad.",
+        "4.2. Concepto de plenitud hermética del ordenamiento.",
+        "4.3. Casos en que se observan lagunas y solución judicial.",
+        "4.4. Conflicto entre normas positivas y criterios de solución.",
+        "5.1. Concepto y tipos de fuente (materiales y formales).",
+        "5.2. Fuentes formales del Derecho: clasificación.",
+        "5.3. La ley: concepto, elementos, características y efectos."
+    ]
+)
+
+# CARGA DINÁMICA ULTRA LIGERA DE RESPUESTAS AUTOMÁTICAS
+RESPUESTAS = {
+    "1.1. La norma moral, características.": {
+        "preg": "¿Cuáles son las características principales de la norma moral?",
+        "opts": ["A) Unilateral, Interior, Autónoma, Incoercible.", "B) Bilateral, Exterior, Heterónoma, Coercible."],
+        "ok": "A) Unilateral, Interior, Autónoma, Incoercible.",
+        "fund": "Regula la rectitud íntima de la conciencia (fuero interno) sin fuerza coactiva."
     },
-    2: {
-        "titulo": "CÉDULA 2.- La norma jurídica.",
-        "preguntas": [
-            {
-                "sub": "2.1", "preg": "La norma jurídica: Características.",
-                "opciones": ["A) Heterónoma, Exterior, Bilateral, Coercible.", "B) Autónoma, Interior, Unilateral, Incoercible."],
-                "correcta": "A) Heterónoma, Exterior, Bilateral, Coercible.",
-                "explicacion": "Emana de autoridad externa, rige actos manifestados y es coactiva."
-            },
-            {
-                "sub": "2.2", "preg": "Clasificación: Normas imperativas vs permisivas.",
-                "opciones": [
-                    "A) Imperativas ordenan u prohíben; Permisivas conceden opción.",
-                    "B) Imperativas otorgan derecho opcional; Permisivas imponen cárcel."
-                ],
-                "correcta": "A) Imperativas ordenan u prohíben; Permisivas conceden opción.",
-                "explicacion": "Imperativas limitan voluntad; permisivas facultan vender la casa."
-            },
-            {
-                "sub": "2.3", "preg": "Estructura lógica de la norma jurídica.",
-                "opciones": ["A) Juicio hipotético: Supuesto de Hecho y Consecuencia.", "B) Mandato categórico directo sin hipótesis factuales previas."],
-                "correcta": "A) Juicio hipotético: Supuesto de Hecho y Consecuencia.",
-                "explicacion": "Si ocurre la hipótesis fáctica, se aplica el efecto legal."
-            }
-        ]
+    "1.2. Derecho y Moral: diferencias entre ambos órdenes.": {
+        "preg": "¿Cuál es la distinción formal de coacción entre ambos?",
+        "opts": ["A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.", "B) Ambos ordenamientos imponen multas estatales de forma idéntica."],
+        "ok": "A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.",
+        "fund": "El Derecho cuenta con el imperio del Estado para obligar por la fuerza física legítima."
     },
-    3: {
-        "titulo": "CÉDULA 3.- Vigencia, validez y eficacia del Derecho positivo.",
-        "preguntas": [
-            {
-                "sub": "3.1 a/b", "preg": "Vigencia: concepto y momento.",
-                "opciones": ["A) Fuerza obligatoria; inicia desde la publicación oficial.", "B) Rectitud moral; obliga desde el debate parlamentario."],
-                "correcta": "A) Fuerza obligatoria; inicia desde la publicación oficial.",
-                "explicacion": "Determina el momento exacto en que el precepto obliga."
-            },
-            {
-                "sub": "3.1 c)", "preg": "La derogación de la ley: clasificación.",
-                "opciones": ["A) Pérdida de efectos por otra ley: Expresa, Tácita, Total, Parcial.", "B) Pérdida de validez por el desuso social prolongado."],
-                "correcta": "A) Pérdida de efectos por otra ley: Expresa, Tácita, Total, Parcial.",
-                "explicacion": "Expresa anula formalmente; Tácita opera por incompatibilidad."
-            },
-            {
-                "sub": "3.2 a)", "preg": "Validez: concepto.",
-                "opciones": ["A) Existencia formal y obligatoriedad basada en el sistema.", "B) Grado de cumplimiento sociológico real en la calle."],
-                "correcta": "A) Existencia formal y obligatoriedad basada en el sistema.",
-                "explicacion": "La validez implica la pertenencia legítima al orden jerárquico."
-            },
-            {
-                "sub": "3.2 b)", "preg": "Fundamentos de validez: doctrinas.",
-                "opciones": ["A) Iusnaturalista (justicia) e Iuspositivista (legalidad formal).", "B) Sociológica (fuerza real) and Contractualista privada."],
-                "correcta": "A) Iusnaturalista (justicia) e Iuspositivista (legalidad formal).",
-                "explicacion": "Positivismo trata la forma; derecho natural exige justicia moral."
-            },
-            {
-                "sub": "3.3", "preg": "Eficacia: concepto.",
-                "opciones": ["A) Grado fáctico de acatamiento ciudadano y aplicación judicial.", "B) La mera escrituración formal previa de las normas."],
-                "correcta": "A) Grado fáctico de acatamiento ciudadano y aplicación judicial.",
-                "explicacion": "La eficacia mide el plano real de obediencia de una norma."
-            }
-        ]
+    "1.3. Normas de uso y trato social: concepto y diferencias.": {
+        "preg": "¿Qué caracteriza a los usos sociales frente a la norma jurídica?",
+        "opts": ["A) Son unilaterales y su infracción acarrea reproche o aislamiento social.", "B) Otorgan acciones legales ante los tribunales civiles para exigir su cumplimiento."],
+        "ok": "A) Son unilaterales y su infracción acarrea reproche o aislamiento social.",
+        "fund": "Emanan de la colectividad de forma difusa; carecen de castigo institucional legal."
     },
-    4: {
-        "titulo": "CÉDULA 4.- La plenitud hermética y las lagunas del Derecho.",
-        "preguntas": [
-            {
-                "sub": "4.1", "preg": "Principio de inexcusabilidad (Art. 76 CPR).",
-                "opciones": ["A) Obliga a jueces a resolver conflictos aun sin ley expresa.", "B) Faculta a tribunales a rechazar causas ante vacíos legales."],
-                "correcta": "A) Obliga a jueces a resolver conflictos aun sin ley expresa.",
-                "explicacion": "El juez debe fallar siempre, integrando el sistema ante vacíos."
-            },
-            {
-                "sub": "4.2", "preg": "Concepto de plenitud hermética.",
-                "opciones": ["A) El ordenamiento es completo y provee siempre solución.", "B) Postulado empírico que niega las lagunas en los códigos."],
-                "correcta": "A) El ordenamiento es completo y provee siempre solución.",
-                "explicacion": "El sistema posee normas de clausura y auto-integración."
-            },
-            {
-                "sub": "4.3", "preg": "Lagunas del Derecho; solución judicial.",
-                "opciones": ["A) Vacío legal; el juez integra mediante analogía y equidad.", "B) Choque de artículos; el juez deriva de forma obligatoria."],
-                "correcta": "A) Vacío legal; el juez integra mediante analogía y equidad.",
-                "explicacion": "La integración faculta al magistrado a construir la regla de fallo."
-            },
-            {
-                "sub": "4.4", "preg": "Conflicto entre normas: criterios.",
-                "opciones": ["A) Se resuelve mediante: Jerarquía, Especialidad y Temporalidad.", "B) Se resuelve ponderando el costo o volumen del expediente."],
-                "correcta": "A) Se resuelve mediante: Jerarquía, Especialidad y Temporalidad.",
-                "explicacion": "Jerarquía (superior prima), Especialidad (especial), Temporalidad (posterior)."
-            }
-        ]
+    "2.1. La norma jurídica: Características.": {
+        "preg": "¿Cuáles son las notas constitutivas de la norma jurídica?",
+        "opts": ["A) Heterónoma, Exterior, Bilateral y Coercible.", "B) Autónoma, Interior, Unilateral e Incoercible."],
+        "ok": "A) Heterónoma, Exterior, Bilateral y Coercible.",
+        "fund": "Emana de autoridad externa, regula actos manifestados y confiere deberes correlativos."
     },
-    5: {
-        "titulo": "CÉDULA 5.- Fuentes del ordenamiento izquierdo.",
-        "preguntas": [
-            {
-                "sub": "5.1", "preg": "Concepto y tipos de fuente.",
-                "opciones": ["A) Materiales: factores sociales; Formales: modos obligatorios.", "B) Materiales: códigos; Formales: discursos parlamentarios."],
-                "correcta": "A) Materiales: factores sociales; Formales: modos obligatorios.",
-                "explicacion": "Material es la causa real; formal es el canal dotado de imperio."
-            },
-            {
-                "sub": "5.2", "preg": "Fuentes formales: clasificación.",
-                "opciones": ["A) CPR, Ley, Tratados, Reglamentos, Costumbre, Jurisprudencia.", "B) Se reducen exclusivamente a la legislación parlamentaria."],
-                "correcta": "A) CPR, Ley, Tratados, Reglamentos, Costumbre, Jurisprudencia.",
-                "explicacion": "El derecho positivo consagra un orden jerárquico de producción."
-            },
-            {
-                "sub": "5.3 a/b/c", "preg": "La ley: concepto, elementos y características.",
-                "opciones": ["A) Declaración de voluntad soberana que manda, prohíbe o permite.", "B) Mandato coyuntural judicial para dirimir un litigio privado."],
-                "correcta": "A) Declaración de voluntad soberana que manda, prohíbe o permite.",
+    "2.2. Clasificación entre normas imperativas y permisivas.": {
+        "preg": "¿Cómo operan las normas imperativas frente a las permisivas?",
+        "opts": ["A) Imperativas ordenan o prohíben absolutamente; Permisivas conceden opción o facultad.", "B) Imperativas otorgan un derecho opcional; Permisivas aplican cárcel inmediata."],
+        "ok": "A) Imperativas ordenan o prohíben absolutamente; Permisivas conceden opción o facultad.",
+        "fund": "Ejemplo: Es imperativa la prohibición de venta entre cónyuges; permisiva la facultad de vender."
+    },
+    "2.3. Estructura lógica de la norma jurídica.": {
+        "preg": "¿Cuál es la composición analítica de la norma jurídica?",
+        "opts": ["A) Un juicio hipotético estructurado en un Supuesto de Hecho y una Consecuencia.", "B) Una orden categórica directa desprovista de hipótesis fácticas previas."],
+        "ok": "A) Un juicio hipotético estructurado en un Supuesto de Hecho y una Consecuencia.",
+        "fund": "Determina que si ocurre la hipótesis factual contemplada, debe aplicarse el efecto legal."
+    },
+    "3.1. Vigencia: concepto, momento y derogación de la ley.": {
+        "preg": "¿Cómo se clasifica formalmente la derogación de una ley?",
+        "opts": ["A) Expresa, Tácita, Total y Parcial.", "B) Absoluta, Relativa fáctica y por Desuso."],
+        "ok": "A) Expresa, Tácita, Total y Parcial.",
+        "fund": "Expresa lo declara; Tácita opera por incompatibilidad; Parcial elimina solo incisos."
+    },
+    "3.2. Validez: concepto y las dos principales doctrinas.": {
+        "preg": "¿Qué postulan el Iuspositivismo y el Iusnaturalismo sobre la validez?",
+        "opts": ["A) Positivismo exige legalidad formal; Iusnaturalismo exige justicia de fondo moral.", "B) Positivismo se basa en la moral universal; Iusnaturalismo en la fuerza soberana."],
+        "ok": "A) Positivismo exige legalidad formal; Iusnaturalismo exige justicia de fondo moral.",
+        "fund": "El positivismo asocia la validez a la regularidad del proceso de creación del Estado."
+    },
+    "3.3. Eficacia: concepto fáctico sociológico.": {
+        "preg": "¿Qué representa técnicamente la eficacia del Derecho?",
+        "opts": ["A) El grado fáctico de acatamiento ciudadano y aplicación efectiva por los jueces.", "B) La mera promulgación y escrituración formal de los artículos en los códigos."],
+        "ok": "A) El grado fáctico de acatamiento ciudadano y aplicación efectiva por los jueces.",
+        "fund": "La eficacia mide el impacto sociológico real de la norma jurídica en los hechos."
+    },
+    "4.1. Introducción constitucional: principio de inexcusabilidad.": {
+        "preg": "¿Qué deber impone el principio de inexcusabilidad (Art. 76 CPR)?",
+        "opts": ["A) Obliga a los jueces a resolver conflictos aun sin ley expresa aplicable.", "B) Faculta a tribunales a rechazar la demanda ante vacíos de la legislación."],
+        "ok": "A) Obliga a los jueces a resolver conflictos aun sin ley expresa aplicable.",
+        "fund": "Reclamada su intervención legal, el juez debe fallar integrando analogía o equidad."
+    },
+    "4.2. Concepto de plenitud hermética del ordenamiento.": {
+        "preg": "¿Qué postula técnicamente la plenitud hermética?",
+        "opts": ["A) El ordenamiento como un todo es completo y provee siempre una solución sistémica.", "B) Las leyes particulares describen de forma perfecta toda la realidad futura escrita."],
+        "ok": "A) El ordenamiento como un todo es completo y provee siempre una solución sistémica.",
+        "fund": "El sistema posee normas de clausura y auto-integración jurídica interna."
+    },
+    "4.3. Casos en que se observan lagunas y solución judicial.": {
+        "preg": "¿Cómo procede el magistrado ante un vacío de la ley mediante integración?",
+        "opts": ["A) Llena la laguna recurriendo a analogía, principios generales y equidad natural.", "B) Suspende el proceso y deriva la resolución de forma obligatoria al parlamento."],
+        "ok": "A) Llena la laguna recurriendo a analogía, principios generales y equidad natural.",
+        "fund": "Extrae la regla de fallo desde las premisas y bases racionales del ordenamiento."
+    },
+    "4.4. Conflicto entre normas positivas y criterios de solución.": {
+        "preg": "¿Cuáles son los tres criterios clásicos para resolver antinomias?",
+        "opts": ["A) Jerarquía (superior), Especialidad (específica) y Temporalidad (posterior).", "B) Cuantía del juicio, antigüedad de la corte y residencia del demandado."],
+        "ok": "A) Jerarquía (superior), Especialidad (específica) y Temporalidad (posterior).",
+        "fund": "Reglas fundamentales de la hermenéutica para mantener la coherencia unitaria del Derecho."
+    },
+    "5.1. Concepto y tipos de fuente (materiales y formales).": {
+        "preg": "¿Cuál es el paralelo conceptual entre fuentes materiales y formales?",
+        "opts": ["A) Materiales: factores sociales/reales; Formales: canales de expresión obligatoria.", "B) Materiales: libros de papel; Formales: discursos solemnes del Congreso."],
+        "ok": "A) Materiales: factores sociales/reales; Formales: canales de expresión obligatoria.",
+        "fund": "La causa político-social frente al envase dotado de imperio vinculante (ej. ley)."
+    },
+    "5.2. Fuentes formales del Derecho: clasificación.": {
+        "preg": "¿Cuáles son las fuentes formales principales reconocidas en Chile?",
+        "opts": ["A) La Constitución, la ley, los tratados, reglamentos, costumbre y jurisprudencia.", "B) Únicamente la legislación parlamentaria escrita dictada por el Congreso."],
+        "ok": "A) La Constitución, la ley, los tratados, reglamentos, costumbre y jurisprudencia.",
+        "fund": "El derecho nacional consagra una estructura articulada de producción normativa."
+    },
+    "5.3. La ley: concepto, elementos, características y efectos.": {
+        "preg": "En cuanto al tiempo, ¿qué consagra el Principio de Irretroactividad (Art. 9 CC)?",
+        "opts": ["A) La ley solo dispone para el futuro y jamás rige hacia el pasado, salvo favorabilidad penal.", "B) Faculta al Estado a castigar de forma automática las conductas lícitas del pasado."],
+        "ok": "A) La ley solo dispone para el futuro y jamás rige hacia el pasado, salvo favorabilidad penal.",
