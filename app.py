@@ -3,7 +3,7 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# 1. ESTILOS CSS GLOBALES (Control visual absoluto y ocultamiento infalible)
+# 1. ESTILOS CSS GLOBALES
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
@@ -35,7 +35,7 @@ SUBPREGUNTAS = {
     4: [{"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su aprobación en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}],
     5: [
         {"enunciado": "¿Cuándo comienza legalmente la personalidad de una persona natural según el Código Civil?", "alternativas": ["A) Al momento de la concepción.", "B) Al nacer, esto es, al separarse completamente de la madre y sobrevivir un momento siquiera.", "C) A los 18 años de edad."], "correcta": 1},
-        {"enunciado": "La existencia natural de la persona humana comienza con:", "alternativas": ["A) El nacimiento.", "B) La inscripción en el Registro Civil.", "C) La concepción."], "correcta": 2}
+        {"enunciado": "La existence natural de la persona humana comienza con:", "alternativas": ["A) El nacimiento.", "B) La inscripción en el Registro Civil.", "C) La concepción."], "correcta": 2}
     ]
 }
 
@@ -43,7 +43,7 @@ SUBPREGUNTAS = {
 if "cedula_actual" not in st.session_state:
     st.session_state.cedula_actual = 1
 if "fase" not in st.session_state:
-    st.session_state.fase = "SELECCION_CEDULA"  # SELECCION_CEDULA, SUBPREGUNTAS, EVALUACION_TERMINADA
+    st.session_state.fase = "SELECCION_CEDULA"
 if "pregunta_index" not in st.session_state:
     st.session_state.pregunta_index = 0
 if "respuestas_alumno" not in st.session_state:
@@ -52,7 +52,6 @@ if "respuestas_alumno" not in st.session_state:
 # 4. LOGICA DE NAVEGACIÓN ASOCIADA A LOS ACCIONADORES REALES
 def click_anterior():
     if st.session_state.fase == "SELECCION_CEDULA":
-        # Retroceso cíclico perfecto (1 -> 5 -> 4 -> 3 -> 2 -> 1)
         st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
     elif st.session_state.fase == "SUBPREGUNTAS":
         if st.session_state.pregunta_index > 0:
@@ -63,7 +62,6 @@ def click_anterior():
 
 def click_siguiente():
     if st.session_state.fase == "SELECCION_CEDULA":
-        # Avance cíclico perfecto (1 -> 2 -> 3 -> 4 -> 5 -> 1)
         st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
     elif st.session_state.fase == "SUBPREGUNTAS":
         preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
@@ -81,13 +79,12 @@ def click_enter_cedula():
 # DATA-ANCHOR SEGURO PARA EL JAVASCRIPT
 st.markdown(f'<div id="fase-app" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-# 5. INTERFAZ GRÁFICA SUPERIOR (Sincronización nativa sin JS intermedio)
+# 5. INTERFAZ GRÁFICA SUPERIOR
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
 
 cols_superiores = st.columns(5)
 for i in range(1, 6):
-    # Usamos el color primario nativo de Streamlit (Rojo/Azul según tu tema) para la activa
     tipo_boton = "primary" if st.session_state.cedula_actual == i else "secondary"
     if cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type=tipo_boton, use_container_width=True):
         st.session_state.cedula_actual = i
@@ -111,10 +108,8 @@ if st.session_state.fase == "SUBPREGUNTAS":
     st.markdown(f'<div class="cuadro-pregunta">❓ {pregunta_data["enunciado"]}</div>', unsafe_allow_html=True)
     st.write("")
     
-    # Recuperar respuesta previa si existe
     opcion_guardada = st.session_state.respuestas_alumno.get(idx, None)
     
-    # index=None obliga a que ninguna opción aparezca premarcada al inicio
     seleccion = st.radio(
         "Selecciona la alternativa correcta:",
         options=range(len(pregunta_data["alternativas"])),
@@ -157,41 +152,34 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 7. BOTONES OCULTOS POR KEY (Invisibles pero funcionales para el DOM)
+# 7. BOTONES TÉCNICOS POR KEY (Completamente invisibles en el DOM)
 st.button("InvisibleAnt", key="btn_js_ant", on_click=click_anterior)
 st.button("InvisibleSig", key="btn_js_sig", on_click=click_siguiente)
 st.button("InvisibleEnt", key="btn_js_ent", on_click=click_enter_cedula)
 
-# 8. CAPTURA DE TECLADO INSTANTÁNEA (Mediante clics simulados directos)
-js_teclado = """
-<script>
-const doc = window.parent.document;
+# 8. SCRIPT DE JAVASCRIPT CONCATENADO CON COMILLAS SIMPLES (Cero fallos de sintaxis)
+js_teclado = '<script>' \
+             'const doc = window.parent.document;' \
+             'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }' \
+             'window.parent._keyHandler = function(e) {' \
+             '  const botones = Array.from(doc.querySelectorAll("button"));' \
+             '  const btnAnt = botones.find(b => b.innerText.includes("InvisibleAnt"));' \
+             '  const btnSig = botones.find(b => b.innerText.includes("InvisibleSig"));' \
+             '  const btnEnt = botones.find(b => b.innerText.includes("InvisibleEnt"));' \
+             '  const contenedorFase = doc.getElementById("fase-app");' \
+             '  const faseActual = contenedorFase ? contenedorFase.getAttribute("data-fase") : "SELECCION_CEDULA";' \
+             '  if (e.key === "Backspace" || e.key === " " || e.key === "Enter") {' \
+             '    if (doc.activeElement && doc.activeElement.type === "radio" && e.key !== "Enter") { return; }' \
+             '    e.preventDefault();' \
+             '    if (e.key === "Backspace" && btnAnt) { btnAnt.click(); }' \
+             '    else if (e.key === " " && faseActual === "SELECCION_CEDULA" && btnSig) { btnSig.click(); }' \
+             '    else if (e.key === "Enter") {' \
+             '      if (faseActual === "SELECCION_CEDULA" && btnEnt) { btnEnt.click(); }' \
+             '      else if (faseActual === "SUBPREGUNTAS" && btnSig) { btnSig.click(); }' \
+             '    }' \
+             '  }' \
+             '};' \
+             'doc.addEventListener("keydown", window.parent._keyHandler);' \
+             '</script>'
 
-if(window.parent._keyHandler) {
-    doc.removeEventListener('keydown', window.parent._keyHandler);
-}
-
-window.parent._keyHandler = function(e) {
-    // Buscar los botones ocultos reales generados por Streamlit por su texto interno
-    const botones = Array.from(doc.querySelectorAll('button'));
-    const btnAnt = botones.find(b => b.innerText.includes('InvisibleAnt'));
-    const btnSig = botones.find(b => b.innerText.includes('InvisibleSig'));
-    const btnEnt = botones.find(b => b.innerText.includes('InvisibleEnt'));
-    
-    const contenedorFase = doc.getElementById('fase-app');
-    const faseActual = contenedorFase ? contenedorFase.getAttribute('data-fase') : 'SELECCION_CEDULA';
-
-    if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {
-        // Permitir que las flechas y selección del radio button funcionen de forma nativa
-        if (doc.activeElement && doc.activeElement.type === 'radio' && e.key !== 'Enter') {
-            return;
-        }
-
-        e.preventDefault();
-
-        if (e.key === 'Backspace' && btnAnt) {
-            btnAnt.click();
-        } 
-        else if (e.key === ' ' && faseActual === 'SELECCION_CEDULA' && btnSig) {
-            btnSig.click();
-        } 
+st.components.v1.html(js_teclado, height=0)
