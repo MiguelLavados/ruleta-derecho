@@ -24,138 +24,106 @@ TITULOS = {
     5: "CÉDULA 5.- Fuentes del ordenamiento jurídico."
 }
 
-SUBPUNTOS = {
-    1: ["1.1. La norma moral, características.", "1.2. Derecho y Moral: diferencias entre ambos órdenes.", "1.3 a) Normas de uso y trato social: concepto.", "1.3 b) Normas de uso y trato social: características y diferencias con la norma jurídica."],
-    2: ["2.1. La norma jurídica: Características.", "2.2. Clasificación entre normas jurídicas imperativas y permisivas.", "2.3. Estructura lógica de la norma jurídica."],
-    3: ["3.1 a/b) Vigencia: concepto y momento de la vigencia.", "3.1 c) La derogación de la ley: concepto y clasificación.", "3.2 a) Validez: concepto.", "3.2 b) Fundamentos de la validez del Derecho y presupuestos: las dos principales doctrinas.", "3.3. Eficacia: concepto."],
-    4: ["4.1. Introducción constitucional: principio de inexcusabilidad.", "4.2. Concepto de plenitud hermética del ordenamiento jurídico.", "4.3. Casos en que se observan lagunas del Derecho; solución judicial.", "4.4. Conflicto entre normas jurídicas positivas: criterios de solución judicial."],
-    5: ["5.1. Concepto y tipos de fuente (materiales y formales).", "5.2. Fuentes formales del Derecho: clasificación.", "5.3 a/b/c) La ley: concepto, elementos y características.", "5.3 d) La ley: efectos de la ley en cuanto al espacio.", "5.3 e) La ley: efectos de la ley en cuanto al tiempo."]
-}
-
-CORRECTAS = {
-    "1.1": ("A", "La norma moral regula el fuero interno íntimo y no confiere acción legal a terceros."),
-    "1.2": ("A", "El Derecho cuenta con el aparato público para imponerse; la Moral apela a la conciencia."),
-    "1.3 a)": ("A", "Consisten en modales de convivencia variables no tipificados legalmente de manera previa."),
-    "1.3 b)": ("A", "Las infracciones a normas jurídicas conllevan multas, embargos o cárcel estatal."),
-    "2.1": ("A", "Emana de autoridad externa, rige actos manifestados y confiere facultades correlativas."),
-    "2.2": ("A", "Ejemplo: Es imperativa la prohibición de compraventa entre cónyuges."),
-    "2.3": ("A", "Determina que si ocurre la hipótesis fáctica se debe aplicar el efecto legal coactivo."),
-    "3.1 a/b)": ("A", "La vigencia fija el marco temporal exacto a partir del cual el precepto vincula."),
-    "3.1 c)": ("A", "Expresa lo declara; Tácita opera por incompatibilidad; Parcial remueve incisos."),
-    "3.2 a)": ("A", "La validez implica la pertenencia legítima de la norma a la jerarquía del orden."),
-    "3.2 b)": ("A", "El positivismo atiende al órgano competente; el derecho natural a la moral."),
-    "3.3.": ("A", "La eficacia mide el impacto sociológico real de la norma jurídica en los hechos."),
-    "4.1.": ("A", "El juez está obligado a fallar siempre, debiendo integrar el sistema ante vacíos."),
-    "4.2.": ("A", "Postula que aunque la ley tenga lagunas, el ordenamiento como un todo es hermético."),
-    "4.3.": ("A", "La integración faculta al magistrado a construir la solución desde las bases del sistema."),
-    "4.4.": ("A", "Jerarquía (superior prima), Especialidad (especial), Temporalidad (posterior deroga)."),
-    "5.1.": ("A", "La fuente material es la causa real; la formal es el envase dotado de imperio legal."),
-    "5.2.": ("A", "El sistema reconoce una estructura pluralista de producción de normas."),
-    "5.3 a/b/c)": ("A", "Emana del legislador siguiendo el proceso formal que prescribe la Carta Fundamental."),
-    "5.3 d)": ("A", "Las directrices del Estado obligan a chilenos y extranjeros dentro de las fronteras."),
-    "5.3 e)": ("A", "Protege la certeza jurídica impidiendo sancionar hacia el pasado conductas pretéritas.")
-}
-
-if "sel_cedula" not in st.session_state: st.session_state.sel_cedula = 1
-if "p_idx" not in st.session_state: st.session_state.p_idx = 0
-if "historial_notas" not in st.session_state: st.session_state.historial_notas = {}
-
-st.write("### 👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)")
-
-b1, b2, b3, b4, b5 = st.columns(5)
-with b1:
-    if st.button("Cédula 1", use_container_width=True): st.session_state.sel_cedula = 1; st.session_state.p_idx = 0; st.session_state.rerun()
-with b2:
-    if st.button("Cédula 2", use_container_width=True): st.session_state.sel_cedula = 2; st.session_state.p_idx = 0; st.session_state.rerun()
-with b3:
-    if st.button("Cédula 3", use_container_width=True): st.session_state.sel_cedula = 3; st.session_state.p_idx = 0; st.session_state.rerun()
-with b4:
-    if st.button("Cédula 4", use_container_width=True): st.session_state.sel_cedula = 4; st.session_state.p_idx = 0; st.session_state.rerun()
-with b5:
-    if st.button("Cédula 5", use_container_width=True): st.session_state.sel_cedula = 5; st.session_state.p_idx = 0; st.session_state.rerun()
-
-st.write("---")
-
-c_actual = st.session_state.sel_cedula
-t_items = SUBPUNTOS[c_actual]
-total_p = len(t_items)
-idx = st.session_state.p_idx
-sub_nombre = t_items[idx]
-
-st.success(f"### 📍 {TITULOS[c_actual]}")
-st.write(f"**Interrogación del Subpunto {idx + 1} de {total_p}**")
-st.progress((idx + 1) / total_p)
-st.markdown(f"#### {sub_nombre}")
-
-# BUSCAR CLAVE
-clave_busca = sub_nombre.split(" ")[0].strip()
-
-opciones_radio = [
-    "A) Opción Doctrinal A: Solución formal imperativa y coercible regulada por el ordenamiento chileno.",
-    "B) Opción Doctrinal B: Infracción o postulado ajeno a las bases obligatorias institucionales."
-]
-
-# VARIABLE DE CONTROL DE CORRECCIÓN INDEPENDIENTE POR PREGUNTA
-clave_corr = f"corr_{c_actual}_{idx}"
-if clave_corr not in st.session_state: st.session_state[clave_corr] = None
-
-seleccion = st.radio("Seleccione la respuesta del alumno:", options=opciones_radio, index=None, key=f"ev_{c_actual}_{idx}")
-
-st.text_area("Anotaciones y comentarios de la comisión:", height=70, key=f"nt_{c_actual}_{idx}")
-
-if st.button("📝 Evaluar Respuesta", use_container_width=True):
-    if seleccion is None:
-        st.warning("Por favor, marque una opción antes de calificar.")
-    else:
-        st.session_state[clave_corr] = "A" if "A)" in seleccion else "B"
-        st.rerun()
-
-# DESPLIEGUE PERSISTENTE DE LA CORRECCIÓN
-if st.session_state[clave_corr] is not None:
-    res_data = CORRECTAS.get(clave_busca, ("A", "Fundamento del temario oficial."))
-    if st.session_state[clave_corr] == res_data[0]:
-        st.success("🎯 ¡CORRECTO!")
-    else:
-        st.error("❌ INCORRECTO.")
-        st.info(f"**Respuesta Correcta Esperada:**\n{opciones_radio[0] if res_data[0]=='A' else opciones_radio[1]}")
-    st.warning(f"**Fundamento Técnico (Ratio Iuris):**\n{res_data[1]}")
-
-# EVALUACIÓN DE NOTA FINAL AL LLEGAR AL ÚLTIMO SUBPUNTO
-if idx == total_p - 1:
-    st.write("---")
-    st.write("### 📊 CIERRE DE EVALUACIÓN DE LA CÉDULA")
-    if st.button("🏁 CALCULACIÓN DE NOTA INSTITUCIONAL", type="primary", use_container_width=True):
-        correctas = 0
-        for i in range(total_p):
-            sub_c = t_items[i].split(" ")[0].strip()
-            data_p = CORRECTAS.get(sub_c, ("A", ""))
-            if st.session_state.get(f"corr_{c_actual}_{i}") == data_p[0]:
-                correctas += 1
-        
-        porcentaje = (correctas / total_p) * 100
-        if porcentaje >= 60:
-            nota = 4.0 + (porcentaje - 60) * (3.0 / 40)
-        else:
-            nota = 1.0 + porcentaje * (3.0 / 60)
-        st.session_state.historial_notas[c_actual] = round(nota, 1)
-
-if c_actual in st.session_state.historial_notas:
-    n_final = st.session_state.historial_notas[c_actual]
-    if n_final >= 4.0:
-        st.balloons()
-        st.metric(label="⭐⭐ NOTA FINAL CÉDULA ⭐⭐", value=f"{n_final}", delta="APROBADO")
-    else:
-        st.metric(label="❌ NOTA FINAL CÉDULA ❌", value=f"{n_final}", delta="REPROBADO", delta_color="inverse")
-
-st.write("")
-n1, n2 = st.columns(2)
-with n1:
-    if st.button("⬅️ Anterior Subpunto", use_container_width=True):
-        if st.session_state.p_idx > 0:
-            st.session_state.p_idx -= 1
-            st.rerun()
-with n2:
-    if st.button("➡️ Siguiente Subpunto", use_container_width=True):
-        if st.session_state.p_idx < total_p - 1:
-            st.session_state.p_idx += 1
-            st.rerun()
+# CONTENIDO EXHAUSTIVO Y VARIABLES CRUZADAS VERDADERAS (Escala Dinámica A/B)
+ESTRUCTURA_EXAMEN = {
+    1: {
+        "preguntas": [
+            {
+                "sub": "1.1", "preg": "¿Cuáles son las características esenciales que aíslan a la norma moral?",
+                "opts": ["A) Es bilateral, de fuero externo, heterónoma y enteramente coercible por el Estado.", "B) Es unilateral, de fuero interno, autónoma en su origen e incoercible fáctico."],
+                "ok": "B", "fund": "La moral obliga solo la conciencia del sujeto y carece de imperio coactivo institucional."
+            },
+            {
+                "sub": "1.2", "preg": "Derecho y Moral: ¿Cuál es el paralelo formal según su ámbito de aplicación?",
+                "opts": ["A) El Derecho regula actos manifestados (exterior); la Moral regula la pureza de la intención (interior).", "B) La Moral exige la ejecución material del acto; al Derecho le importa la aceptación íntima."],
+                "ok": "A", "fund": "Cumplir un contrato por miedo a la multa es válido para el Derecho, pero carece de mérito moral."
+            },
+            {
+                "sub": "1.3 a)", "preg": "¿Cuál es el concepto doctrinal que define a los usos o normas de trato social?",
+                "opts": ["A) Son imperativos categóricos impersonales dictados por los tribunales en lo civil.", "B) Son pautas de decoro, cortesía y urbanidad establecidas de forma difusa por la colectividad."],
+                "ok": "B", "fund": "Consisten en modales o costumbres de convivencia común que varían según el grupo social."
+            },
+            {
+                "sub": "1.3 b)", "preg": "¿Qué diferencia sustantiva separa la sanción de un uso social de la norma jurídica?",
+                "opts": ["A) El uso social acarrea rechazo, reprobación o aislamiento; la norma jurídica conlleva castigo del Estado.", "B) El uso social aplica penas corporales de cárcel; el Derecho acarrea remordimiento íntimo."],
+                "ok": "A", "fund": "La transgresión jurídica activa multas o prisiones; el uso social solo el reproche del entorno."
+            }
+        ]
+    },
+    2: {
+        "preguntas": [
+            {
+                "sub": "2.1", "preg": "¿Cuáles son las notas características e indispensables de la norma jurídica?",
+                "opts": ["A) Autonomía de la conciencia, unilateralidad absoluta e incoercibilidad civil general.", "B) Heteronomía legislativa, exterioridad conductual, bilateralidad y coercibilidad potencial."],
+                "ok": "B", "fund": "Nace de una potestad externa, rige actos manifestados y otorga facultad correlativa a un tercero."
+            },
+            {
+                "sub": "2.2", "preg": "Frente al margen de la autonomía de la voluntad, ¿cómo operan las normas imperativas y permisivas?",
+                "opts": ["A) Las Imperativas mandan o prohíben sin admitir pacto; las Permisivas confieren una opción legítima.", "B) Las Imperativas otorgan una opción renunciable; las Permisivas imponen nulidades absolutas directas."],
+                "ok": "A", "fund": "Es imperativa la prohibición de venta entre cónyuges; permisiva la facultad del dueño de enajenar."
+            },
+            {
+                "sub": "2.3", "preg": "¿Cuál es la estructura lógica interna de una norma jurídica según la teoría tradicional?",
+                "opts": ["A) Se compone como un juicio hipotético estructurado en un Supuesto de Hecho y una Consecuencia.", "B) Consiste en una declaración política abstracta exenta de consecuencias coactivas puntuales."],
+                "ok": "A", "fund": "Determina que ante la realización fáctica de la hipótesis legal se gatilla el efecto punitivo."
+            }
+        ]
+    },
+    3: {
+        "preguntas": [
+            {
+                "sub": "3.1 a/b", "preg": "¿Qué es la vigencia de una norma y cuándo principia por regla general en Chile?",
+                "opts": ["A) Es el valor ético intrínseco de la norma; principia desde su aprobación unánime por el Senado.", "B) Es la fuerza obligatoria formal de la ley; principia desde su publicación en el Diario Oficial."],
+                "ok": "B", "fund": "Establece el marco temporal exacto a partir del cual el precepto positivo obliga a los habitantes."
+            },
+            {
+                "sub": "3.1 c)", "preg": "En relación a la pérdida de vigencia, ¿cómo opera la derogación Tácita de una ley?",
+                "opts": ["A) Cuando la nueva ley contiene disposiciones que no pueden conciliarse con las de la ley anterior.", "B) Cuando el nuevo texto legal declara de manera explícita qué artículos del pasado quedan abolidos."],
+                "ok": "A", "fund": "La derogación tácita se fundamenta en la incompatibilidad lógica entre el precepto antiguo y el nuevo."
+            },
+            {
+                "sub": "3.2 a)", "preg": "¿Cómo se conceptualiza de forma técnica la validez dentro del Derecho positivo?",
+                "opts": ["A) Es la existencia formal y obligatoriedad de la norma fundada en su conformidad con las reglas superiores.", "B) Representa el grado material de cumplimiento sociológico que exhibe espontáneamente la calle."],
+                "ok": "A", "fund": "Implica que la norma pertenece legítimamente al orden jerárquico por emanar del órgano competente."
+            },
+            {
+                "sub": "3.2 b)", "preg": "¿Qué presupuesto sustenta la validez normativa según la doctrina Iuspositivista?",
+                "opts": ["A) La concordancia moral y sintonía intrínseca de los artículos con los ideales de justicia natural.", "B) La regularidad formal de su producción bajo las competencias y procesos que dicta el Estado."],
+                "ok": "B", "fund": "El positivismo opera bajo la separación conceptual tajante entre la validez del Derecho y la Moral."
+            },
+            {
+                "sub": "3.3", "preg": "¿Qué representa técnicamente la eficacia de las leyes en el orden social?",
+                "opts": ["A) El grado fáctico de acatamiento por los ciudadanos y de aplicación real por los jueces.", "B) La correcta protocolización y archivo administrativo de los borradores en el Congreso."],
+                "ok": "A", "fund": "Mide el plano del hecho empírico: si la directriz legal es efectivamente obedecida en la práctica."
+            }
+        ]
+    },
+    4: {
+        "preguntas": [
+            {
+                "sub": "4.1", "preg": "¿Qué deber impone el principio de inexcusabilidad a la magistratura (Art. 76 CPR)?",
+                "opts": ["A) Autoriza a rechazar demandas si los códigos sustantivos poseen redacciones confusas o ambiguas.", "B) Obliga a los jueces a resolver conflictos de su competencia, aun ante la falta de ley expresa aplicable."],
+                "ok": "B", "fund": "El juez no puede negarse a administrar justicia; ante vacíos debe integrar mediante la equidad natural."
+            },
+            {
+                "sub": "4.2", "preg": "¿Qué postula técnicamente el concepto dogmático de plenitud hermética del ordenamiento?",
+                "opts": ["A) El ordenamiento como un todo es completo y sistemático, proveyendo siempre una solución jurídica.", "B) Los textos legislativos individuales redactados por las cámaras carecen por completo de vacíos."],
+                "ok": "A", "fund": "Distingue las lagunas de la ley (vacíos en códigos) de la autosuficiencia del sistema integral."
+            },
+            {
+                "sub": "4.3", "preg": "¿Cómo procede judicialmente la solución de una laguna jurídica por vía de integración?",
+                "opts": ["A) El magistrado llena el vacío legal recurriendo a la analogía, principios generales y equidad natural.", "B) Se archivan los expedientes y se suspende el proceso remitiendo los antecedentes al Parlamento."],
+                "ok": "A", "fund": "La integración faculta al juez a extraer la regla de fallo desde las premisas racionales del sistema."
+            },
+            {
+                "sub": "4.4", "preg": "Frente a antinomias normativas vigentes, ¿cuál es el orden clásico de los criterios de solución?",
+                "opts": ["A) Criterio de Jerarquía (norma superior), Especialidad (norma específica) y Temporalidad (posterior).", "B) Ponderación económica del daño patrimonial, antigüedad del tribunal y residencia fiscal."],
+                "ok": "A", "fund": "Reglas lógicas fundamentales de la hermenéutica para mantener la coherencia y unidad del Derecho."
+            }
+        ]
+    },
+    5: {
+        "preguntas": [
+            {
+                "sub": "5.1", "preg": "¿Cuál es la distinción científica entre Fuentes Materiales y Fuentes Formales?",
+                "opts": ["A) Materiales son factores de la realidad social; Formales son los procedimientos obligatorios (ley).", "B) Materiales aluden a libros escritos; Formales a ceremonias y discursos solemnes del Congreso."],
