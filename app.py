@@ -3,7 +3,7 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# 1. ESTILOS CSS LIMPIOS 
+# 1. ESTILOS CSS LIMPIOS Y CONTROL DE MARCOS
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
@@ -11,8 +11,8 @@ st.markdown("""
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
     
-    /* Ocultar visualmente el input técnico que procesa el teclado */
-    div.stTextInput { position: absolute; top: -9999px; left: -9999px; display: none !important; }
+    /* Eliminar el molesto borde de enfoque nativo de los botones de Streamlit */
+    button:focus { outline: none !important; box-shadow: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -55,48 +55,49 @@ if "pregunta_index" not in st.session_state:
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 4. CAPTURA DE TECLADO MEDIANTE INPUT INVISIBLE NATIVO
-def procesar_teclado_nativo():
-    evento = st.session_state.captura_teclado_secreta
-    if evento:
-        if evento == "backspace":
-            if st.session_state.fase == "SELECCION_CEDULA":
-                st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
-            elif st.session_state.fase == "SUBPREGUNTAS":
-                if st.session_state.pregunta_index > 0:
-                    st.session_state.pregunta_index -= 1
-                else:
-                    st.session_state.fase = "SELECCION_CEDULA"
-                    st.session_state.pregunta_index = 0
-                    
-        elif evento == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
-            st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
-            
-        elif evento == "enter":
-            if st.session_state.fase == "SELECCION_CEDULA":
-                st.session_state.fase = "SUBPREGUNTAS"
+# 4. RECEPTOR DE URL CON FORZADO DE ESTADO (MÉTODO 100% INMUNE A ERRORES DE ENFOQUE)
+query_params = st.query_params
+if "tecla" in query_params:
+    evento = query_params["tecla"]
+    st.query_params.clear()  # Limpiar inmediatamente el estado
+    
+    if evento == "backspace":
+        if st.session_state.fase == "SELECCION_CEDULA":
+            # Ciclo infinito perfecto en reversa (1 -> 5 -> 4 -> 3 -> 2 -> 1)
+            st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
+        elif st.session_state.fase == "SUBPREGUNTAS":
+            if st.session_state.pregunta_index > 0:
+                st.session_state.pregunta_index -= 1
+            else:
+                st.session_state.fase = "SELECCION_CEDULA"
                 st.session_state.pregunta_index = 0
-                st.session_state.respuestas_alumno = {}
-            elif st.session_state.fase == "SUBPREGUNTAS":
-                preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
-                if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
-                    st.session_state.pregunta_index += 1
-                else:
-                    st.session_state.fase = "EVALUACION_TERMINADA"
+                
+    elif evento == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
+        # Ciclo infinito perfecto hacia adelante (1 -> 2 -> 3 -> 4 -> 5 -> 1)
+        st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
+        
+    elif evento == "enter":
+        if st.session_state.fase == "SELECCION_CEDULA":
+            st.session_state.fase = "SUBPREGUNTAS"
+            st.session_state.pregunta_index = 0
+            st.session_state.respuestas_alumno = {}
+        elif st.session_state.fase == "SUBPREGUNTAS":
+            preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
+            if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
+                st.session_state.pregunta_index += 1
+            else:
+                st.session_state.fase = "EVALUACION_TERMINADA"
 
-# Crear el input técnico de intercambio
-st.text_input("Teclado Técnico", key="captura_teclado_secreta", on_change=procesar_teclado_nativo)
-
-# Pasar la fase actual al DOM para que JS sepa qué teclas permitir
+# Anclaje para pasarle la fase actual de la App a JavaScript de forma oculta
 st.markdown(f'<div id="estado-fase" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-
-# 5. INTERFAZ GRÁFICA SUPERIOR
+# 5. INTERFAZ GRÁFICA SUPERIOR (Sincronización Total de Color)
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
 
 cols_superiores = st.columns(5)
 for i in range(1, 6):
+    # Pintar de rojo ("primary") ÚNICAMENTE la cédula activa, asegurando consistencia visual
     tipo_boton = "primary" if st.session_state.cedula_actual == i else "secondary"
     if cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type=tipo_boton, use_container_width=True):
         st.session_state.cedula_actual = i
@@ -107,7 +108,6 @@ st.write("---")
 # Cuadro descriptivo de la Cédula activa
 contenido_cedula = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
 st.markdown(f'<div class="cuadro-cedula">📍 {contenido_cedula}</div>', unsafe_allow_html=True)
-
 
 # 6. MÓDULOS DE RENDERIZADO DE EVALUACIÓN
 if st.session_state.fase == "SUBPREGUNTAS":
@@ -123,6 +123,7 @@ if st.session_state.fase == "SUBPREGUNTAS":
     
     opcion_guardada = st.session_state.respuestas_alumno.get(idx, None)
     
+    # index=None obliga a que ninguna opción aparezca premarcada
     seleccion = st.radio(
         "Selecciona la alternativa correcta:",
         options=range(len(pregunta_data["alternativas"])),
@@ -164,9 +165,8 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-
-# 7. INYECCIÓN DE JAVASCRIPT CON INTERCAMBIO DE INPUT DE ALTA VELOCIDAD
-js_captura_nativa = (
+# 7. INYECCIÓN DE JAVASCRIPT GLOBAL MEDIANTE URL-RELOAD DIRECTO
+js_revolucionario = (
     '<script>'
     'const doc = window.parent.document;'
     'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }'
@@ -181,12 +181,9 @@ js_captura_nativa = (
     '    else if (e.key === " " && faseActual === "SELECCION_CEDULA") { comando = "espacio"; }'
     '    else if (e.key === "Enter") { comando = "enter"; }'
     '    if (comando !== "") {'
-    '      const inputTecnico = doc.querySelector("input[data-testid=\'stTextInputInput\']");'
-    '      if (inputTecnico) {'
-    '        inputTecnico.value = comando;'
-    '        inputTecnico.dispatchEvent(new Event("change", { bubbles: true }));'
-    '        inputTecnico.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));'
-    '      }'
+    '      const url = new URL(window.parent.location.href);'
+    '      url.searchParams.set("tecla", comando);'
+    '      window.parent.location.href = url.toString();'  # Forzar recarga limpia
     '    }'
     '  }'
     '};'
@@ -194,4 +191,4 @@ js_captura_nativa = (
     '</script>'
 )
 
-st.components.v1.html(js_captura_nativa, height=0)
+st.components.v1.html(js_revolucionario, height=0)
