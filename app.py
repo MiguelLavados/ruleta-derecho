@@ -13,7 +13,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 1. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS (Se añadieron preguntas reales a todas)
+# 1. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS
 DATOS_CEDULAS = {
     1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
     2: "CÉDULA 2.- Fuentes del Derecho y la Ley.",
@@ -53,7 +53,7 @@ SUBPREGUNTAS = {
 if "cedula_actual" not in st.session_state:
     st.session_state.cedula_actual = 1
 if "fase" not in st.session_state:
-    st.session_state.fase = "SELECCION_CEDULA"  # SELECCION_CEDULA, SUBPREGUNTAS, EVALUACION_TERMINADA
+    st.session_state.fase = "SELECCION_CEDULA"
 if "pregunta_index" not in st.session_state:
     st.session_state.pregunta_index = 0
 if "respuestas_alumno" not in st.session_state:
@@ -64,7 +64,6 @@ def js_accion_siguiente():
     if st.session_state.fase == "SELECCION_CEDULA":
         if st.session_state.cedula_actual < 5:
             st.session_state.cedula_actual += 1
-            
     elif st.session_state.fase == "SUBPREGUNTAS":
         preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
         if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
@@ -76,7 +75,6 @@ def js_accion_anterior():
     if st.session_state.fase == "SELECCION_CEDULA":
         if st.session_state.cedula_actual > 1:
             st.session_state.cedula_actual -= 1
-            
     elif st.session_state.fase == "SUBPREGUNTAS":
         if st.session_state.pregunta_index > 0:
             st.session_state.pregunta_index -= 1
@@ -95,7 +93,6 @@ def js_accion_enter_cedula():
 # ANCLA OCULTA PARA PASARLE LA FASE ACTUAL A JAVASCRIPT
 st.markdown(f'<div id="fase-app" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-
 # 4. INTERFAZ GRÁFICA
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
@@ -113,7 +110,6 @@ st.write("---")
 # Mostrar cuadro de la Cédula Activa
 contenido_cedula = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
 st.markdown(f'<div class="cuadro-cedula">📍 {contenido_cedula}</div>', unsafe_allow_html=True)
-
 
 # 5. ZONA CENTRAL DINÁMICA
 if st.session_state.fase == "SUBPREGUNTAS":
@@ -170,50 +166,46 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-
-# 6. ENMASCARAMIENTO INMUTABLE (LOS BOTONES NUNCA MÁS SE VERÁN)
+# 6. ENMASCARAMIENTO INMUTABLE Ocultamiento total de botones
 st.markdown('<div style="display: none !important; visibility: hidden; height: 0px; overflow: hidden;">', unsafe_allow_html=True)
 st.button("InvisibleAnt", key="btn_js_ant", on_click=js_accion_anterior)
 st.button("InvisibleSig", key="btn_js_sig", on_click=js_accion_siguiente)
 st.button("InvisibleEnt", key="btn_js_ent", on_click=js_accion_enter_cedula)
 st.markdown('</div>', unsafe_allow_html=True)
 
-
-# 7. SCRIPT DE JAVASCRIPT CON CONTROL DE FASES INTELIGENTE
+# 7. SCRIPT DE JAVASCRIPT CORREGIDO
 st.components.v1.html(
-    """
-    <script>
+    """<script>
     const doc = window.parent.document;
-    
     if(window.parent._keyHandler) {
         doc.removeEventListener('keydown', window.parent._keyHandler);
     }
-
     window.parent._keyHandler = function(e) {
         const botones = Array.from(doc.querySelectorAll('button'));
         const btnAnt = botones.find(b => b.innerText.includes('InvisibleAnt'));
         const btnSig = botones.find(b => b.innerText.includes('InvisibleSig'));
         const btnEnt = botones.find(b => b.innerText.includes('InvisibleEnt'));
-        
-        // Obtener la fase exacta del backend desde el contenedor seguro
         const contenedorFase = doc.getElementById('fase-app');
         const faseActual = contenedorFase ? contenedorFase.getAttribute('data-fase') : "SELECCION_CEDULA";
 
         if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {
             e.preventDefault(); 
-            
-            // ACCIÓN BACKSPACE: Retrocede en cualquier pantalla
             if (e.key === 'Backspace' && btnAnt) {
                 btnAnt.click();
             }
-            
-            // ACCIÓN ESPACIO: Solo navega entre pestañas si no ha empezado el examen
             if (e.key === ' ' && faseActual === "SELECCION_CEDULA" && btnSig) {
                 btnSig.click();
             }
-            
-            // ACCIÓN ENTER INTELIGENTE:
             if (e.key === 'Enter') {
                 if (faseActual === "SELECCION_CEDULA" && btnEnt) {
-                    btnEnt.click(); // Abre las subpreguntas sin saltarse pasos
+                    btnEnt.click();
                 } else if (faseActual === "SUBPREGUNTAS" && btnSig) {
+                    btnSig.click();
+                }
+            }
+        }
+    };
+    doc.addEventListener('keydown', window.parent._keyHandler);
+    </script>""",
+    height=0,
+)
