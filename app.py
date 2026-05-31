@@ -3,7 +3,7 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# Estilos visuales adaptados
+# Estilos visuales de la interfaz
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
@@ -13,7 +13,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 1. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS
+# 1. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS (Se añadieron preguntas reales a todas)
 DATOS_CEDULAS = {
     1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
     2: "CÉDULA 2.- Fuentes del Derecho y la Ley.",
@@ -22,19 +22,18 @@ DATOS_CEDULAS = {
     5: "CÉDULA 5.- Sujetos de Derecho y Personas Naturales."
 }
 
-# Subpreguntas de prueba para TODAS las cédulas (para que no fallen al seleccionarlas)
 SUBPREGUNTAS = {
     1: [
-        {"enunciado": "Pregunta de prueba Cédula 1", "alternativas": ["A) Opción 1", "B) Opción 2"], "correcta": 0}
+        {"enunciado": "¿Cuál es la principal sanción ante el incumplimiento de una norma jurídica?", "alternativas": ["A) El remordimiento de conciencia.", "B) La exclusión social del grupo.", "C) La coacción del Estado (sanción legal organizada)."], "correcta": 2}
     ],
     2: [
-        {"enunciado": "Pregunta de prueba Cédula 2", "alternativas": ["A) Opción 1", "B) Opción 2"], "correcta": 0}
+        {"enunciado": "¿Qué tipo de fuente del derecho corresponde a la jurisprudencia?", "alternativas": ["A) Fuente formal material.", "B) Fuente formal indirecta.", "C) Fuente histórica."], "correcta": 1}
     ],
     3: [
-        {"enunciado": "Pregunta de prueba Cédula 3", "alternativas": ["A) Opción 1", "B) Opción 2"], "correcta": 0}
+        {"enunciado": "La interpretación de la ley realizada por el legislador se denomina:", "alternativas": ["A) Interpretación doctrinal.", "B) Interpretación auténtica o legal.", "C) Interpretación judicial."], "correcta": 1}
     ],
     4: [
-        {"enunciado": "Pregunta de prueba Cédula 4", "alternativas": ["A) Opción 1", "B) Opción 2"], "correcta": 0}
+        {"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su aprobación en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}
     ],
     5: [
         {
@@ -54,13 +53,13 @@ SUBPREGUNTAS = {
 if "cedula_actual" not in st.session_state:
     st.session_state.cedula_actual = 1
 if "fase" not in st.session_state:
-    st.session_state.fase = "SELECCION_CEDULA"
+    st.session_state.fase = "SELECCION_CEDULA"  # SELECCION_CEDULA, SUBPREGUNTAS, EVALUACION_TERMINADA
 if "pregunta_index" not in st.session_state:
     st.session_state.pregunta_index = 0
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 3. FUNCIONES DE LOGICA DE NAVEGACIÓN
+# 3. CONTROLLER: ACCIONES DE NAVEGACIÓN
 def js_accion_siguiente():
     if st.session_state.fase == "SELECCION_CEDULA":
         if st.session_state.cedula_actual < 5:
@@ -93,6 +92,10 @@ def js_accion_enter_cedula():
             st.session_state.pregunta_index = 0
             st.session_state.respuestas_alumno = {}
 
+# ANCLA OCULTA PARA PASARLE LA FASE ACTUAL A JAVASCRIPT
+st.markdown(f'<div id="fase-app" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
+
+
 # 4. INTERFAZ GRÁFICA
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
@@ -111,7 +114,8 @@ st.write("---")
 contenido_cedula = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
 st.markdown(f'<div class="cuadro-cedula">📍 {contenido_cedula}</div>', unsafe_allow_html=True)
 
-# 5. RENDERIZADO SEGÚN LA FASE
+
+# 5. ZONA CENTRAL DINÁMICA
 if st.session_state.fase == "SUBPREGUNTAS":
     lista_preguntas = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
     idx = st.session_state.pregunta_index
@@ -166,32 +170,21 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 6. ENMASCARAMIENTO ABSOLUTO (OCULTA LAS VENTANITAS MOLESTAS)
-st.markdown("""
-<style>
-    .ocultar-bloque-botones {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0px !important;
-        overflow: hidden !important;
-    }
-</style>
-""", unsafe_allow_html=True)
 
-# Encapsulado rígido para que los botones actúen pero no ocupen espacio ni se rendericen en pantalla
-st.markdown('<div class="ocultar-bloque-botones">', unsafe_allow_html=True)
+# 6. ENMASCARAMIENTO INMUTABLE (LOS BOTONES NUNCA MÁS SE VERÁN)
+st.markdown('<div style="display: none !important; visibility: hidden; height: 0px; overflow: hidden;">', unsafe_allow_html=True)
 st.button("InvisibleAnt", key="btn_js_ant", on_click=js_accion_anterior)
 st.button("InvisibleSig", key="btn_js_sig", on_click=js_accion_siguiente)
 st.button("InvisibleEnt", key="btn_js_ent", on_click=js_accion_enter_cedula)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# 7. INYECCIÓN REVISADA DE JAVASCRIPT GLOBAL
+
+# 7. SCRIPT DE JAVASCRIPT CON CONTROL DE FASES INTELIGENTE
 st.components.v1.html(
     """
     <script>
     const doc = window.parent.document;
     
-    // Remover escuchadores previos si existen para evitar doble gatillado
     if(window.parent._keyHandler) {
         doc.removeEventListener('keydown', window.parent._keyHandler);
     }
@@ -201,28 +194,26 @@ st.components.v1.html(
         const btnAnt = botones.find(b => b.innerText.includes('InvisibleAnt'));
         const btnSig = botones.find(b => b.innerText.includes('InvisibleSig'));
         const btnEnt = botones.find(b => b.innerText.includes('InvisibleEnt'));
+        
+        // Obtener la fase exacta del backend desde el contenedor seguro
+        const contenedorFase = doc.getElementById('fase-app');
+        const faseActual = contenedorFase ? contenedorFase.getAttribute('data-fase') : "SELECCION_CEDULA";
 
         if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {
-            // Permitir navegación nativa dentro del componente de opciones de Streamlit
-            if (doc.activeElement && doc.activeElement.type === 'radio') {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (btnSig) btnSig.click();
-                }
-            } else {
-                e.preventDefault();
-                if (e.key === 'Backspace' && btnAnt) btnAnt.click();
-                if (e.key === ' ' && btnSig) btnSig.click();
-                if (e.key === 'Enter') {
-                    if (btnEnt) btnEnt.click();
-                    if (btnSig) btnSig.click();
-                }
+            e.preventDefault(); 
+            
+            // ACCIÓN BACKSPACE: Retrocede en cualquier pantalla
+            if (e.key === 'Backspace' && btnAnt) {
+                btnAnt.click();
             }
-        }
-    };
-
-    doc.addEventListener('keydown', window.parent._keyHandler);
-    </script>
-    """,
-    height=0,
-)
+            
+            // ACCIÓN ESPACIO: Solo navega entre pestañas si no ha empezado el examen
+            if (e.key === ' ' && faseActual === "SELECCION_CEDULA" && btnSig) {
+                btnSig.click();
+            }
+            
+            // ACCIÓN ENTER INTELIGENTE:
+            if (e.key === 'Enter') {
+                if (faseActual === "SELECCION_CEDULA" && btnEnt) {
+                    btnEnt.click(); // Abre las subpreguntas sin saltarse pasos
+                } else if (faseActual === "SUBPREGUNTAS" && btnSig) {
