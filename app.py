@@ -3,13 +3,16 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# 1. ESTILOS CSS LIMPIOS (Sin botones basura que ocultar)
+# 1. ESTILOS CSS LIMPIOS 
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
     .cuadro-cedula { background-color: #E8F5E9; padding: 20px; border-radius: 5px; border-left: 5px solid #2E7D32; color: #1B5E20; font-size: 20px; font-weight: bold; margin-bottom: 20px;}
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
+    
+    /* Ocultar visualmente el input técnico que procesa el teclado */
+    div.stTextInput { position: absolute; top: -9999px; left: -9999px; display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -52,40 +55,40 @@ if "pregunta_index" not in st.session_state:
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 4. RECEPTOR DE COMANDOS DE TECLADO DESDE EL COMPONENTE WEB JS
-# Recibe las pulsaciones de teclas guardadas en la URL de forma totalmente transparente
-query_params = st.query_params
-if "tecla" in query_params:
-    tecla_pulsada = query_params["tecla"]
-    st.query_params.clear() # Limpiar la cola inmediatamente para que no se duplique el comando
-    
-    # Lógica de navegación pura en Python (Sin clics fantasmas)
-    if tecla_pulsada == "backspace":
-        if st.session_state.fase == "SELECCION_CEDULA":
-            st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
-        elif st.session_state.fase == "SUBPREGUNTAS":
-            if st.session_state.pregunta_index > 0:
-                st.session_state.pregunta_index -= 1
-            else:
-                st.session_state.fase = "SELECCION_CEDULA"
+# 4. CAPTURA DE TECLADO MEDIANTE INPUT INVISIBLE NATIVO
+# JavaScript inyectará las pulsaciones de teclado en este cuadro de texto oculto, gatillando el refresco de Streamlit al instante
+def procesar_teclado_nativo():
+    evento = st.session_state.captura_teclado_secreta
+    if evento:
+        if evento == "backspace":
+            if st.session_state.fase == "SELECCION_CEDULA":
+                st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
+            elif st.session_state.fase == "SUBPREGUNTAS":
+                if st.session_state.pregunta_index > 0:
+                    st.session_state.pregunta_index -= 1
+                else:
+                    st.session_state.fase = "SELECCION_CEDULA"
+                    st.session_state.pregunta_index = 0
+                    
+        elif evento == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
+            st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
+            
+        elif evento == "enter":
+            if st.session_state.fase == "SELECCION_CEDULA":
+                st.session_state.fase = "SUBPREGUNTAS"
                 st.session_state.pregunta_index = 0
-                
-    elif tecla_pulsada == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
-        st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
-        
-    elif tecla_pulsada == "enter":
-        if st.session_state.fase == "SELECCION_CEDULA":
-            st.session_state.fase = "SUBPREGUNTAS"
-            st.session_state.pregunta_index = 0
-            st.session_state.respuestas_alumno = {}
-        elif st.session_state.fase == "SUBPREGUNTAS":
-            preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
-            if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
-                st.session_state.pregunta_index += 1
-            else:
-                st.session_state.fase = "EVALUACION_TERMINADA"
+                st.session_state.respuestas_alumno = {}
+            elif st.session_state.fase == "SUBPREGUNTAS":
+                preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
+                if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
+                    st.session_state.pregunta_index += 1
+                else:
+                    st.session_state.fase = "EVALUACION_TERMINADA"
 
-# Pasar la fase actual de la App a una etiqueta HTML oculta leída por JS
+# Crear el input técnico de intercambio
+st.text_input("Teclado Técnico", key="captura_teclado_secreta", on_change=procesar_teclado_nativo)
+
+# Pasar la fase actual al DOM para que JS sepa qué teclas permitir
 st.markdown(f'<div id="estado-fase" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
 
@@ -93,7 +96,6 @@ st.markdown(f'<div id="estado-fase" data-fase="{st.session_state.fase}" style="d
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
 
-# Pestañas de Cédulas superiores
 cols_superiores = st.columns(5)
 for i in range(1, 6):
     tipo_boton = "primary" if st.session_state.cedula_actual == i else "secondary"
@@ -120,7 +122,6 @@ if st.session_state.fase == "SUBPREGUNTAS":
     st.markdown(f'<div class="cuadro-pregunta">❓ {pregunta_data["enunciado"]}</div>', unsafe_allow_html=True)
     st.write("")
     
-    # Recuperar índice si ya respondió antes
     opcion_guardada = st.session_state.respuestas_alumno.get(idx, None)
     
     seleccion = st.radio(
@@ -130,7 +131,6 @@ if st.session_state.fase == "SUBPREGUNTAS":
         index=opcion_guardada,
         key=f"radio_actual_{st.session_state.cedula_actual}_{idx}"
     )
-    # Guardar en memoria inmediatamente al cambiar de opción
     st.session_state.respuestas_alumno[idx] = seleccion
 
 elif st.session_state.fase == "EVALUACION_TERMINADA":
@@ -144,9 +144,8 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
             buenas += 1
             
     total_p = len(lista_preguntas)
-    malas = total_p - buenas
+    malas = total_p - whites = total_p - buenas
     
-    # Fórmula de nota estándar chilena al 60% de exigencia
     if total_p > 0:
         porcentaje = buenas / total_p
         if porcentaje >= 0.6:
@@ -167,9 +166,8 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.respuestas_alumno = {}
 
 
-# 7. INYECCIÓN DE CAPTURA DE TECLADO INLINE DIRECTO (Cero fallos de sintaxis)
-# Se encarga de capturar las teclas y notificarlas directo a la URL de forma asíncrona
-js_captura_limpia = (
+# 7. INYECCIÓN DE JAVASCRIPT CON INTERCAMBIO DE INPUT DE ALTA VELOCIDAD
+js_captura_nativa = (
     '<script>'
     'const doc = window.parent.document;'
     'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }'
@@ -184,16 +182,13 @@ js_captura_limpia = (
     '    else if (e.key === " " && faseActual === "SELECCION_CEDULA") { comando = "espacio"; }'
     '    else if (e.key === "Enter") { comando = "enter"; }'
     '    if (comando !== "") {'
-    '      const url = new URL(window.parent.location.href);'
-    '      url.searchParams.set("tecla", comando);'
-    '      window.parent.history.replaceState({}, "", url.toString());'
-    '      const btnRefresh = doc.querySelector(".stActionButton");'
-    '      if (btnRefresh) { btnRefresh.click(); }'
-    '      else { window.parent.location.reload(); }'
+    '      const inputTecnico = doc.querySelector("input[data-testid=\'stTextInputInput\']");'
+    '      if (inputTecnico) {'
+    '        // Insertar el comando en el input oculto y forzar el evento nativo de Streamlit'
+    '        inputTecnico.value = comando;'
+    '        inputTecnico.dispatchEvent(new Event("change", { bubbles: true }));'
+    '        inputTecnico.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));'
+    '      }'
     '    }'
     '  }'
     '};'
-    'doc.addEventListener("keydown", window.parent._keyHandler);'
-    '</script>'
-)
-
