@@ -1,119 +1,99 @@
 import streamlit as st
-import datetime
 
-st.set_page_config(page_title="EXAMINADOR", layout="centered")
+# Configuración de la página
+st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-if datetime.date.today() > datetime.date(2026, 6, 30):
-    st.error("La aplicación ha caducado.")
-    st.stop()
+# Estilos visuales rápidos para asemejar tu interfaz
+st.markdown("""
+    <style>
+    .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+    .cuadro-cedula { background-color: #E8F5E9; padding: 20px; border-radius: 5px; border-left: 5px solid #2E7D32; color: #1B5E20; font-size: 20px; font-weight: bold; }
+    .titulo-controles { font-size: 18px; font-weight: bold; margin-top: 30px; margin-bottom: 10px; }
+    </style>
+""", unsafe_allow_html=True)
 
-st.markdown("<h2 style='text-align:center; color: #1E3A8A;'>EXAMINADOR DE TEORÍA DEL DERECHO</h2>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align:center; color: #4B5563;'>Profesor Jaime Esponda</h4>", unsafe_allow_html=True)
-
-with st.sidebar:
-    st.caption("🛠️ **Soporte Técnico:**\nMétodo Cognuss II\nMiguel López Lavados")
-
-st.divider()
-
-if "sel_cedula" not in st.session_state: st.session_state["sel_cedula"] = 1
-if "p_idx" not in st.session_state: st.session_state["p_idx"] = 0
-if "historial_notas" not in st.session_state: st.session_state["historial_notas"] = {}
-
-TITULOS = {
+# 1. Base de datos simulada de tus Cédulas
+DATOS_CEDULAS = {
     1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
-    2: "CÉDULA 2.- La norma jurídica.",
-    3: "CÉDULA 3.- Vigencia, validez y eficacia del Derecho positivo.",
-    4: "CÉDULA 4.- La plenitud hermética del ordenamiento jurídico y las lagunas del Derecho.",
-    5: "CÉDULA 5.- Fuentes del ordenamiento jurídico."
+    2: "CÉDULA 2.- Fuentes del Derecho y la Ley.",
+    3: "CÉDULA 3.- Interpretación e Integración de la Ley.",
+    4: "CÉDULA 4.- Efectos de la Ley en el Tiempo y el Espacio.",
+    5: "CÉDULA 5.- Sujetos de Derecho y Personas Naturales."
 }
 
-DATOS_EXAMEN = {
-    1: {
-        "titulo": TITULOS[1],
-        "preguntas": [
-            {"sub": "1.1", "preg": "¿Características de la norma moral?", "opts": ["A) Bilateral, exterior y coercible estatal.", "B) Unilateral, interior, autónoma e incoercible."], "ok": "B", "fund": "Obliga solo la conciencia y carece de fuerza coactiva pública."},
-            {"sub": "1.2", "preg": "¿Qué distingue formalmente al Derecho de la Moral?", "opts": ["A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.", "B) El Derecho es de fuero puramente interno y autónomo."], "ok": "A", "fund": "El Derecho cuenta con el imperio del aparato público para imponerse."},
-            {"sub": "1.3 a)", "preg": "¿Concepto doctrinal de las normas de trato social?", "opts": ["A) Mandatos imperativos escritos por el Congreso.", "B) Pautas de decoro, cortesía y urbanidad dictadas por el grupo."], "ok": "B", "fund": "Consisten en costumbres variables de convivencia comunitaria difusa."},
-            {"sub": "1.3 b)", "preg": "¿Diferencia de sanción con la norma jurídica?", "opts": ["A) El uso social acarrea rechazo; la jurídica un castigo estatal.", "B) El uso social aplica multas y cárcel directas."], "ok": "A", "fund": "La transgresión legal gatilla penas públicas punitivas por jueces."}
-        ]
-    },
-    2: {
-        "titulo": TITULOS[2],
-        "preguntas": [
-            {"sub": "2.1", "preg": "¿Características constitutivas de la norma jurídica?", "opts": ["A) Heterónoma, exterior, bilateral y coercible.", "B) Autónoma, interior, unilateral e incoercible."], "ok": "A", "fund": "Emana de potestad externa, rige actos manifestados y es correlativa."},
-            {"sub": "2.2", "preg": "¿Cómo operan las normas imperativas y permisivas?", "opts": ["A) Las Imperativas otorgan opción; las Permisivas imponen nulidad.", "B) Las Imperativas ordenan absolutamente; las Permisivas conceden opción."], "ok": "B", "fund": "Imperativa: prohibición entre cónyuges. Permisiva: facultad de vender."},
-            {"sub": "2.3", "preg": "¿Estructura lógica de la norma jurídica?", "opts": ["A) Juicio hipotético: Supuesto de Hecho y Consecuencia.", "B) Declaración categórica exenta de efectos coactivos."], "ok": "A", "fund": "Si se realiza la hipótesis legal, se gatilla el efecto coactivo."}
-        ]
-    },
-    3: {
-        "titulo": TITULOS[3],
-        "preguntas": [
-            {"sub": "3.1 a/b", "preg": "¿Cuándo principia la vigencia formal en Chile?", "opts": ["A) Desde la aprobación en comisiones parlamentarias.", "B) Por regla general, desde su publicación en el Diario Oficial."], "ok": "B", "fund": "Fija el marco de obligatoriedad temporal del precepto positivo."},
-            {"sub": "3.1 c)", "preg": "En relación al cese, ¿cómo opera la derogación Tácita?", "opts": ["A) Cuando la nueva ley contiene disposiciones incompatibles con la anterior.", "B) Cuando el nuevo texto declara explícitamente qué artículos caen."], "ok": "A", "fund": "Se fundamenta en la incompatibilidad lógica de los preceptos."},
-            {"sub": "3.2 a)", "preg": "¿Qué es conceptualmente la validez jurídica?", "opts": ["A) Conformidad con las normas superiores que fija su pertinencia.", "B) El grado fáctico de cumplimiento material de los ciudadanos."], "ok": "A", "fund": "Implica la existencia formal legítima fundada en la jerarquía."},
-            {"sub": "3.2 b)", "preg": "¿Qué sustenta la validez según el Iuspositivismo?", "opts": ["A) La regularidad formal de su producción por los órganos del Estado.", "B) La concordancia de los artículos con ideales de justicia natural."], "ok": "A", "fund": "El positivismo opera bajo la separación de Derecho y Moral."},
-            {"sub": "3.3", "preg": "¿Qué representa técnicamente la eficacia?", "opts": ["A) El grado fáctico de acatamiento ciudadano y aplicación judicial.", "B) La protocolización burocrática de los borradores oficiales."], "ok": "A", "fund": "Mide si la directriz legal es efectivamente obedecida."}
-        ]
-    },
-    4: {
-        "titulo": TITULOS[4],
-        "preguntas": [
-            {"sub": "4.1", "preg": "En relación al principio de inexcusabilidad (Art. 76 CPR), ¿qué obligación impone a los tribunales?", "opts": ["A) Autoriza a rechazar causas ante vacíos de la legislación.", "B) Obliga a jueces a resolver litigios aun sin ley expresa aplicable."], "ok": "B", "fund": "El juez debe fallar siempre, integrando el sistema ante vacíos."},
-            {"sub": "4.2", "preg": "¿Qué postula técnicamente la plenitud hermética?", "opts": ["A) El ordenamiento como un todo es completo y provee solución.", "B) Los códigos escritos particulares carecen de vacíos normativos."], "ok": "A", "fund": "El sistema posee normas de clausura y auto-integración."},
-            {"sub": "4.3", "preg": "¿Cómo procede la solución por vía de integración?", "opts": ["A) El magistrado llena el vacío usando analogía and equidad natural.", "B) Suspende el proceso de forma obligatoria."], "ok": "A", "fund": "Construye la regla de fallo desde las bases del ordenamiento."},
-            {"sub": "4.4", "preg": "¿Cuáles son los criterios para resolver antinomias?", "opts": ["A) Criterio de Jerarquía, Especialidad y Temporalidad.", "B) Ponderación económica y residencia del demandado."], "ok": "A", "fund": "Reglas para mantener la coherencia y unidad interna del Derecho."}
-        ]
-    },
-    5: {
-        "titulo": TITULOS[5],
-        "preguntas": [
-            {"sub": "5.1", "preg": "¿Distinción entre Fuentes Materiales y Formales?", "opts": ["A) Materiales: factores sociales; Formales: canales de expresión (ley).", "B) Materiales: libros de papel; Formales: discursos del Congreso."], "ok": "A", "fund": "La causa político-social frente al envase dotado de imperio."},
-            {"sub": "5.2", "preg": "¿Cuáles son las fuentes formales principales en Chile?", "opts": ["A) Únicamente la legislación penal parlamentaria escrita.", "B) La Constitución, la ley, los tratados, reglamentos, costumbre y fallos."], "ok": "B", "fund": "El derecho positivo consagra una estructura plural de producción."},
-            {"sub": "5.3 a/b/c", "preg": "¿Cómo define la ley el Código Civil (Art. 1)?", "opts": ["A) Declaración de voluntad soberana que manda, prohíbe o permite.", "B) Mandato coyuntural particular expedido por la judicatura."], "ok": "A", "fund": "Redactada por Andrés Bello de carácter general y abstracto."},
-            {"sub": "5.3 d)", "preg": "Respecto al espacio, ¿qué estatuye la territorialidad (Art. 14 CC)?", "opts": ["A) La ley obliga a todos los habitantes, incluso extranjeros, dentro.", "B) Inmunidad jurisdiccional absoluta para los turistas."], "ok": "A", "fund": "Un extranjero en el territorio debe cumplir la ley chilena."},
-            {"sub": "5.3 e)", "preg": "En cuanto al tiempo, ¿cuál es el alcance de la irretroactividad (Art. 9 CC)?", "opts": ["A) Faculta al Estado a castigar retroactivamente conductas.", "B) La ley solo dispone para el futuro, salvo favor penal."], "ok": "B", "fund": "Resguarda la certeza impidiendo alterar situaciones consolidadas."}
-        ]
-    }
-}
+# 2. Inicializar el estado de la aplicación (Cédula actual)
+if "cedula_actual" not in st.session_state:
+    st.session_state.cedula_actual = 1
 
-st.write("### 👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)")
+# --- INTERFAZ GRÁFICA ---
 
-# 1. BOTONERA DE SELECCIÓN DE CÉDULA
-b1, b2, b3, b4, b5 = st.columns(5)
-with b1:
-    if st.button("Cédula 1", use_container_width=True): st.session_state["sel_cedula"] = 1; st.session_state["p_idx"] = 0; st.rerun()
-with b2:
-    if st.button("Cédula 2", use_container_width=True): st.session_state["sel_cedula"] = 2; st.session_state["p_idx"] = 0; st.rerun()
-with b3:
-    if st.button("Cédula 3", use_container_width=True): st.session_state["sel_cedula"] = 3; st.session_state["p_idx"] = 0; st.rerun()
-with b4:
-    if st.button("Cédula 4", use_container_width=True): st.session_state["sel_cedula"] = 4; st.session_state["p_idx"] = 0; st.rerun()
-with b5:
-    if st.button("Cédula 5", use_container_width=True): st.session_state["sel_cedula"] = 5; st.session_state["p_idx"] = 0; st.rerun()
+# Encabezado lateral simulado
+st.caption("Soporte Técnico: Método Cognuss II  \nMiguel López Lavados")
+
+# Título Principal
+st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
+
+# Fila de botones superiores (Cédulas individuales)
+cols_superiores = st.columns(5)
+for i in range(1, 6):
+    # Si la cédula es la activa, resalta visualmente de alguna forma (Streamlit type primary)
+    tipo_boton = "primary" if st.session_state.cedula_actual == i else "secondary"
+    if cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type=tipo_boton, use_container_width=True):
+        st.session_state.cedula_actual = i
 
 st.write("---")
 
-c_actual = st.session_state["sel_cedula"]
-item_c = DATOS_EXAMEN[c_actual]
-total_p = len(item_c["preguntas"])
-idx = st.session_state["p_idx"]
-p_act = item_c["preguntas"][idx]
+# Contenido de la Cédula Seleccionada
+contenido = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
+st.markdown(f'<div class="cuadro-cedula">📍 {contenido}</div>', unsafe_allow_html=True)
 
-st.success(f"### 📍 {item_c['titulo']}")
+# Controles del Examinador en la parte inferior
+st.markdown('<div class="titulo-controles">🎲 CONTROLES DEL EXAMINADOR</div>', unsafe_allow_html=True)
 
-# =====================================================
-# 🔥 JUGADA MAESTRA: CONTROLES UBICADOS ARRIBA DEL EXAMEN
-# =====================================================
-st.write("### 🎛️ CONTROLES DEL EXAMINADOR")
-c_nav1, c_nav2, c_eval, c_nota = st.columns([1, 1, 1.5, 1.5])
+col_ant, col_sig, _ = st.columns([1, 1, 4])
 
-with c_nav1:
-    if st.button("⬅️ Anterior", use_container_width=True):
-        if st.session_state["p_idx"] > 0:
-            st.session_state["p_idx"] -= 1
-            st.rerun()
+# Funciones de navegación
+def avanzar():
+    if st.session_state.cedula_actual < 5:
+        st.session_state.cedula_actual += 1
 
-with c_nav2:
-    if st.button("➡️ Siguiente", use_container_width=True):
-        if st.session_state["p_idx"] < total_p - 1:
-            st.session_state["p_idx"] += 1
+def retroceder():
+    if st.session_state.cedula_actual > 1:
+        st.session_state.cedula_actual -= 1
+
+# Botones de control físico
+btn_anterior = col_ant.button("⬅️ Anterior", on_click=retroceder, use_container_width=True)
+btn_siguiente = col_sig.button("➡️ Siguiente", on_click=avanzar, use_container_width=True)
+
+
+# --- INYECCIÓN DE JAVASCRIPT (ATAJOS DE TECLADO) ---
+# Este script escucha globalmente las teclas y hace clic invisible en tus botones de Streamlit
+st.components.v1.html(
+    """
+    <script>
+    const doc = window.parent.document;
+    
+    doc.addEventListener('keydown', function(e) {
+        // Detener acciones nativas del navegador (ej: que Backspace te mande a la página anterior de Chrome)
+        if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+        }
+        
+        // Buscar todos los elementos botón generados por Streamlit
+        const botones = Array.from(doc.querySelectorAll('button'));
+        
+        // Identificar los botones correctos por su texto interno
+        const botonAnterior = botones.find(b => b.innerText.includes('Anterior'));
+        const botonSiguiente = botones.find(b => b.innerText.includes('Siguiente'));
+        
+        // Ejecución de eventos según la tecla presionada
+        if (e.key === 'Backspace' && botonAnterior) {
+            botonAnterior.click();
+        } else if ((e.key === ' ' || e.key === 'Enter') && botonSiguiente) {
+            botonSiguiente.click();
+        }
+    });
+    </script>
+    """,
+    height=0,
+)
