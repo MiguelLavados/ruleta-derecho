@@ -1,15 +1,15 @@
 import streamlit as st
 import datetime
 
-# CONFIGURACIÓN GENERAL
+# CONFIGURACIÓN GENERAL DE LA PLATAFORMA
 st.set_page_config(page_title="EXAMINADOR", layout="centered")
 
-# CADUCIDAD DE LICENCIA
+# CONTROL DE CADUCIDAD REGLAMENTARIA
 if datetime.date.today() > datetime.date(2026, 6, 30):
     st.error("⏳ Licencia caducada. Disponible hasta el 30 de junio de 2026.")
     st.stop()
 
-# ENCABEZADO FORMAL
+# ENCABEZADO INSTITUCIONAL
 st.markdown("<h1 style='text-align:center; color: #1E3A8A;'>EXAMINADOR DE TEORÍA DEL DERECHO</h1>", unsafe_allow_html=True)
 st.markdown("<h3 style='text-align:center; color: #4B5563;'>Profesor Jaime Esponda</h3>", unsafe_allow_html=True)
 
@@ -19,198 +19,140 @@ with st.sidebar:
 
 st.divider()
 
-st.subheader("🎯 Panel Central: Seleccione el Módulo de Examen")
-modulo = st.selectbox(
-    "Elija el rango de Cédulas a evaluar en tiempo real:",
-    ["--- Seleccione un Módulo ---", "Módulo A: Cédulas 1 a 5", "Módulo B: Cédulas 6 a 10", "Módulo C: Cédulas 11 a 14"]
-)
-
-# LÍNEAS CORTADAS EN BLOQUES PARA EVITAR EL LÍMITE DE GITHUB
+# BASE DE DATOS FIEL AL DOCUMENTO USS ENVIADO
 DATOS_EXAMEN = {
     1: {
-        "titulo": "CÉDULA 1 - EL DERECHO Y LA MORAL. NORMAS DE USO SOCIAL",
+        "titulo": "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social",
         "preguntas": [
             {
-                "sub": "1.1", 
-                "preg": "¿Cuáles son las características principales de la norma moral?",
+                "sub": "1.2", 
+                "preg": "Respecto al paralelo estructural, ¿qué distingue al Derecho de la Moral?",
                 "opciones": [
-                    "A) Autónoma, interior, unilateral, incoercible.",
-                    "B) Heterónoma, exterior, bilateral, coercible.",
-                    "C) Exterior, bilateral, coercible."
+                    "A) El Derecho es bilateral, exterior, heterónomo y coercible; la Moral es unilateral, interior, autónoma e incoercible.",
+                    "B) El Derecho prioriza la pureza de la intención interna; la Moral exige coacción física estatal."
                 ],
-                "correcta": "A) Autónoma, interior, unilateral, incoercible.",
-                "explicacion": "Regula el fuero interno íntimo de la conciencia y "
-                               "carece de fuerza coactiva estatal."
+                "correcta": "A) El Derecho es bilateral, exterior, heterónomo y coercible; la Moral es unilateral, interior, autónoma e incoercible.",
+                "explicacion": "El Derecho concede facultades a terceros y es coercible (fuerza pública); la Moral impone deberes internos sin coacción."
             },
             {
-                "sub": "1.2", 
-                "preg": "¿Cuál es la diferencia formal de obligatoriedad entre Derecho y Moral?",
+                "sub": "1.3", 
+                "preg": "Según la naturaleza de la sanción, ¿cómo se diferencia un uso social de una norma jurídica?",
                 "opciones": [
-                    "A) El Derecho es coercible y bilateral; la Moral es incoercible.",
-                    "B) Ambos ordenamientos imponen multas de forma idéntica.",
-                    "C) El Derecho es unilateral y la Moral es coercible."
+                    "A) El uso social acarrea rechazo, reprobación o aislamiento; la norma jurídica conlleva un castigo institucional (multa, cárcel).",
+                    "B) El uso social es escrito y tipificado; la norma jurídica es difusa e imprecisa según la época."
                 ],
-                "correcta": "A) El Derecho es coercible and bilateral; la Moral es incoercible.",
-                "explicacion": "El Derecho cuenta con el imperio del aparato público "
-                               "para imponer su cumplimiento por la fuerza."
+                "correcta": "A) El uso social acarrea rechazo, reprobación o aislamiento; la norma jurídica conlleva un castigo institucional (multa, cárcel).",
+                "explicacion": "Los usos sociales nacen de forma difusa en la sociedad civil; las normas jurídicas emanan de órganos estatales autorizados."
             }
         ]
     },
     2: {
-        "titulo": "CÉDULA 2 - LA NORMA JURÍDICA Y SU ESTRUCTURA LÓGICA",
+        "titulo": "CÉDULA 2.- La norma jurídica",
         "preguntas": [
             {
-                "sub": "2.1", 
-                "preg": "¿Cuáles son las características esenciales de la norma jurídica?",
-                "opciones": [
-                    "A) Heterónoma, exterior, bilateral, coercible.",
-                    "B) Autónoma, interior, unilateral, incoercible.",
-                    "C) Heterónoma, interior, unilateral, incoercible."
-                ],
-                "correcta": "A) Heterónoma, exterior, bilateral, coercible.",
-                "explicacion": "Nace de una potestad externa, rige actos manifestados y "
-                               "confiere deberes y facultades correlativas."
-            },
-            {
                 "sub": "2.2", 
-                "preg": "¿Cuál es la estructura lógica interna de una norma jurídica?",
+                "preg": "Frente al margen de la voluntad, ¿cómo operan las Normas Imperativas frente a las Permisivas?",
                 "opciones": [
-                    "A) Juicio hipotético que enlaza Supuesto de Hecho con Consecuencia.",
-                    "B) Mandato categórico abstracto sin hipótesis de conducta.",
-                    "C) Sugerencia moral que prescribe conductas deseables."
+                    "A) Las Imperativas no pueden ser modificadas por acuerdo de particulares; las Permisivas otorgan una opción al sujeto.",
+                    "B) Las Imperativas otorgan una opción lícita; las Permisivas imponen nulidad absoluta si se infringen."
                 ],
-                "correcta": "A) Juicio hipotético que enlaza Supuesto de Hecho con Consecuencia.",
-                "explicacion": "Establece que si se realiza la hipótesis fáctica, "
-                               "se debe aplicar el efecto legal coactivo."
+                "correcta": "A) Las Imperativas no pueden ser modificadas por acuerdo de particulares; las Permisivas otorgan una opción al sujeto.",
+                "explicacion": "Las imperativas ordenan o prohíben de forma absoluta (ej. compraventa entre cónyuges); las permisivas conceden una aptitud legítima."
             }
         ]
     },
     3: {
-        "titulo": "CÉDULA 3 - VIGENCIA, VALIDEZ Y EFICACIA NORMATIVA",
+        "titulo": "CÉDULA 3.- Vigencia, validez y eficacia del Derecho positivo",
         "preguntas": [
             {
                 "sub": "3.1", 
-                "preg": "¿Qué define la validez jurídica según el iuspositivismo?",
+                "preg": "¿Cuál es la diferencia técnica entre una Derogación Tácita y una Derogación Parcial?",
                 "opciones": [
-                    "A) Haber sido creada por órgano competente y según procedimiento.",
-                    "B) La conformidad moral absoluta con los dictámenes de justicia.",
-                    "C) El desuso social generalizado de las normas comunitarias."
+                    "A) Tácita ocurre por incompatibilidad con la ley nueva; Parcial elimina solo algunas disposiciones manteniendo el resto vigente.",
+                    "B) Tácita deroga la totalidad del cuerpo legal; Parcial declara explícitamente qué artículos del pasado quedan sin efecto."
                 ],
-                "correcta": "A) Haber sido creada por órgano competente y según procedimiento.",
-                "explicacion": "El positivismo asocia la validez a la regularidad "
-                               "de su producción formal dentro del sistema."
+                "correcta": "A) Tácita ocurre por incompatibilidad con la ley nueva; Parcial elimina solo algunas disposiciones manteniendo el resto vigente.",
+                "explicacion": "La derogación expresa se declara explícitamente. La total deja sin efecto todo el cuerpo legal preexistente."
+            },
+            {
+                "sub": "3.2", 
+                "preg": "En relación al fundamento de validez, ¿qué postula el Iuspositivismo frente al Iusnaturalismo?",
+                "opciones": [
+                    "A) El Iuspositivismo se funda en la legalidad formal (órgano y proceso); el Iusnaturalismo en la justicia material.",
+                    "B) El Iuspositivismo exige una conexión intrínseca con la moral; el Iusnaturalismo exige solo el poder del Estado."
+                ],
+                "correcta": "A) El Iuspositivismo se funda en la legalidad formal (órgano y proceso); el Iusnaturalismo en la justicia material.",
+                "explicacion": "Para el positivismo rige la separación conceptual entre Derecho y Moral; el iusnaturalismo exige concordancia ética."
             }
         ]
     },
     4: {
-        "titulo": "CÉDULA 4 - PLENITUD HERMÉTICA Y LAGUNAS DEL DERECHO",
+        "titulo": "CÉDULA 4.- La plenitud hermética del ordenamiento jurídico y las lagunas del Derecho",
         "preguntas": [
             {
                 "sub": "4.1", 
-                "preg": "Conforme al principio de inexcusabilidad, ¿cuál es el deber del juez?",
+                "preg": "¿Qué consagra el Principio de Inexcusabilidad (Art. 76 inc 2° CPR y Art. 10 inc 2° COT)?",
                 "opciones": [
-                    "A) No puede excusarse de fallar ni aun por falta de ley.",
-                    "B) Puede suspender el juicio indefinidamente a la espera de ley.",
-                    "C) Debe declarar absueltas a las partes si las leyes fallan."
+                    "A) Obliga a los jueces a resolver los conflictos sometidos a su conocimiento, incluso si no existe una ley expresa aplicable.",
+                    "B) Permite al magistrado abstenerse o rechazar una demanda ante un daño tecnológico o vacío legal nuevo."
                 ],
-                "correcta": "A) No puede excusarse de fallar ni aun por falta de ley.",
-                "explicacion": "El juez está obligado a dictar sentencia siempre, "
-                               "debiendo integrar el sistema si hay vacíos."
+                "correcta": "A) Obliga a los jueces a resolver los conflictos sometidos a su conocimiento, incluso si no existe una ley expresa aplicable.",
+                "explicacion": "El juez no puede negarse a fallar por falta de ley; debe integrar el sistema utilizando los principios generales del derecho."
+            },
+            {
+                "sub": "4.2", 
+                "preg": "¿Qué establece el concepto técnico de plenitud hermética y cómo soluciona las lagunas?",
+                "opciones": [
+                    "A) El ordenamiento es un sistema completo y cerrado que ofrece herramientas de integración (analogía o equidad) para llenar vacíos.",
+                    "B) Postula la coexistencia de contradicciones insalvables resueltas mediante los criterios de Jerarquía y Especialidad."
+                ],
+                "correcta": "A) El ordenamiento es un sistema completo y cerrado que ofrece herramientas de integración (analogía o equidad) para llenar vacíos.",
+                "explicacion": "Las lagunas son vacíos legales específicos que se solucionan judicialmente mediante la integración (analogía o equidad natural)."
             }
         ]
     },
     5: {
-        "titulo": "CÉDULA 5 - FUENTES DEL DERECHO. MATERIALES Y FORMALES",
+        "titulo": "CÉDULA 5.- Fuentes del ordenamiento jurídico",
         "preguntas": [
             {
                 "sub": "5.1", 
-                "preg": "Cuál es la distinción científica entre Fuentes Materiales y Formales?",
+                "preg": "¿Cuál es el paralelo técnico entre las Fuentes Materiales y las Fuentes Formales?",
                 "opciones": [
-                    "A) Materiales son factores sociales; Formales son expresiones (ley).",
-                    "B) Materiales aluden a libros; formales a ceremonias."
+                    "A) Materiales son factores de la realidad social (metajurídicos); Formales son los procedimientos institucionales de fuerza obligatoria.",
+                    "B) Materiales son leyes publicadas (ej. Ley 21.459); Formales son hechos como el aumento de delitos cibernéticos."
                 ],
-                "correcta": "A) Materiales son factores sociales; Formales son expresiones (ley).",
-                "explicacion": "La fuente material provee el contenido político-social; "
-                               "la formal confiere fuerza vinculante."
-            }
-        ]
-    },
-    6: {
-        "titulo": "CÉDULA 6 - LA COSTUMBRE JURÍDICA",
-        "preguntas": [
+                "correcta": "A) Materiales son factores de la realidad social (metajurídicos); Formales son los modos de manifestación de fuerza obligatoria.",
+                "explicacion": "Las fuentes materiales determinan el contenido normativo; las fuentes formales se manifiestan con fuerza vinculante."
+            },
             {
-                "sub": "6.1", 
-                "preg": "¿Cuáles son los dos elementos de la costumbre jurídica?",
+                "sub": "5.3", 
+                "preg": "Respecto a los efectos de la ley en el espacio y tiempo, ¿cuál es la regla general en el Derecho Civil?",
                 "opciones": [
-                    "A) Práctica constante (Material) y Opinio Iuris (Espiritual).",
-                    "B) Hábitos comunitarios transitorios desprovistos de sanción."
+                    "A) Territorialidad (Art. 14, obligatoria para todo habitante) e Irretroactividad (Art. 9, dispone solo para el futuro).",
+                    "B) Extraterritorialidad absoluta de los turistas chilenos y retroactividad automática de las leyes de tránsito."
                 ],
-                "correcta": "A) Práctica constante (Material) y Opinio Iuris (Espiritual).",
-                "explicacion": "Requiere la repetición uniforme de un acto y la "
-                               "conciencia social de responder a un deber legal."
+                "correcta": "A) Territorialidad (Art. 14, obligatoria para todo habitante) e Irretroactividad (Art. 9, dispone solo para el futuro).",
+                "explicacion": "La territorialidad vincula a chilenos y extranjeros; la irretroactividad prohíbe sancionar hacia el pasado salvo favorabilidad penal."
             }
         ]
-    },
-    7: {
-        "titulo": "CÉDULA 7 - CONSTITUCIONALISMO Y JERARQUÍA NORMATIVA",
-        "preguntas": [
-            {
-                "sub": "7.1", 
-                "preg": "¿Qué implica el principio de supremacía constitucional (Art. 6 CPR)?",
-                "options": [
-                    "A) Toda norma inferior debe subordinarse formal y materialmente.",
-                    "B) La Constitución es modificable por resolución judicial ordinaria."
-                ],
-                "correcta": "A) Toda norma inferior debe subordinarse formal y materialmente.",
-                "explicacion": "La Carta Fundamental es la norma cúspide que vincula "
-                               "a todos los órganos del Estado."
-            }
-        ]
-    },
-    8: {
-        "titulo": "CÉDULA 8 - LA JURISPRUDENCIA COMO FUENTE DEL DERECHO",
-        "preguntas": [
-            {
-                "sub": "8.1", 
-                "preg": "Respecto al efecto relativo de sentencias (Art. 3 CC), ¿cuál es la regla?",
-                "opciones": [
-                    "A) Las sentencias solo tienen fuerza obligatoria en las causas actuales.",
-                    "B) Los fallos de la Corte Suprema constituyen leyes generales."
-                ],
-                "correcta": "A) Las sentencias solo tienen fuerza obligatoria en las causas actuales.",
-                "explicacion": "Chile no sigue el sistema del precedente obligatorio anglosajón."
-            }
-        ]
-    },
-    9: {
-        "titulo": "CÉDULA 9 - INTERPRETACIÓN DE LA LEY. REGLAS",
-        "preguntas": [
-            {
-                "sub": "9.1", 
-                "preg": "¿Cuáles son los cuatro elementos de interpretación en el Código Civil?",
-                "opciones": [
-                    "A) Gramatical, Lógico, Histórico y Sistemático.",
-                    "B) Político, Económico, Sociológico e Internacional."
-                ],
-                "correcta": "A) Gramatical, Lógico, Histórico y Sistemático.",
-                "explicacion": "Establecidos explícitamente por los Arts. 19 al 24 del Código Civil."
-            }
-        ]
-    },
-    10: {
-        "titulo": "CÉDULA 10 - LOS SUJETOS DE DERECHO. PERSONAS",
-        "preguntas": [
-            {
-                "sub": "10.1", 
-                "preg": "¿Cuándo se inicia la existencia legal de la persona natural?",
-                "opciones": [
-                    "A) Al nacer, al separarse de la madre y sobrevivir un momento.",
-                    "B) Desde la concepción en el vientre materno plenamente."
-                ],
-                "correcta": "A) Al nacer, al separarse de la madre y sobrevivir un momento.",
-                "explicacion": "Cumplimiento taxativo del Artículo 74 del Código Civil."
-            }
-        ]
-    },
-    11: {
-        "titulo": "CÉDULA 11 - ATRIBUTOS DE LA PERSONALIDAD",
+    }
+}
+
+# VARIABLES INTERNAS DE CONTROL
+if "sel_cedula" not in st.session_state: st.session_state.sel_cedula = None
+if "p_idx" not in st.session_state: st.session_state.p_idx = 0
+if "corregido_ok" not in st.session_state: st.session_state.corregido_ok = False
+
+st.write("### 👨‍🏫 PANEL DEL PROFESOR: EVALUACIÓN DE PREGUNTAS (CÉDULAS 1 A 5)")
+
+# BOTONERA DIRECTA Y FORMAL
+b1, b2, b3, b4, b5 = st.columns(5)
+with b1:
+    if st.button("Cédula 1", use_container_width=True): st.session_state.sel_cedula = 1; st.session_state.p_idx = 0; st.session_state.corregido_ok = False; st.rerun()
+with b2:
+    if st.button("Cédula 2", use_container_width=True): st.session_state.sel_cedula = 2; st.session_state.p_idx = 0; st.session_state.corregido_ok = False; st.rerun()
+with b3:
+    if st.button("Cédula 3", use_container_width=True): st.session_state.sel_cedula = 3; st.session_state.p_idx = 0; st.session_state.corregido_ok = False; st.rerun()
+with b4:
+    if st.button("Cédula 4", use_container_width=True): st.session_state.sel_cedula = 4; st.session_state.p_idx = 0; st.session_state.corregido_ok = False; st.rerun()
+with b5:
