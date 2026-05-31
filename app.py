@@ -3,7 +3,7 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# 1. ESTILOS CSS REVISADOS
+# 1. ESTILOS CSS GLOBALES (Control visual absoluto y ocultamiento infalible)
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
@@ -11,16 +11,11 @@ st.markdown("""
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
     
-    div.stButton > button.btn-activa {
-        background-color: #FF5252 !important;
-        color: white !important;
-        border: 1px solid #FF5252 !important;
-    }
-    div.stButton > button.btn-inactiva {
-        background-color: #F5F5F5 !important;
-        color: #333333 !important;
-        border: 1px solid #E0E0E0 !important;
-    }
+    /* Ocultar por completo los botones técnicos del teclado del DOM visual */
+    div[data-testid="stActionButton"] { display: none !important; }
+    div[key="btn_js_ant"] { display: none !important; position: absolute; top: -9999px; }
+    div[key="btn_js_sig"] { display: none !important; position: absolute; top: -9999px; }
+    div[key="btn_js_ent"] { display: none !important; position: absolute; top: -9999px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -48,63 +43,63 @@ SUBPREGUNTAS = {
 if "cedula_actual" not in st.session_state:
     st.session_state.cedula_actual = 1
 if "fase" not in st.session_state:
-    st.session_state.fase = "SELECCION_CEDULA"
+    st.session_state.fase = "SELECCION_CEDULA"  # SELECCION_CEDULA, SUBPREGUNTAS, EVALUACION_TERMINADA
 if "pregunta_index" not in st.session_state:
     st.session_state.pregunta_index = 0
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 4. CAPTURAR COMANDOS DIRECTOS DESDE LA URL (MANEJO DE TECLADO MÁS LIMPIO)
-if "accion" in st.query_params:
-    accion = st.query_params["accion"]
-    st.query_params.clear()  # Limpia la URL para el siguiente ciclo
-        
-    if accion == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
-        st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
-        
-    elif accion == "backspace" and st.session_state.fase == "SELECCION_CEDULA":
+# 4. LOGICA DE NAVEGACIÓN ASOCIADA A LOS ACCIONADORES REALES
+def click_anterior():
+    if st.session_state.fase == "SELECCION_CEDULA":
+        # Retroceso cíclico perfecto (1 -> 5 -> 4 -> 3 -> 2 -> 1)
         st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
-        
-    elif accion == "backspace" and st.session_state.fase == "SUBPREGUNTAS":
+    elif st.session_state.fase == "SUBPREGUNTAS":
         if st.session_state.pregunta_index > 0:
             st.session_state.pregunta_index -= 1
         else:
             st.session_state.fase = "SELECCION_CEDULA"
             st.session_state.pregunta_index = 0
-            
-    elif accion == "enter":
-        if st.session_state.fase == "SELECCION_CEDULA":
-            st.session_state.fase = "SUBPREGUNTAS"
-            st.session_state.pregunta_index = 0
-            st.session_state.respuestas_alumno = {}
-        elif st.session_state.fase == "SUBPREGUNTAS":
-            preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
-            if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
-                st.session_state.pregunta_index += 1
-            else:
-                st.session_state.fase = "EVALUACION_TERMINADA"
 
-# ANCLA OCULTA PARA PASARLE LA FASE ACTUAL A JAVASCRIPT
+def click_siguiente():
+    if st.session_state.fase == "SELECCION_CEDULA":
+        # Avance cíclico perfecto (1 -> 2 -> 3 -> 4 -> 5 -> 1)
+        st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
+    elif st.session_state.fase == "SUBPREGUNTAS":
+        preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
+        if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
+            st.session_state.pregunta_index += 1
+        else:
+            st.session_state.fase = "EVALUACION_TERMINADA"
+
+def click_enter_cedula():
+    if st.session_state.fase == "SELECCION_CEDULA":
+        st.session_state.fase = "SUBPREGUNTAS"
+        st.session_state.pregunta_index = 0
+        st.session_state.respuestas_alumno = {}
+
+# DATA-ANCHOR SEGURO PARA EL JAVASCRIPT
 st.markdown(f'<div id="fase-app" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-# 5. INTERFAZ GRÁFICA CENTRAL
+# 5. INTERFAZ GRÁFICA SUPERIOR (Sincronización nativa sin JS intermedio)
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
 
-# Fila superior de Cédulas limpia
 cols_superiores = st.columns(5)
 for i in range(1, 6):
-    clase_css = "btn-activa" if st.session_state.cedula_actual == i else "btn-inactiva"
-    cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type="secondary", use_container_width=True)
-    st.markdown(f"<script>window.parent.document.querySelectorAll('button')[{i-1}].className += ' {clase_css}';</script>", unsafe_allow_html=True)
+    # Usamos el color primario nativo de Streamlit (Rojo/Azul según tu tema) para la activa
+    tipo_boton = "primary" if st.session_state.cedula_actual == i else "secondary"
+    if cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type=tipo_boton, use_container_width=True):
+        st.session_state.cedula_actual = i
+        st.session_state.fase = "SELECCION_CEDULA"
 
 st.write("---")
 
-# Cuadro de la Cédula Activa
+# Cuadro descriptivo de la Cédula activa
 contenido_cedula = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
 st.markdown(f'<div class="cuadro-cedula">📍 {contenido_cedula}</div>', unsafe_allow_html=True)
 
-# 6. ZONA DE EVALUACIÓN DINÁMICA
+# 6. EXAMEN / PREGUNTAS DINÁMICAS
 if st.session_state.fase == "SUBPREGUNTAS":
     lista_preguntas = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
     idx = st.session_state.pregunta_index
@@ -116,8 +111,10 @@ if st.session_state.fase == "SUBPREGUNTAS":
     st.markdown(f'<div class="cuadro-pregunta">❓ {pregunta_data["enunciado"]}</div>', unsafe_allow_html=True)
     st.write("")
     
-    opcion_guardada = st.session_state.respuestas_alumno.get(idx, 0)
+    # Recuperar respuesta previa si existe
+    opcion_guardada = st.session_state.respuestas_alumno.get(idx, None)
     
+    # index=None obliga a que ninguna opción aparezca premarcada al inicio
     seleccion = st.radio(
         "Selecciona la alternativa correcta:",
         options=range(len(pregunta_data["alternativas"])),
@@ -125,7 +122,8 @@ if st.session_state.fase == "SUBPREGUNTAS":
         index=opcion_guardada,
         key=f"radio_preg_{idx}"
     )
-    st.session_state.respuestas_alumno[idx] = seleccion
+    if seleccion is not None:
+        st.session_state.respuestas_alumno[idx] = seleccion
 
 elif st.session_state.fase == "EVALUACION_TERMINADA":
     st.markdown('<div class="cuadro-nota">📊 EVALUACIÓN FINALIZADA</div>', unsafe_allow_html=True)
@@ -154,37 +152,46 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
     c2.metric("Preguntas Incorrectas", f"❌ {malas}")
     c3.metric("Nota Obtenida", f"🎓 {nota:.1f}")
     
-    if st.button("Reiniciar Cédula / Volver", type="primary"):
+    if st.button("Reiniciar Cédula / Volver", type="primary", key="btn_reiniciar"):
         st.session_state.fase = "SELECCION_CEDULA"
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 7. INYECCIÓN DE JAVASCRIPT DIRECTO SIN COMILLAS TRIPLES
-# Definimos el script en una sola línea de texto para prevenir fallos de sintaxis en Python
-js_script = "<script>" \
-            "const doc = window.parent.document;" \
-            "if(window.parent._keyHandler) { doc.removeEventListener('keydown', window.parent._keyHandler); }" \
-            "window.parent._keyHandler = function(e) {" \
-            "  const contenedorFase = doc.getElementById('fase-app');" \
-            "  const faseActual = contenedorFase ? contenedorFase.getAttribute('data-fase') : 'SELECCION_CEDULA';" \
-            "  if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {" \
-            "    if (doc.activeElement && doc.activeElement.type === 'radio' && e.key !== 'Enter') return;" \
-            "    e.preventDefault();" \
-            "    let accion = '';" \
-            "    if (e.key === 'Backspace') accion = 'backspace';" \
-            "    else if (e.key === ' ' && faseActual === 'SELECCION_CEDULA') accion = 'espacio';" \
-            "    else if (e.key === 'Enter') accion = 'enter';" \
-            "    if (accion !== '') {" \
-            "      const url = new URL(window.parent.location.href);" \
-            "      url.searchParams.set('accion', accion);" \
-            "      window.parent.history.replaceState({}, '', url.toString());" \
-            "      const submitBtn = doc.querySelector('.stActionButton');" \
-            "      if (submitBtn) submitBtn.click();" \
-            "      else window.parent.location.reload();" \
-            "    }" \
-            "  }" \
-            "};" \
-            "doc.addEventListener('keydown', window.parent._keyHandler);" \
-            "</script>"
+# 7. BOTONES OCULTOS POR KEY (Invisibles pero funcionales para el DOM)
+st.button("InvisibleAnt", key="btn_js_ant", on_click=click_anterior)
+st.button("InvisibleSig", key="btn_js_sig", on_click=click_siguiente)
+st.button("InvisibleEnt", key="btn_js_ent", on_click=click_enter_cedula)
 
-st.components.v1.html(js_script, height=0)
+# 8. CAPTURA DE TECLADO INSTANTÁNEA (Mediante clics simulados directos)
+js_teclado = """
+<script>
+const doc = window.parent.document;
+
+if(window.parent._keyHandler) {
+    doc.removeEventListener('keydown', window.parent._keyHandler);
+}
+
+window.parent._keyHandler = function(e) {
+    // Buscar los botones ocultos reales generados por Streamlit por su texto interno
+    const botones = Array.from(doc.querySelectorAll('button'));
+    const btnAnt = botones.find(b => b.innerText.includes('InvisibleAnt'));
+    const btnSig = botones.find(b => b.innerText.includes('InvisibleSig'));
+    const btnEnt = botones.find(b => b.innerText.includes('InvisibleEnt'));
+    
+    const contenedorFase = doc.getElementById('fase-app');
+    const faseActual = contenedorFase ? contenedorFase.getAttribute('data-fase') : 'SELECCION_CEDULA';
+
+    if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {
+        // Permitir que las flechas y selección del radio button funcionen de forma nativa
+        if (doc.activeElement && doc.activeElement.type === 'radio' && e.key !== 'Enter') {
+            return;
+        }
+
+        e.preventDefault();
+
+        if (e.key === 'Backspace' && btnAnt) {
+            btnAnt.click();
+        } 
+        else if (e.key === ' ' && faseActual === 'SELECCION_CEDULA' && btnSig) {
+            btnSig.click();
+        } 
