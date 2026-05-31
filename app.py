@@ -1,15 +1,12 @@
 import streamlit as st
 import datetime
 
-# CONFIGURACIÓN GENERAL DE LA PLATAFORMA
 st.set_page_config(page_title="EXAMINADOR", layout="centered")
 
-# CONTROL DE CADUCIDAD REGLAMENTARIA
 if datetime.date.today() > datetime.date(2026, 6, 30):
     st.error("⏳ Licencia caducada. Disponible hasta el 30 de junio de 2026.")
     st.stop()
 
-# ENCABEZADO INSTITUCIONAL
 st.markdown("<h1 style='text-align:center; color: #1E3A8A;'>EXAMINADOR DE TEORÍA DEL DERECHO</h1>", unsafe_allow_html=True)
 st.markdown("<h3 style='text-align:center; color: #4B5563;'>Profesor Jaime Esponda</h3>", unsafe_allow_html=True)
 
@@ -19,7 +16,6 @@ with st.sidebar:
 
 st.divider()
 
-# BASE DE DATOS FIEL AL DOCUMENTO USS ENVIADO
 DATOS_EXAMEN = {
     1: {
         "titulo": "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social",
@@ -36,7 +32,7 @@ DATOS_EXAMEN = {
             },
             {
                 "sub": "1.3", 
-                "preg": "Según la naturaleza de la sanción, ¿como se diferencia un uso social de una norma jurídica?",
+                "preg": "Según la naturaleza de la sanción, ¿cómo se diferencia un uso social de una norma jurídica?",
                 "opciones": [
                     "A) El uso social acarrea rechazo, reprobación o aislamiento; la norma jurídica conlleva un castigo institucional (multa, cárcel).",
                     "B) El uso social es escrito y tipificado; la norma jurídica es difusa e imprecisa según la época."
@@ -101,12 +97,12 @@ DATOS_EXAMEN = {
             },
             {
                 "sub": "4.2", 
-                "preg": "¿Qué establece el concepto técnico de plenitud hermética y cómo soluciona las lagunas?",
+                "preg": "Qué establece el concepto técnico de plenitud hermética?",
                 "opciones": [
-                    "A) El ordenamiento es un sistema completo y cerrado que ofrece herramientas de integración (analogía o equidad) para llenar vacíos.",
-                    "B) Postula la coexistencia de contradicciones insalvables resueltas mediante los criterios de Jerarquía y Especialidad."
+                    "A) El ordenamiento es un sistema completo y cerrado que ofrece herramientas de integración para llenar vacíos.",
+                    "B) Postula la coexistencia de contradicciones insalvables resueltas mediante los criterios de Jerarquía."
                 ],
-                "correcta": "A) El ordenamiento es un sistema completo y cerrado que ofrece herramientas de integración (analogía o equidad) para llenar vacíos.",
+                "correcta": "A) El ordenamiento es un sistema completo y cerrado que ofrece herramientas de integración para llenar vacíos.",
                 "explicacion": "Las lagunas son vacíos legales específicos que se solucionan judicialmente mediante la integración (analogía o equidad natural)."
             }
         ]
@@ -118,34 +114,23 @@ DATOS_EXAMEN = {
                 "sub": "5.1", 
                 "preg": "¿Cuál es el paralelo técnico entre las Fuentes Materiales y las Fuentes Formales?",
                 "opciones": [
-                    "A) Materiales son factores de la realidad social (metajurídicos); Formales son los procedimientos institucionales de fuerza obligatoria.",
-                    "B) Materiales son leyes publicadas (ej. Ley 21.459); Formales son hechos como el aumento de delitos cibernéticos."
+                    "A) Materiales son factores de la realidad social; Formales son los procedimientos institucionales obligatorios.",
+                    "B) Materiales son leyes publicadas; Formales son hechos reales espontáneos."
                 ],
-                "correcta": "A) Materiales son factores de la realidad social (metajurídicos); Formales son los modos de manifestación de fuerza obligatoria.",
+                "correcta": "A) Materiales son factores de la realidad social; Formales son los procedimientos institucionales obligatorios.",
                 "explicacion": "Las fuentes materiales determinan el contenido normativo; las fuentes formales se manifiestan con fuerza vinculante."
-            },
-            {
-                "sub": "5.3", 
-                "preg": "Respecto a los efectos de la ley en el espacio y tiempo, ¿cuál es la regla general en el Derecho Civil?",
-                "opciones": [
-                    "A) Territorialidad (Art. 14, obligatoria para todo habitante) e Irretroactividad (Art. 9, dispone solo para el futuro).",
-                    "B) Extraterritorialidad absoluta de los turistas chilenos y retroactividad automática de las leyes de tránsito."
-                ],
-                "correcta": "A) Territorialidad (Art. 14, obligatoria para todo habitante) e Irretroactividad (Art. 9, dispone solo para el futuro).",
-                "explicacion": "La territorialidad vincula a chilenos y extranjeros; la irretroactividad prohíbe sancionar hacia el pasado salvo favorabilidad penal."
             }
         ]
     }
 }
 
-# VARIABLES INTERNAS DE CONTROL
 if "sel_cedula" not in st.session_state: st.session_state.sel_cedula = None
 if "p_idx" not in st.session_state: st.session_state.p_idx = 0
 if "corregido_ok" not in st.session_state: st.session_state.corregido_ok = False
 
 st.write("### 👨‍🏫 PANEL DEL PROFESOR: EVALUACIÓN DE PREGUNTAS (CÉDULAS 1 A 5)")
 
-# BOTONERA DIRECTA EN FILAS SEPARADAS PARA EVITAR ERRORES DE INDENTACIÓN
+# BOTONERA RECONFIGURADA PARA DESPLEGAR LAS 5 OPCIONES DE UNA VEZ
 b1, b2, b3, b4, b5 = st.columns(5)
 with b1:
     if st.button("Cédula 1", use_container_width=True):
@@ -169,3 +154,37 @@ with b4:
     if st.button("Cédula 4", use_container_width=True):
         st.session_state.sel_cedula = 4
         st.session_state.p_idx = 0
+        st.session_state.corregido_ok = False
+        st.rerun()
+with b5:
+    if st.button("Cédula 5", use_container_width=True):
+        st.session_state.sel_cedula = 5
+        st.session_state.p_idx = 0
+        st.session_state.corregido_ok = False
+        st.rerun()
+
+st.write("---")
+
+if st.session_state.sel_cedula in DATOS_EXAMEN:
+    item = DATOS_EXAMEN[st.session_state.sel_cedula]
+    st.success(f"### 📍 {item['titulo']}")
+    
+    idx = st.session_state.p_idx
+    total_p = len(item["preguntas"])
+    p_act = item["preguntas"][idx]
+    
+    st.write(f"**Pregunta {idx + 1} de {total_p}**")
+    st.progress((idx + 1) / total_p)
+    st.markdown(f"#### {p_act['sub']}. {p_act['preg']}")
+    
+    seleccion = st.radio(
+        "Seleccione la respuesta del alumno:",
+        options=p_act["opciones"],
+        index=None,
+        key=f"eval_{st.session_state.sel_cedula}_{idx}"
+    )
+    
+    st.text_area("Anotaciones adicionales del examen oral:", height=70, key=f"notes_{st.session_state.sel_cedula}_{idx}")
+    
+    if st.button("📝 Corregir e Inyectar Sanción", use_container_width=True):
+        if seleccion is None:
