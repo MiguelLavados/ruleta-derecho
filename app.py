@@ -11,7 +11,7 @@ st.markdown("""
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
     
-    /* Ocultamiento absoluto y definitivo de los gatilladores del teclado */
+    /* Ocultamiento absoluto de los gatilladores del teclado */
     div[key="btn_js_ant"] { display: none !important; position: absolute; top: -9999px; }
     div[key="btn_js_sig"] { display: none !important; position: absolute; top: -9999px; }
     div[key="btn_js_ent"] { display: none !important; position: absolute; top: -9999px; }
@@ -114,7 +114,6 @@ if st.session_state.fase == "SUBPREGUNTAS":
     st.markdown(f'<div class="cuadro-pregunta">❓ {pregunta_data["enunciado"]}</div>', unsafe_allow_html=True)
     st.write("")
     
-    # Control de índice de opción previamente guardada
     opcion_guardada = st.session_state.respuestas_alumno.get(idx, None)
     clave_radio_dinamico = f"radio_preg_{st.session_state.cedula_actual}_{idx}"
     
@@ -124,9 +123,8 @@ if st.session_state.fase == "SUBPREGUNTAS":
         format_func=lambda x: pregunta_data["alternativas"][x],
         index=opcion_guardada,
         key=clave_radio_dinamico,
-        on_change=guardar_respuesta_inmediata  # <--- BLINDAJE EN CALIENTE
+        on_change=guardar_respuesta_inmediata
     )
-    # Asegurar el registro si no se gatilló el on_change
     st.session_state.respuestas_alumno[idx] = seleccion
 
 elif st.session_state.fase == "EVALUACION_TERMINADA":
@@ -142,9 +140,8 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
     total_p = len(lista_preguntas)
     malas = total_p - buenas
     
-    # Cálculo de nota Chilena estándar (Escala de 1.0 a 7.0 con exigencia al 60%)
     if total_p > 0:
-        porcentaje = buenas / total_p
+        porcentaje = whites = buenas / total_p
         if porcentaje >= 0.6:
             nota = 4.0 + (porcentaje - 0.6) * (3.0 / 0.4)
         else:
@@ -162,24 +159,36 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 8. BOTONES TÉCNICOS POR KEY (Invisibles pero funcionales para el iFrame)
+# 8. BOTONES TÉCNICOS POR KEY (Invisibles)
 st.button("InvisibleAnt", key="btn_js_ant", on_click=click_anterior)
 st.button("InvisibleSig", key="btn_js_sig", on_click=click_siguiente)
 st.button("InvisibleEnt", key="btn_js_ent", on_click=click_enter_cedula)
 
-# 9. SCRIPT DE JAVASCRIPT CONCATENADO CON COMILLAS SIMPLES
-js_teclado = '<script>' \
-             'const doc = window.parent.document;' \
-             'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }' \
-             'window.parent._keyHandler = function(e) {' \
-             '  const botones = Array.from(doc.querySelectorAll("button"));' \
-             '  const btnAnt = botones.find(b => b.innerText.includes("InvisibleAnt"));' \
-             '  const btnSig = botones.find(b => b.innerText.includes("InvisibleSig"));' \
-             '  const btnEnt = botones.find(b => b.innerText.includes("InvisibleEnt"));' \
-             '  const contenedorFase = doc.getElementById("fase-app");' \
-             '  const faseActual = contenedorFase ? contenedorFase.getAttribute("data-fase") : "SELECCION_CEDULA";' \
-             '  if (e.key === "Backspace" || e.key === " " || e.key === "Enter") {' \
-             '    if (doc.activeElement && doc.activeElement.type === "radio" && e.key !== "Enter") { return; }' \
-             '    e.preventDefault();' \
-             '    if (e.key === "Backspace" && btnAnt) { btnAnt.click(); }' \
-             '    else if (e.key === " " && faseActual === "SELECCION_CEDULA" && btnSig) { btnSig.click(); }' \
+# 9. SCRIPT DE JAVASCRIPT PROTEGIDO DENTRO DE PARÉNTESIS NATIVOS (Cero fallos de sintaxis)
+js_teclado = (
+    '<script>'
+    'const doc = window.parent.document;'
+    'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }'
+    'window.parent._keyHandler = function(e) {'
+    '  const botones = Array.from(doc.querySelectorAll("button"));'
+    '  const btnAnt = botones.find(b => b.innerText.includes("InvisibleAnt"));'
+    '  const btnSig = botones.find(b => b.innerText.includes("InvisibleSig"));'
+    '  const btnEnt = botones.find(b => b.innerText.includes("InvisibleEnt"));'
+    '  const contenedorFase = doc.getElementById("fase-app");'
+    '  const faseActual = contenedorFase ? contenedorFase.getAttribute("data-fase") : "SELECCION_CEDULA";'
+    '  if (e.key === "Backspace" || e.key === " " || e.key === "Enter") {'
+    '    if (doc.activeElement && doc.activeElement.type === "radio" && e.key !== "Enter") { return; }'
+    '    e.preventDefault();'
+    '    if (e.key === "Backspace" && btnAnt) { btnAnt.click(); }'
+    '    else if (e.key === " " && faseActual === "SELECCION_CEDULA" && btnSig) { btnSig.click(); }'
+    '    else if (e.key === "Enter") {'
+    '      if (faseActual === "SELECCION_CEDULA" && btnEnt) { btnEnt.click(); }'
+    '      else if (faseActual === "SUBPREGUNTAS" && btnSig) { btnSig.click(); }'
+    '    }'
+    '  }'
+    '};'
+    'doc.addEventListener("keydown", window.parent._keyHandler);'
+    '</script>'
+)
+
+st.components.v1.html(js_teclado, height=0)
