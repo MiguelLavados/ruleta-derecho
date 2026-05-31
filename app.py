@@ -3,7 +3,7 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# 1. ESTILOS CSS LIMPIOS Y CONTROL DE MARCOS
+# 1. ESTILOS CSS REVISADOS (Ocultamiento invisible infalible)
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
@@ -11,12 +11,21 @@ st.markdown("""
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
     
-    /* Eliminar el molesto borde de enfoque nativo de los botones de Streamlit */
-    button:focus { outline: none !important; box-shadow: none !important; }
+    /* Forzar a los botones técnicos a ser invisibles y no ocupar espacio vertical */
+    .boton-fantasma {
+        opacity: 0 !important;
+        position: absolute !important;
+        height: 0px !important;
+        width: 0px !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        pointer-events: none !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# 2. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS CHILENAS REALES
+# 2. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS
 DATOS_CEDULAS = {
     1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
     2: "CÉDULA 2.- Fuentes del Derecho y la Ley.",
@@ -55,49 +64,42 @@ if "pregunta_index" not in st.session_state:
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 4. RECEPTOR DE URL CON FORZADO DE ESTADO (MÉTODO 100% INMUNE A ERRORES DE ENFOQUE)
-query_params = st.query_params
-if "tecla" in query_params:
-    evento = query_params["tecla"]
-    st.query_params.clear()  # Limpiar inmediatamente el estado
-    
-    if evento == "backspace":
-        if st.session_state.fase == "SELECCION_CEDULA":
-            # Ciclo infinito perfecto en reversa (1 -> 5 -> 4 -> 3 -> 2 -> 1)
-            st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
-        elif st.session_state.fase == "SUBPREGUNTAS":
-            if st.session_state.pregunta_index > 0:
-                st.session_state.pregunta_index -= 1
-            else:
-                st.session_state.fase = "SELECCION_CEDULA"
-                st.session_state.pregunta_index = 0
-                
-    elif evento == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
-        # Ciclo infinito perfecto hacia adelante (1 -> 2 -> 3 -> 4 -> 5 -> 1)
-        st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
-        
-    elif evento == "enter":
-        if st.session_state.fase == "SELECCION_CEDULA":
-            st.session_state.fase = "SUBPREGUNTAS"
+# 4. LOGICA DE NAVEGACIÓN ASOCIADA A LAS TECLAS CHILENAS
+def click_anterior():
+    if st.session_state.fase == "SELECCION_CEDULA":
+        st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
+    elif st.session_state.fase == "SUBPREGUNTAS":
+        if st.session_state.pregunta_index > 0:
+            st.session_state.pregunta_index -= 1
+        else:
+            st.session_state.fase = "SELECCION_CEDULA"
             st.session_state.pregunta_index = 0
-            st.session_state.respuestas_alumno = {}
-        elif st.session_state.fase == "SUBPREGUNTAS":
-            preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
-            if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
-                st.session_state.pregunta_index += 1
-            else:
-                st.session_state.fase = "EVALUACION_TERMINADA"
 
-# Anclaje para pasarle la fase actual de la App a JavaScript de forma oculta
+def click_siguiente():
+    if st.session_state.fase == "SELECCION_CEDULA":
+        st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
+    elif st.session_state.fase == "SUBPREGUNTAS":
+        preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
+        if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
+            st.session_state.pregunta_index += 1
+        else:
+            st.session_state.fase = "EVALUACION_TERMINADA"
+
+def click_enter_cedula():
+    if st.session_state.fase == "SELECCION_CEDULA":
+        st.session_state.fase = "SUBPREGUNTAS"
+        st.session_state.pregunta_index = 0
+        st.session_state.respuestas_alumno = {}
+
+# Contenedor de datos oculto leído por JavaScript
 st.markdown(f'<div id="estado-fase" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-# 5. INTERFAZ GRÁFICA SUPERIOR (Sincronización Total de Color)
+# 5. INTERFAZ GRÁFICA SUPERIOR NATIVA
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
 
 cols_superiores = st.columns(5)
 for i in range(1, 6):
-    # Pintar de rojo ("primary") ÚNICAMENTE la cédula activa, asegurando consistencia visual
     tipo_boton = "primary" if st.session_state.cedula_actual == i else "secondary"
     if cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type=tipo_boton, use_container_width=True):
         st.session_state.cedula_actual = i
@@ -109,7 +111,7 @@ st.write("---")
 contenido_cedula = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
 st.markdown(f'<div class="cuadro-cedula">📍 {contenido_cedula}</div>', unsafe_allow_html=True)
 
-# 6. MÓDULOS DE RENDERIZADO DE EVALUACIÓN
+# 6. ZONA DE EVALUACIÓN DINÁMICA
 if st.session_state.fase == "SUBPREGUNTAS":
     lista_preguntas = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
     idx = st.session_state.pregunta_index
@@ -123,7 +125,6 @@ if st.session_state.fase == "SUBPREGUNTAS":
     
     opcion_guardada = st.session_state.respuestas_alumno.get(idx, None)
     
-    # index=None obliga a que ninguna opción aparezca premarcada
     seleccion = st.radio(
         "Selecciona la alternativa correcta:",
         options=range(len(pregunta_data["alternativas"])),
@@ -165,8 +166,15 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 7. INYECCIÓN DE JAVASCRIPT GLOBAL MEDIANTE URL-RELOAD DIRECTO
-js_revolucionario = (
+# 7. BOTONES TÉCNICOS ENVOLVIMIENTO INVISIBLE DE ALTA SEGURIDAD
+st.markdown('<div class="boton-fantasma">', unsafe_allow_html=True)
+st.button("EJECUTAR_ANTERIOR", key="btn_js_ant", on_click=click_anterior)
+st.button("EJECUTAR_SIGUIENTE", key="btn_js_sig", on_click=click_siguiente)
+st.button("EJECUTAR_ENTER", key="btn_js_ent", on_click=click_enter_cedula)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# 8. INYECCIÓN DE JAVASCRIPT GLOBAL MEDIANTE CLICS SIMULADOS INMEDIATOS
+js_final = (
     '<script>'
     'const doc = window.parent.document;'
     'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }'
@@ -176,19 +184,15 @@ js_revolucionario = (
     '  if (e.key === "Backspace" || e.key === " " || e.key === "Enter") {'
     '    if (doc.activeElement && doc.activeElement.type === "radio" && e.key !== "Enter") { return; }'
     '    e.preventDefault();'
-    '    let comando = "";'
-    '    if (e.key === "Backspace") { comando = "backspace"; }'
-    '    else if (e.key === " " && faseActual === "SELECCION_CEDULA") { comando = "espacio"; }'
-    '    else if (e.key === "Enter") { comando = "enter"; }'
-    '    if (comando !== "") {'
-    '      const url = new URL(window.parent.location.href);'
-    '      url.searchParams.set("tecla", comando);'
-    '      window.parent.location.href = url.toString();'  # Forzar recarga limpia
+    '    const botones = Array.from(doc.querySelectorAll("button"));'
+    '    const btnAnt = botones.find(b => b.innerText.includes("EJECUTAR_ANTERIOR"));'
+    '    const btnSig = botones.find(b => b.innerText.includes("EJECUTAR_SIGUIENTE"));'
+    '    const btnEnt = botones.find(b => b.innerText.includes("EJECUTAR_ENTER"));'
+    '    if (e.key === "Backspace" && btnAnt) { btnAnt.click(); }'
+    '    else if (e.key === " " && faseActual === "SELECCION_CEDULA" && btnSig) { btnSig.click(); }'
+    '    else if (e.key === "Enter") {'
+    '      if (faseActual === "SELECCION_CEDULA" && btnEnt) { btnEnt.click(); }'
+    '      else if (faseActual === "SUBPREGUNTAS" && btnSig) { btnSig.click(); }'
     '    }'
     '  }'
     '};'
-    'doc.addEventListener("keydown", window.parent._keyHandler);'
-    '</script>'
-)
-
-st.components.v1.html(js_revolucionario, height=0)
