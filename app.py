@@ -3,17 +3,30 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# Estilos visuales de la interfaz
+# 1. ESTILOS CSS REVISADOS (Para pintar las pestañas activas e inactivas)
+# Nota: Forzamos la eliminación de los márgenes inferiores de botones fantasmas
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
     .cuadro-cedula { background-color: #E8F5E9; padding: 20px; border-radius: 5px; border-left: 5px solid #2E7D32; color: #1B5E20; font-size: 20px; font-weight: bold; margin-bottom: 20px;}
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
+    
+    /* Forzar estilos personalizados a los botones superiores según su estado simulado */
+    div.stButton > button.btn-activa {
+        background-color: #FF5252 !important;
+        color: white !important;
+        border: 1px solid #FF5252 !important;
+    }
+    div.stButton > button.btn-inactiva {
+        background-color: #F5F5F5 !important;
+        color: #333333 !important;
+        border: 1px solid #E0E0E0 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# 1. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS
+# 2. BASE DE DATOS DE CÉDULAS Y SUBPREGUNTAS
 DATOS_CEDULAS = {
     1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
     2: "CÉDULA 2.- Fuentes del Derecho y la Ley.",
@@ -49,7 +62,7 @@ SUBPREGUNTAS = {
     ]
 }
 
-# 2. INICIALIZAR ESTADOS DE LA APLICACIÓN
+# 3. INICIALIZAR ESTADOS DE LA APLICACIÓN
 if "cedula_actual" not in st.session_state:
     st.session_state.cedula_actual = 1
 if "fase" not in st.session_state:
@@ -59,59 +72,69 @@ if "pregunta_index" not in st.session_state:
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 3. CONTROLLER: ACCIONES DE NAVEGACIÓN
-def js_accion_siguiente():
-    if st.session_state.fase == "SELECCION_CEDULA":
-        if st.session_state.cedula_actual < 5:
-            st.session_state.cedula_actual += 1
-    elif st.session_state.fase == "SUBPREGUNTAS":
-        preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
-        if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
-            st.session_state.pregunta_index += 1
-        else:
-            st.session_state.fase = "EVALUACION_TERMINADA"
+# 4. CAPTURAR COMANDOS DIRECTOS DESDE JAVASCRIPT MEDIANTE QUERY PARAMS (Evita usar botones ocultos)
+# El script JS actualizará la URL silenciosamente y Streamlit reaccionará inmediatamente
+query_params = st.query_transform(st.experimental_get_query_params() if hasattr(st, 'experimental_get_query_params') else st.query_params)
 
-def js_accion_anterior():
-    if st.session_state.fase == "SELECCION_CEDULA":
-        if st.session_state.cedula_actual > 1:
-            st.session_state.cedula_actual -= 1
-    elif st.session_state.fase == "SUBPREGUNTAS":
+if "accion" in query_params:
+    accion = query_params["accion"]
+    # Limpiar el parámetro de inmediato para que no se repita en el siguiente bucle
+    if hasattr(st, 'experimental_set_query_params'):
+        st.experimental_set_query_params()
+    else:
+        st.query_params.clear()
+        
+    # --- EJECUTAR ACCIONES DE TECLADO ---
+    if accion == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
+        # Avanza de forma cíclica (1 -> 2 -> 3 -> 4 -> 5 -> 1)
+        st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
+        
+    elif accion == "backspace" and st.session_state.fase == "SELECCION_CEDULA":
+        # Retrocede de forma cíclica (1 -> 5 -> 4 -> 3 -> 2 -> 1)
+        st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
+        
+    elif accion == "backspace" and st.session_state.fase == "SUBPREGUNTAS":
         if st.session_state.pregunta_index > 0:
             st.session_state.pregunta_index -= 1
         else:
             st.session_state.fase = "SELECCION_CEDULA"
             st.session_state.pregunta_index = 0
-
-def js_accion_enter_cedula():
-    if st.session_state.fase == "SELECCION_CEDULA":
-        preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
-        if preguntas_disponibles:
+            
+    elif accion == "enter":
+        if st.session_state.fase == "SELECCION_CEDULA":
             st.session_state.fase = "SUBPREGUNTAS"
             st.session_state.pregunta_index = 0
             st.session_state.respuestas_alumno = {}
+        elif st.session_state.fase == "SUBPREGUNTAS":
+            preguntas_disponibles = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
+            if st.session_state.pregunta_index < len(preguntas_disponibles) - 1:
+                st.session_state.pregunta_index += 1
+            else:
+                st.session_state.fase = "EVALUACION_TERMINADA"
 
 # ANCLA OCULTA PARA PASARLE LA FASE ACTUAL A JAVASCRIPT
 st.markdown(f'<div id="fase-app" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-# 4. INTERFAZ GRÁFICA
+# 5. INTERFAZ GRÁFICA CENTRAL
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
 
-# Fila superior de Cédulas
+# Fila superior de Cédulas limpia
 cols_superiores = st.columns(5)
 for i in range(1, 6):
-    tipo_boton = "primary" if st.session_state.cedula_actual == i else "secondary"
-    if cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type=tipo_boton, use_container_width=True):
-        st.session_state.cedula_actual = i
-        st.session_state.fase = "SELECCION_CEDULA"
+    # Asignamos clases CSS personalizadas para asegurar que la activa se distinga perfectamente
+    clase_css = "btn-activa" if st.session_state.cedula_actual == i else "btn-inactiva"
+    cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type="secondary", use_container_width=True, help=None)
+    # Inyectamos dinámicamente la clase al botón correspondiente
+    st.markdown(f"<script>window.parent.document.querySelectorAll('button')[{i-1}].className += ' {clase_css}';</script>", unsafe_allow_html=True)
 
 st.write("---")
 
-# Mostrar cuadro de la Cédula Activa
+# Cuadro de la Cédula Activa
 contenido_cedula = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
 st.markdown(f'<div class="cuadro-cedula">📍 {contenido_cedula}</div>', unsafe_allow_html=True)
 
-# 5. ZONA CENTRAL DINÁMICA
+# 6. ZONA DE EVALUACIÓN DINÁMICA
 if st.session_state.fase == "SUBPREGUNTAS":
     lista_preguntas = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
     idx = st.session_state.pregunta_index
@@ -166,46 +189,20 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 6. ENMASCARAMIENTO INMUTABLE Ocultamiento total de botones
-st.markdown('<div style="display: none !important; visibility: hidden; height: 0px; overflow: hidden;">', unsafe_allow_html=True)
-st.button("InvisibleAnt", key="btn_js_ant", on_click=js_accion_anterior)
-st.button("InvisibleSig", key="btn_js_sig", on_click=js_accion_siguiente)
-st.button("InvisibleEnt", key="btn_js_ent", on_click=js_accion_enter_cedula)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# 7. SCRIPT DE JAVASCRIPT CORREGIDO
+# 7. INYECCIÓN DE JAVASCRIPT ULTRA-LIMPIO (SIN BOTONES OCULTOS)
+# El JavaScript modifica la URL agregando la acción de la tecla, lo que refresca el backend de Streamlit con la orden
 st.components.v1.html(
-    """<script>
+    """
+    <script>
     const doc = window.parent.document;
+    
     if(window.parent._keyHandler) {
         doc.removeEventListener('keydown', window.parent._keyHandler);
     }
+
     window.parent._keyHandler = function(e) {
-        const botones = Array.from(doc.querySelectorAll('button'));
-        const btnAnt = botones.find(b => b.innerText.includes('InvisibleAnt'));
-        const btnSig = botones.find(b => b.innerText.includes('InvisibleSig'));
-        const btnEnt = botones.find(b => b.innerText.includes('InvisibleEnt'));
         const contenedorFase = doc.getElementById('fase-app');
         const faseActual = contenedorFase ? contenedorFase.getAttribute('data-fase') : "SELECCION_CEDULA";
 
         if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {
-            e.preventDefault(); 
-            if (e.key === 'Backspace' && btnAnt) {
-                btnAnt.click();
-            }
-            if (e.key === ' ' && faseActual === "SELECCION_CEDULA" && btnSig) {
-                btnSig.click();
-            }
-            if (e.key === 'Enter') {
-                if (faseActual === "SELECCION_CEDULA" && btnEnt) {
-                    btnEnt.click();
-                } else if (faseActual === "SUBPREGUNTAS" && btnSig) {
-                    btnSig.click();
-                }
-            }
-        }
-    };
-    doc.addEventListener('keydown', window.parent._keyHandler);
-    </script>""",
-    height=0,
-)
+            // Permitir que el Enter funcione nativamente si está cambiando el radio button
