@@ -11,8 +11,7 @@ st.markdown("""
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
     
-    /* Ocultar por completo los botones técnicos del teclado del DOM visual */
-    div[data-testid="stActionButton"] { display: none !important; }
+    /* Ocultamiento absoluto y definitivo de los gatilladores del teclado */
     div[key="btn_js_ant"] { display: none !important; position: absolute; top: -9999px; }
     div[key="btn_js_sig"] { display: none !important; position: absolute; top: -9999px; }
     div[key="btn_js_ent"] { display: none !important; position: absolute; top: -9999px; }
@@ -35,7 +34,7 @@ SUBPREGUNTAS = {
     4: [{"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su aprobación en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}],
     5: [
         {"enunciado": "¿Cuándo comienza legalmente la personalidad de una persona natural según el Código Civil?", "alternativas": ["A) Al momento de la concepción.", "B) Al nacer, esto es, al separarse completamente de la madre y sobrevivir un momento siquiera.", "C) A los 18 años de edad."], "correcta": 1},
-        {"enunciado": "La existence natural de la persona humana comienza con:", "alternativas": ["A) El nacimiento.", "B) La inscripción en el Registro Civil.", "C) La concepción."], "correcta": 2}
+        {"enunciado": "La existencia natural de la persona humana comienza con:", "alternativas": ["A) El nacimiento.", "B) La inscripción en el Registro Civil.", "C) La concepción."], "correcta": 2}
     ]
 }
 
@@ -49,7 +48,14 @@ if "pregunta_index" not in st.session_state:
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 4. LOGICA DE NAVEGACIÓN ASOCIADA A LOS ACCIONADORES REALES
+# 4. FUNCIONES DE PERSISTENCIA Y REGISTRO EN TIEMPO REAL
+def guardar_respuesta_inmediata():
+    idx = st.session_state.pregunta_index
+    clave_radio = f"radio_preg_{st.session_state.cedula_actual}_{idx}"
+    if clave_radio in st.session_state:
+        st.session_state.respuestas_alumno[idx] = st.session_state.get(clave_radio)
+
+# 5. LOGICA DE NAVEGACIÓN ASOCIADA A LOS ACCIONADORES REALES
 def click_anterior():
     if st.session_state.fase == "SELECCION_CEDULA":
         st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
@@ -79,7 +85,7 @@ def click_enter_cedula():
 # DATA-ANCHOR SEGURO PARA EL JAVASCRIPT
 st.markdown(f'<div id="fase-app" data-fase="{st.session_state.fase}" style="display:none;"></div>', unsafe_allow_html=True)
 
-# 5. INTERFAZ GRÁFICA SUPERIOR
+# 6. INTERFAZ GRÁFICA SUPERIOR
 st.caption("Soporte Técnico: Método Cognuss II \nMiguel López Lavados")
 st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)</div>', unsafe_allow_html=True)
 
@@ -96,7 +102,7 @@ st.write("---")
 contenido_cedula = DATOS_CEDULAS.get(st.session_state.cedula_actual, "Cédula no encontrada")
 st.markdown(f'<div class="cuadro-cedula">📍 {contenido_cedula}</div>', unsafe_allow_html=True)
 
-# 6. EXAMEN / PREGUNTAS DINÁMICAS
+# 7. ZONA DE EXAMEN DINÁMICA
 if st.session_state.fase == "SUBPREGUNTAS":
     lista_preguntas = SUBPREGUNTAS.get(st.session_state.cedula_actual, [])
     idx = st.session_state.pregunta_index
@@ -108,17 +114,20 @@ if st.session_state.fase == "SUBPREGUNTAS":
     st.markdown(f'<div class="cuadro-pregunta">❓ {pregunta_data["enunciado"]}</div>', unsafe_allow_html=True)
     st.write("")
     
+    # Control de índice de opción previamente guardada
     opcion_guardada = st.session_state.respuestas_alumno.get(idx, None)
+    clave_radio_dinamico = f"radio_preg_{st.session_state.cedula_actual}_{idx}"
     
     seleccion = st.radio(
         "Selecciona la alternativa correcta:",
         options=range(len(pregunta_data["alternativas"])),
         format_func=lambda x: pregunta_data["alternativas"][x],
         index=opcion_guardada,
-        key=f"radio_preg_{idx}"
+        key=clave_radio_dinamico,
+        on_change=guardar_respuesta_inmediata  # <--- BLINDAJE EN CALIENTE
     )
-    if seleccion is not None:
-        st.session_state.respuestas_alumno[idx] = seleccion
+    # Asegurar el registro si no se gatilló el on_change
+    st.session_state.respuestas_alumno[idx] = seleccion
 
 elif st.session_state.fase == "EVALUACION_TERMINADA":
     st.markdown('<div class="cuadro-nota">📊 EVALUACIÓN FINALIZADA</div>', unsafe_allow_html=True)
@@ -133,6 +142,7 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
     total_p = len(lista_preguntas)
     malas = total_p - buenas
     
+    # Cálculo de nota Chilena estándar (Escala de 1.0 a 7.0 con exigencia al 60%)
     if total_p > 0:
         porcentaje = buenas / total_p
         if porcentaje >= 0.6:
@@ -152,12 +162,12 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 7. BOTONES TÉCNICOS POR KEY (Completamente invisibles en el DOM)
+# 8. BOTONES TÉCNICOS POR KEY (Invisibles pero funcionales para el iFrame)
 st.button("InvisibleAnt", key="btn_js_ant", on_click=click_anterior)
 st.button("InvisibleSig", key="btn_js_sig", on_click=click_siguiente)
 st.button("InvisibleEnt", key="btn_js_ent", on_click=click_enter_cedula)
 
-# 8. SCRIPT DE JAVASCRIPT CONCATENADO CON COMILLAS SIMPLES (Cero fallos de sintaxis)
+# 9. SCRIPT DE JAVASCRIPT CONCATENADO CON COMILLAS SIMPLES
 js_teclado = '<script>' \
              'const doc = window.parent.document;' \
              'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }' \
@@ -173,13 +183,3 @@ js_teclado = '<script>' \
              '    e.preventDefault();' \
              '    if (e.key === "Backspace" && btnAnt) { btnAnt.click(); }' \
              '    else if (e.key === " " && faseActual === "SELECCION_CEDULA" && btnSig) { btnSig.click(); }' \
-             '    else if (e.key === "Enter") {' \
-             '      if (faseActual === "SELECCION_CEDULA" && btnEnt) { btnEnt.click(); }' \
-             '      else if (faseActual === "SUBPREGUNTAS" && btnSig) { btnSig.click(); }' \
-             '    }' \
-             '  }' \
-             '};' \
-             'doc.addEventListener("keydown", window.parent._keyHandler);' \
-             '</script>'
-
-st.components.v1.html(js_teclado, height=0)
