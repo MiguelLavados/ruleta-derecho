@@ -15,27 +15,30 @@ with st.sidebar:
 
 st.divider()
 
-# INITIALIZACIÓN SEGURA DE ESTADOS CON LLAVES
-if "sel_cedula" not in st.session_state:
-    st.session_state["sel_cedula"] = 1
-if "p_idx" not in st.session_state:
-    st.session_state["p_idx"] = 0
-if "historial_notas" not in st.session_state:
-    st.session_state["historial_notas"] = {}
+if "sel_cedula" not in st.session_state: st.session_state["sel_cedula"] = 1
+if "p_idx" not in st.session_state: st.session_state["p_idx"] = 0
+if "historial_notas" not in st.session_state: st.session_state["historial_notas"] = {}
 
-# BANCO DE DATOS REAL CON ALTERNATIVAS VARIABLES ENUNCIADO POR ENUNCIADO
+TITULOS = {
+    1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
+    2: "CÉDULA 2.- La norma jurídica.",
+    3: "CÉDULA 3.- Vigencia, validez y eficacia del Derecho positivo.",
+    4: "CÉDULA 4.- La plenitud hermética del ordenamiento jurídico y las lagunas del Derecho.",
+    5: "CÉDULA 5.- Fuentes del ordenamiento jurídico."
+}
+
 DATOS_EXAMEN = {
     1: {
-        "titulo": "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
+        "titulo": TITULOS[1],
         "preguntas": [
-            {"sub": "1.1", "preg": "¿Características de la norma moral?", "opts": ["A) Bilateral, exterior y coercible estatal.", "B) Unilateral, interior, autónoma e incoercible."], "ok": "B", "fund": "Obliga solo la conciencia y carece de imperio coactivo público."},
-            {"sub": "1.2", "preg": "¿Qué distingue formalmente al Derecho de la Moral?", "opts": ["A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.", "B) El Derecho es de fuero puramente interno y autónomo."], "ok": "A", "fund": "El Derecho cuenta con el imperio del aparato público para imponerse."},
+            {"sub": "1.1", "preg": "¿Características de la norma moral?", "opts": ["A) Bilateral, exterior y coercible estatal.", "B) Unilateral, interior, autónoma e incoercible."], "ok": "B", "fund": "Obliga solo la conciencia y carece de fuerza coactiva pública."},
+            {"sub": "1.2", "preg": "¿Qué distingue formalmente al Derecho de la Moral?", "opts": ["A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.", "B) El Derecho es puramente interior y autónomo."], "ok": "A", "fund": "El Derecho cuenta con el imperio del aparato público para imponerse."},
             {"sub": "1.3 a)", "preg": "¿Concepto doctrinal de las normas de trato social?", "opts": ["A) Mandatos imperativos escritos por el Congreso.", "B) Pautas de decoro, cortesía y urbanidad dictadas por el grupo."], "ok": "B", "fund": "Consisten en costumbres variables de convivencia comunitaria difusa."},
             {"sub": "1.3 b)", "preg": "¿Diferencia de sanción con la norma jurídica?", "opts": ["A) El uso social acarrea rechazo; la jurídica un castigo estatal.", "B) El uso social aplica multas y cárcel directas."], "ok": "A", "fund": "La transgresión legal gatilla penas públicas punitivas por jueces."}
         ]
     },
     2: {
-        "titulo": "CÉDULA 2.- La norma jurídica.",
+        "titulo": TITULOS[2],
         "preguntas": [
             {"sub": "2.1", "preg": "¿Características constitutivas de la norma jurídica?", "opts": ["A) Heterónoma, exterior, bilateral y coercible.", "B) Autónoma, interior, unilateral e incoercible."], "ok": "A", "fund": "Emana de potestad externa, rige actos manifestados y es correlativa."},
             {"sub": "2.2", "preg": "¿Cómo operan las normas imperativas y permisivas?", "opts": ["A) Las Imperativas otorgan opción; las Permisivas imponen nulidad.", "B) Las Imperativas ordenan absolutamente; las Permisivas conceden opción."], "ok": "B", "fund": "Imperativa: prohibición entre cónyuges. Permisiva: facultad de vender."},
@@ -43,7 +46,7 @@ DATOS_EXAMEN = {
         ]
     },
     3: {
-        "titulo": "CÉDULA 3.- Vigencia, validez y eficacia del Derecho positivo.",
+        "titulo": TITULOS[3],
         "preguntas": [
             {"sub": "3.1 a/b", "preg": "¿Cuándo principia la vigencia formal en Chile?", "opts": ["A) Desde la aprobación en comisiones parlamentarias.", "B) Por regla general, desde su publicación en el Diario Oficial."], "ok": "B", "fund": "Fija el marco de obligatoriedad temporal del precepto positivo."},
             {"sub": "3.1 c)", "preg": "En relación al cese, ¿cómo opera la derogación Tácita?", "opts": ["A) Cuando la nueva ley contiene disposiciones incompatibles con la anterior.", "B) Cuando el nuevo texto declara explícitamente qué artículos caen."], "ok": "A", "fund": "Se fundamenta en la incompatibilidad lógica de los preceptos."},
@@ -53,16 +56,16 @@ DATOS_EXAMEN = {
         ]
     },
     4: {
-        "titulo": "CÉDULA 4.- La plenitud hermética del ordenamiento y las lagunas.",
+        "titulo": TITULOS[4],
         "preguntas": [
-            {"sub": "4.1", "preg": "¿Qué manda el principio de inexcusabilidad (Art. 76 CPR)?", "opts": ["A) Autoriza a rechazar causas ante vacíos de la legislación.", "B) Obliga a jueces a resolver litigios aun sin ley expresa aplicable."], "ok": "B", "fund": "El juez debe fallar siempre, integrando el sistema ante vacíos."},
+            {"sub": "4.1", "preg": "En relación al principio de inexcusabilidad (Art. 76 CPR), ¿qué obligación impone a los tribunales?", "opts": ["A) Autoriza a rechazar causas ante vacíos de la legislación.", "B) Obliga a jueces a resolver litigios aun sin ley expresa aplicable."], "ok": "B", "fund": "El juez debe fallar siempre, integrando el sistema ante vacíos."},
             {"sub": "4.2", "preg": "¿Qué postula técnicamente la plenitud hermética?", "opts": ["A) El ordenamiento como un todo es completo y provee solución.", "B) Los códigos escritos particulares carecen de vacíos normativos."], "ok": "A", "fund": "El sistema posee normas de clausura y auto-integración."},
             {"sub": "4.3", "preg": "¿Cómo procede la solución por vía de integración?", "opts": ["A) El magistrado llena el vacío usando analogía y equidad natural.", "B) Suspende el proceso de forma obligatoria."], "ok": "A", "fund": "Construye la regla de fallo desde las bases del ordenamiento."},
             {"sub": "4.4", "preg": "¿Cuáles son los criterios para resolver antinomias?", "opts": ["A) Criterio de Jerarquía, Especialidad y Temporalidad.", "B) Ponderación económica y residencia del demandado."], "ok": "A", "fund": "Reglas para mantener la coherencia y unidad interna del Derecho."}
         ]
     },
     5: {
-        "titulo": "CÉDULA 5.- Fuentes del ordenamiento jurídico.",
+        "titulo": TITULOS[5],
         "preguntas": [
             {"sub": "5.1", "preg": "¿Distinción entre Fuentes Materiales y Formales?", "opts": ["A) Materiales: factores sociales; Formales: canales de expresión (ley).", "B) Materiales: libros de papel; Formales: discursos del Congreso."], "ok": "A", "fund": "La causa político-social frente al envase dotado de imperio."},
             {"sub": "5.2", "preg": "¿Cuáles son las fuentes formales principales en Chile?", "opts": ["A) Únicamente la legislación penal parlamentaria escrita.", "B) La Constitución, la ley, los tratados, reglamentos, costumbre y fallos."], "ok": "B", "fund": "El derecho positivo consagra una estructura plural de producción."},
@@ -75,33 +78,17 @@ DATOS_EXAMEN = {
 
 st.write("### 👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)")
 
-# COLUMNAS CON OPERACIONES INDEXADAS SEGURAS
 b1, b2, b3, b4, b5 = st.columns(5)
 with b1:
-    if st.button("Cédula 1", use_container_width=True):
-        st.session_state["sel_cedula"] = 1
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 1", use_container_width=True): st.session_state["sel_cedula"] = 1; st.session_state["p_idx"] = 0; st.session_state["corregido"] = False; st.rerun()
 with b2:
-    if st.button("Cédula 2", use_container_width=True):
-        st.session_state["sel_cedula"] = 2
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 2", use_container_width=True): st.session_state["sel_cedula"] = 2; st.session_state["p_idx"] = 0; st.session_state["corregido"] = False; st.rerun()
 with b3:
-    if st.button("Cédula 3", use_container_width=True):
-        st.session_state["sel_cedula"] = 3
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 3", use_container_width=True): st.session_state["sel_cedula"] = 3; st.session_state["p_idx = 0"]; st.session_state["corregido"] = False; st.rerun()
 with b4:
-    if st.button("Cédula 4", use_container_width=True):
-        st.session_state["sel_cedula"] = 4
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 4", use_container_width=True): st.session_state["sel_cedula"] = 4; st.session_state["p_idx"] = 0; st.session_state["corregido"] = False; st.rerun()
 with b5:
-    if st.button("Cédula 5", use_container_width=True):
-        st.session_state.sel_cedula = 5
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 5", use_container_width=True): st.session_state["sel_cedula"] = 5; st.session_state["p_idx"] = 0; st.session_state["corregido"] = False; st.rerun()
 
 st.write("---")
 
@@ -117,11 +104,6 @@ st.progress((idx + 1) / total_p)
 st.markdown(f"#### Subpunto {p_act['sub']}: {p_act['preg']}")
 
 clave_corr = f"corr_{c_actual}_{idx}"
-if clave_corr not in st.session_state:
-    st.session_state[clave_corr] = None
+if clave_corr not in st.session_state: st.session_state[clave_corr] = None
 
-# ENUNCIADOS ESPECÍFICOS REALES
 seleccion = st.radio("Seleccione la respuesta del alumno:", options=p_act["opts"], index=None, key=f"ev_{c_actual}_{idx}")
-
-st.text_area("Anotaciones y comentarios de la comisión:", height=70, key=f"nt_{c_actual}_{idx}")
-
