@@ -3,8 +3,7 @@ import streamlit as st
 # Configuración de la página
 st.set_page_config(page_title="Evaluación Oral", layout="wide")
 
-# 1. ESTILOS CSS REVISADOS (Para pintar las pestañas activas e inactivas)
-# Nota: Forzamos la eliminación de los márgenes inferiores de botones fantasmas
+# 1. ESTILOS CSS REVISADOS
 st.markdown("""
 <style>
     .titulo-panel { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
@@ -12,7 +11,6 @@ st.markdown("""
     .cuadro-pregunta { background-color: #ECEFF1; padding: 20px; border-radius: 5px; border-left: 5px solid #455A64; color: #263238; font-size: 18px; margin-top: 15px; }
     .cuadro-nota { background-color: #FFF3E0; padding: 25px; border-radius: 5px; border-left: 5px solid #FB8C00; font-size: 22px; text-align: center; }
     
-    /* Forzar estilos personalizados a los botones superiores según su estado simulado */
     div.stButton > button.btn-activa {
         background-color: #FF5252 !important;
         color: white !important;
@@ -36,29 +34,13 @@ DATOS_CEDULAS = {
 }
 
 SUBPREGUNTAS = {
-    1: [
-        {"enunciado": "¿Cuál es la principal sanción ante el incumplimiento de una norma jurídica?", "alternativas": ["A) El remordimiento de conciencia.", "B) La exclusión social del grupo.", "C) La coacción del Estado (sanción legal organizada)."], "correcta": 2}
-    ],
-    2: [
-        {"enunciado": "¿Qué tipo de fuente del derecho corresponde a la jurisprudencia?", "alternativas": ["A) Fuente formal material.", "B) Fuente formal indirecta.", "C) Fuente histórica."], "correcta": 1}
-    ],
-    3: [
-        {"enunciado": "La interpretación de la ley realizada por el legislador se denomina:", "alternativas": ["A) Interpretación doctrinal.", "B) Interpretación auténtica o legal.", "C) Interpretación judicial."], "correcta": 1}
-    ],
-    4: [
-        {"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su aprobación en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}
-    ],
+    1: [{"enunciado": "¿Cuál es la principal sanción ante el incumplimiento de una norma jurídica?", "alternativas": ["A) El remordimiento de conciencia.", "B) La exclusión social del grupo.", "C) La coacción del Estado (sanción legal organizada)."], "correcta": 2}],
+    2: [{"enunciado": "¿Qué tipo de fuente del derecho corresponde a la jurisprudencia?", "alternativas": ["A) Fuente formal material.", "B) Fuente formal indirecta.", "C) Fuente histórica."], "correcta": 1}],
+    3: [{"enunciado": "La interpretación de la ley realizada por el legislador se denomina:", "alternativas": ["A) Interpretación doctrinal.", "B) Interpretación auténtica o legal.", "C) Interpretación judicial."], "correcta": 1}],
+    4: [{"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su aprobación en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}],
     5: [
-        {
-            "enunciado": "¿Cuándo comienza legalmente la personalidad de una persona natural según el Código Civil?",
-            "alternativas": ["A) Al momento de la concepción.", "B) Al nacer, esto es, al separarse completamente de la madre y sobrevivir un momento siquiera.", "C) A los 18 años de edad."],
-            "correcta": 1
-        },
-        {
-            "enunciado": "La existencia natural de la persona humana comienza con:",
-            "alternativas": ["A) El nacimiento.", "B) La inscripción en el Registro Civil.", "C) La concepción."],
-            "correcta": 2
-        }
+        {"enunciado": "¿Cuándo comienza legalmente la personalidad de una persona natural según el Código Civil?", "alternativas": ["A) Al momento de la concepción.", "B) Al nacer, esto es, al separarse completamente de la madre y sobrevivir un momento siquiera.", "C) A los 18 años de edad."], "correcta": 1},
+        {"enunciado": "La existencia natural de la persona humana comienza con:", "alternativas": ["A) El nacimiento.", "B) La inscripción en el Registro Civil.", "C) La concepción."], "correcta": 2}
     ]
 }
 
@@ -72,25 +54,15 @@ if "pregunta_index" not in st.session_state:
 if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
-# 4. CAPTURAR COMANDOS DIRECTOS DESDE JAVASCRIPT MEDIANTE QUERY PARAMS (Evita usar botones ocultos)
-# El script JS actualizará la URL silenciosamente y Streamlit reaccionará inmediatamente
-query_params = st.query_transform(st.experimental_get_query_params() if hasattr(st, 'experimental_get_query_params') else st.query_params)
-
-if "accion" in query_params:
-    accion = query_params["accion"]
-    # Limpiar el parámetro de inmediato para que no se repita en el siguiente bucle
-    if hasattr(st, 'experimental_set_query_params'):
-        st.experimental_set_query_params()
-    else:
-        st.query_params.clear()
+# 4. CAPTURAR COMANDOS DIRECTOS DESDE LA URL (MANEJO DE TECLADO MÁS LIMPIO)
+if "accion" in st.query_params:
+    accion = st.query_params["accion"]
+    st.query_params.clear()  # Limpia la URL para el siguiente ciclo
         
-    # --- EJECUTAR ACCIONES DE TECLADO ---
     if accion == "espacio" and st.session_state.fase == "SELECCION_CEDULA":
-        # Avanza de forma cíclica (1 -> 2 -> 3 -> 4 -> 5 -> 1)
         st.session_state.cedula_actual = 1 if st.session_state.cedula_actual == 5 else st.session_state.cedula_actual + 1
         
     elif accion == "backspace" and st.session_state.fase == "SELECCION_CEDULA":
-        # Retrocede de forma cíclica (1 -> 5 -> 4 -> 3 -> 2 -> 1)
         st.session_state.cedula_actual = 5 if st.session_state.cedula_actual == 1 else st.session_state.cedula_actual - 1
         
     elif accion == "backspace" and st.session_state.fase == "SUBPREGUNTAS":
@@ -122,10 +94,8 @@ st.markdown('<div class="titulo-panel">👨‍🏫 PANEL DIRECTO DE EVALUACIÓN 
 # Fila superior de Cédulas limpia
 cols_superiores = st.columns(5)
 for i in range(1, 6):
-    # Asignamos clases CSS personalizadas para asegurar que la activa se distinga perfectamente
     clase_css = "btn-activa" if st.session_state.cedula_actual == i else "btn-inactiva"
-    cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type="secondary", use_container_width=True, help=None)
-    # Inyectamos dinámicamente la clase al botón correspondiente
+    cols_superiores[i-1].button(f"Cédula {i}", key=f"btn_top_{i}", type="secondary", use_container_width=True)
     st.markdown(f"<script>window.parent.document.querySelectorAll('button')[{i-1}].className += ' {clase_css}';</script>", unsafe_allow_html=True)
 
 st.write("---")
@@ -189,20 +159,32 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
         st.session_state.pregunta_index = 0
         st.session_state.respuestas_alumno = {}
 
-# 7. INYECCIÓN DE JAVASCRIPT ULTRA-LIMPIO (SIN BOTONES OCULTOS)
-# El JavaScript modifica la URL agregando la acción de la tecla, lo que refresca el backend de Streamlit con la orden
-st.components.v1.html(
-    """
-    <script>
-    const doc = window.parent.document;
-    
-    if(window.parent._keyHandler) {
-        doc.removeEventListener('keydown', window.parent._keyHandler);
-    }
+# 7. INYECCIÓN DE JAVASCRIPT DIRECTO SIN COMILLAS TRIPLES
+# Definimos el script en una sola línea de texto para prevenir fallos de sintaxis en Python
+js_script = "<script>" \
+            "const doc = window.parent.document;" \
+            "if(window.parent._keyHandler) { doc.removeEventListener('keydown', window.parent._keyHandler); }" \
+            "window.parent._keyHandler = function(e) {" \
+            "  const contenedorFase = doc.getElementById('fase-app');" \
+            "  const faseActual = contenedorFase ? contenedorFase.getAttribute('data-fase') : 'SELECCION_CEDULA';" \
+            "  if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {" \
+            "    if (doc.activeElement && doc.activeElement.type === 'radio' && e.key !== 'Enter') return;" \
+            "    e.preventDefault();" \
+            "    let accion = '';" \
+            "    if (e.key === 'Backspace') accion = 'backspace';" \
+            "    else if (e.key === ' ' && faseActual === 'SELECCION_CEDULA') accion = 'espacio';" \
+            "    else if (e.key === 'Enter') accion = 'enter';" \
+            "    if (accion !== '') {" \
+            "      const url = new URL(window.parent.location.href);" \
+            "      url.searchParams.set('accion', accion);" \
+            "      window.parent.history.replaceState({}, '', url.toString());" \
+            "      const submitBtn = doc.querySelector('.stActionButton');" \
+            "      if (submitBtn) submitBtn.click();" \
+            "      else window.parent.location.reload();" \
+            "    }" \
+            "  }" \
+            "};" \
+            "doc.addEventListener('keydown', window.parent._keyHandler);" \
+            "</script>"
 
-    window.parent._keyHandler = function(e) {
-        const contenedorFase = doc.getElementById('fase-app');
-        const faseActual = contenedorFase ? contenedorFase.getAttribute('data-fase') : "SELECCION_CEDULA";
-
-        if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') {
-            // Permitir que el Enter funcione nativamente si está cambiando el radio button
+st.components.v1.html(js_script, height=0)
