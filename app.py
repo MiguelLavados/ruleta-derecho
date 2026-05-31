@@ -15,13 +15,9 @@ with st.sidebar:
 
 st.divider()
 
-# INICIALIZACIÓN DE ESTADOS
-if "sel_cedula" not in st.session_state:
-    st.session_state["sel_cedula"] = 1
-if "p_idx" not in st.session_state:
-    st.session_state["p_idx"] = 0
-if "historial_notas" not in st.session_state:
-    st.session_state["historial_notas"] = {}
+if "sel_cedula" not in st.session_state: st.session_state["sel_cedula"] = 1
+if "p_idx" not in st.session_state: st.session_state["p_idx"] = 0
+if "historial_notas" not in st.session_state: st.session_state["historial_notas"] = {}
 
 TITULOS = {
     1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
@@ -36,7 +32,7 @@ DATOS_EXAMEN = {
         "titulo": TITULOS[1],
         "preguntas": [
             {"sub": "1.1", "preg": "¿Características de la norma moral?", "opts": ["A) Bilateral, exterior y coercible estatal.", "B) Unilateral, interior, autónoma e incoercible."], "ok": "B", "fund": "Obliga solo la conciencia y carece de fuerza coactiva pública."},
-            {"sub": "1.2", "preg": "¿Qué distingue formalmente al Derecho de la Moral?", "opts": ["A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.", "B) El Derecho es puramente interior y autónomo."], "ok": "A", "fund": "El Derecho cuenta con el imperio del aparato público para imponerse."},
+            {"sub": "1.2", "preg": "¿Qué distingue formalmente al Derecho de la Moral?", "opts": ["A) El Derecho es coercible y bilateral; la Moral es incoercible y unilateral.", "B) El Derecho es de fuero puramente interno y autónomo."], "ok": "A", "fund": "El Derecho cuenta con el imperio del aparato público para imponerse."},
             {"sub": "1.3 a)", "preg": "¿Concepto doctrinal de las normas de trato social?", "opts": ["A) Mandatos imperativos escritos por el Congreso.", "B) Pautas de decoro, cortesía y urbanidad dictadas por el grupo."], "ok": "B", "fund": "Consisten en costumbres variables de convivencia comunitaria difusa."},
             {"sub": "1.3 b)", "preg": "¿Diferencia de sanción con la norma jurídica?", "opts": ["A) El uso social acarrea rechazo; la jurídica un castigo estatal.", "B) El uso social aplica multas y cárcel directas."], "ok": "A", "fund": "La transgresión legal gatilla penas públicas punitivas por jueces."}
         ]
@@ -64,7 +60,7 @@ DATOS_EXAMEN = {
         "preguntas": [
             {"sub": "4.1", "preg": "En relación al principio de inexcusabilidad (Art. 76 CPR), ¿qué obligación impone a los tribunales?", "opts": ["A) Autoriza a rechazar causas ante vacíos de la legislación.", "B) Obliga a jueces a resolver litigios aun sin ley expresa aplicable."], "ok": "B", "fund": "El juez debe fallar siempre, integrando el sistema ante vacíos."},
             {"sub": "4.2", "preg": "¿Qué postula técnicamente la plenitud hermética?", "opts": ["A) El ordenamiento como un todo es completo y provee solución.", "B) Los códigos escritos particulares carecen de vacíos normativos."], "ok": "A", "fund": "El sistema posee normas de clausura y auto-integración."},
-            {"sub": "4.3", "preg": "¿Cómo procede la solución por vía de integración?", "opts": ["A) El magistrado llena el vacío usando analogía y equidad natural.", "B) Suspende el proceso de forma obligatoria."], "ok": "A", "fund": "Construye la regla de fallo desde las bases del ordenamiento."},
+            {"sub": "4.3", "preg": "¿Cómo procede la solución por vía de integración?", "opts": ["A) El magistrado llena el vacío usando analogía and equidad natural.", "B) Suspende el proceso de forma obligatoria."], "ok": "A", "fund": "Construye la regla de fallo desde las bases del ordenamiento."},
             {"sub": "4.4", "preg": "¿Cuáles son los criterios para resolver antinomias?", "opts": ["A) Criterio de Jerarquía, Especialidad y Temporalidad.", "B) Ponderación económica y residencia del demandado."], "ok": "A", "fund": "Reglas para mantener la coherencia y unidad interna del Derecho."}
         ]
     },
@@ -82,33 +78,18 @@ DATOS_EXAMEN = {
 
 st.write("### 👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)")
 
-# BOTONERA RECTIFICADA SIN COMILLAS INTERNAS ERRÓNEAS
+# 1. BOTONERA DE SELECCIÓN DE CÉDULA
 b1, b2, b3, b4, b5 = st.columns(5)
 with b1:
-    if st.button("Cédula 1", use_container_width=True):
-        st.session_state["sel_cedula"] = 1
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 1", use_container_width=True): st.session_state["sel_cedula"] = 1; st.session_state["p_idx"] = 0; st.rerun()
 with b2:
-    if st.button("Cédula 2", use_container_width=True):
-        st.session_state["sel_cedula"] = 2
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 2", use_container_width=True): st.session_state["sel_cedula"] = 2; st.session_state["p_idx"] = 0; st.rerun()
 with b3:
-    if st.button("Cédula 3", use_container_width=True):
-        st.session_state["sel_cedula"] = 3
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 3", use_container_width=True): st.session_state["sel_cedula"] = 3; st.session_state["p_idx"] = 0; st.rerun()
 with b4:
-    if st.button("Cédula 4", use_container_width=True):
-        st.session_state["sel_cedula"] = 4
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 4", use_container_width=True): st.session_state["sel_cedula"] = 4; st.session_state["p_idx"] = 0; st.rerun()
 with b5:
-    if st.button("Cédula 5", use_container_width=True):
-        st.session_state["sel_cedula"] = 5
-        st.session_state["p_idx"] = 0
-        st.rerun()
+    if st.button("Cédula 5", use_container_width=True): st.session_state["sel_cedula"] = 5; st.session_state["p_idx"] = 0; st.rerun()
 
 st.write("---")
 
@@ -119,13 +100,20 @@ idx = st.session_state["p_idx"]
 p_act = item_c["preguntas"][idx]
 
 st.success(f"### 📍 {item_c['titulo']}")
-st.write(f"**Interrogación del Subpunto {idx + 1} de {total_p}**")
-st.progress((idx + 1) / total_p)
-st.markdown(f"#### Subpunto {p_act['sub']}: {p_act['preg']}")
 
-clave_corr = f"corr_{c_actual}_{idx}"
-if clave_corr not in st.session_state:
-    st.session_state[clave_corr] = None
+# =====================================================
+# 🔥 JUGADA MAESTRA: CONTROLES UBICADOS ARRIBA DEL EXAMEN
+# =====================================================
+st.write("### 🎛️ CONTROLES DEL EXAMINADOR")
+c_nav1, c_nav2, c_eval, c_nota = st.columns([1, 1, 1.5, 1.5])
 
-seleccion = st.radio("Seleccione la respuesta del alumno:", options=p_act["opts"], index=None, key=f"ev_{c_actual}_{idx}")
+with c_nav1:
+    if st.button("⬅️ Anterior", use_container_width=True):
+        if st.session_state["p_idx"] > 0:
+            st.session_state["p_idx"] -= 1
+            st.rerun()
 
+with c_nav2:
+    if st.button("➡️ Siguiente", use_container_width=True):
+        if st.session_state["p_idx"] < total_p - 1:
+            st.session_state["p_idx"] += 1
