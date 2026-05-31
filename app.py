@@ -46,7 +46,7 @@ SUBPREGUNTAS = {
         {"enunciado": "La interpretación de la ley realizada por el legislador se denomina:", "alternativas": ["A) Interpretación doctrinal.", "B) Interpretación auténtica o legal.", "C) Interpretación judicial."], "correcta": 1}
     ],
     4: [
-        {"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su aprobación en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}
+        {"enunciado": "Por regla general, las leyes en Chile comienzan a regir desde:", "alternativas": ["A) Su approval en el Congreso.", "B) Su publicación en el Diario Oficial.", "C) Su firma por el Presidente."], "correcta": 1}
     ],
     5: [
         {"enunciado": "¿Cuándo comienza legalmente la personalidad de una persona natural según el Código Civil?", "alternativas": ["A) Al momento de la concepción.", "B) Al nacer, esto es, al separarse completamente de la madre y sobrevivir un momento siquiera.", "C) A los 18 años de edad."], "correcta": 1},
@@ -173,26 +173,7 @@ st.button("EJECUTAR_SIGUIENTE", key="btn_js_sig", on_click=click_siguiente)
 st.button("EJECUTAR_ENTER", key="btn_js_ent", on_click=click_enter_cedula)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# 8. INYECCIÓN DE JAVASCRIPT GLOBAL MEDIANTE CLICS SIMULADOS INMEDIATOS
-js_final = (
-    '<script>'
-    'const doc = window.parent.document;'
-    'if(window.parent._keyHandler) { doc.removeEventListener("keydown", window.parent._keyHandler); }'
-    'window.parent._keyHandler = function(e) {'
-    '  const elFase = doc.getElementById("estado-fase");'
-    '  const faseActual = elFase ? elFase.getAttribute("data-fase") : "SELECCION_CEDULA";'
-    '  if (e.key === "Backspace" || e.key === " " || e.key === "Enter") {'
-    '    if (doc.activeElement && doc.activeElement.type === "radio" && e.key !== "Enter") { return; }'
-    '    e.preventDefault();'
-    '    const botones = Array.from(doc.querySelectorAll("button"));'
-    '    const btnAnt = botones.find(b => b.innerText.includes("EJECUTAR_ANTERIOR"));'
-    '    const btnSig = botones.find(b => b.innerText.includes("EJECUTAR_SIGUIENTE"));'
-    '    const btnEnt = botones.find(b => b.innerText.includes("EJECUTAR_ENTER"));'
-    '    if (e.key === "Backspace" && btnAnt) { btnAnt.click(); }'
-    '    else if (e.key === " " && faseActual === "SELECCION_CEDULA" && btnSig) { btnSig.click(); }'
-    '    else if (e.key === "Enter") {'
-    '      if (faseActual === "SELECCION_CEDULA" && btnEnt) { btnEnt.click(); }'
-    '      else if (faseActual === "SUBPREGUNTAS" && btnSig) { btnSig.click(); }'
-    '    }'
-    '  }'
-    '};'
+# 8. INYECCIÓN DE JAVASCRIPT CORREGIDA EN UNA SOLA LÍNEA DE TEXTO REAL
+js_final = "<script>const doc = window.parent.document; if(window.parent._keyHandler) { doc.removeEventListener('keydown', window.parent._keyHandler); } window.parent._keyHandler = function(e) { const elFase = doc.getElementById('estado-fase'); const faseActual = elFase ? elFase.getAttribute('data-fase') : 'SELECCION_CEDULA'; if (e.key === 'Backspace' || e.key === ' ' || e.key === 'Enter') { if (doc.activeElement && doc.activeElement.type === 'radio' && e.key !== 'Enter') { return; } e.preventDefault(); const botones = Array.from(doc.querySelectorAll('button')); const btnAnt = botones.find(b => b.innerText.includes('EJECUTAR_ANTERIOR')); const btnSig = botones.find(b => b.innerText.includes('EJECUTAR_SIGUIENTE')); const btnEnt = botones.find(b => b.innerText.includes('EJECUTAR_ENTER')); if (e.key === 'Backspace' && btnAnt) { btnAnt.click(); } else if (e.key === ' ' && faseActual === 'SELECCION_CEDULA' && btnSig) { btnSig.click(); } else if (e.key === 'Enter') { if (faseActual === 'SELECCION_CEDULA' && btnEnt) { btnEnt.click(); } else if (faseActual === 'SUBPREGUNTAS' && btnSig) { btnSig.click(); } } } }; doc.addEventListener('keydown', window.parent._keyHandler);</script>"
+
+st.components.v1.html(js_final, height=0)
