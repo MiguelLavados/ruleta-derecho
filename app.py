@@ -24,7 +24,6 @@ TITULOS = {
     5: "CÉDULA 5.- Fuentes del ordenamiento jurídico."
 }
 
-# CONTENIDO EXHAUSTIVO Y VARIABLES CRUZADAS VERDADERAS (Escala Dinámica A/B)
 ESTRUCTURA_EXAMEN = {
     1: {
         "preguntas": [
@@ -40,32 +39,32 @@ ESTRUCTURA_EXAMEN = {
             },
             {
                 "sub": "1.3 a)", "preg": "¿Cuál es el concepto doctrinal que define a los usos o normas de trato social?",
-                "opts": ["A) Son imperativos categóricos impersonales dictados por los tribunales en lo civil.", "B) Son pautas de decoro, cortesía y urbanidad establecidas de forma difusa por la colectividad."],
-                "ok": "B", "fund": "Consisten en modales o costumbres de convivencia común que varían según el grupo social."
+                "opts": ["A) Son pautas de decoro, cortesía y urbanidad establecidas de forma difusa por la colectividad.", "B) Son imperativos categóricos impersonales dictados por los tribunales en lo civil."],
+                "ok": "A", "fund": "Consisten en modales o costumbres de convivencia común que varían según el grupo social."
             },
             {
-                "sub": "1.3 b)", "preg": "¿Qué diferencia sustantiva separa la sanción de un uso social de la norma jurídica?",
-                "opts": ["A) El uso social acarrea rechazo, reprobación o aislamiento; la norma jurídica conlleva castigo del Estado.", "B) El uso social aplica penas corporales de cárcel; el Derecho acarrea remordimiento íntimo."],
-                "ok": "A", "fund": "La transgresión jurídica activa multas o prisiones; el uso social solo el reproche del entorno."
+                "sub": "1.3 b)", "preg": "Normas de uso y trato social: características y diferencias con la norma jurídica.",
+                "opts": ["A) Los usos sociales confieren acciones legales directas ante tribunales para exigir el saludo.", "B) Los usos sociales son heterónomos, exteriores y unilaterales; las jurídicas son coercibles institucionales."],
+                "ok": "B", "fund": "La transgresión jurídica activa multas o prisiones; el uso social solo el reproche o aislamiento del entorno."
             }
         ]
     },
     2: {
         "preguntas": [
             {
-                "sub": "2.1", "preg": "¿Cuáles son las notas características e indispensables de la norma jurídica?",
-                "opts": ["A) Autonomía de la conciencia, unilateralidad absoluta e incoercibilidad civil general.", "B) Heteronomía legislativa, exterioridad conductual, bilateralidad y coercibilidad potencial."],
-                "ok": "B", "fund": "Nace de una potestad externa, rige actos manifestados y otorga facultad correlativa a un tercero."
+                "sub": "2.1", "preg": "¿Cuáles son las notes características e indispensables de la norma jurídica?",
+                "opts": ["A) Heterónoma legislativa, exterioridad conductual, bilateralidad y coercibilidad potencial.", "B) Autonomía de la conciencia, unilateralidad absoluta e incoercibilidad civil general."],
+                "ok": "A", "fund": "Nace de una potestad externa, rige actos manifestados y confiere facultad correlativa a un tercero."
             },
             {
                 "sub": "2.2", "preg": "Frente al margen de la autonomía de la voluntad, ¿cómo operan las normas imperativas y permisivas?",
-                "opts": ["A) Las Imperativas mandan o prohíben sin admitir pacto; las Permisivas confieren una opción legítima.", "B) Las Imperativas otorgan una opción renunciable; las Permisivas imponen nulidades absolutas directas."],
-                "ok": "A", "fund": "Es imperativa la prohibición de venta entre cónyuges; permisiva la facultad del dueño de enajenar."
+                "opts": ["A) Las Imperativas otorgan una opción renunciable; las Permisivas imponen nulidades absolutas directas.", "B) Las Imperativas ordenan o prohíben una conducta; las Permisivas confieren una aptitud legítima."],
+                "ok": "B", "fund": "Es imperativa la prohibición de venta entre cónyuges; permisiva la facultad del dueño de enajenar."
             },
             {
                 "sub": "2.3", "preg": "¿Cuál es la estructura lógica interna de una norma jurídica según la teoría tradicional?",
                 "opts": ["A) Se compone como un juicio hipotético estructurado en un Supuesto de Hecho y una Consecuencia.", "B) Consiste en una declaración política abstracta exenta de consecuencias coactivas puntuales."],
-                "ok": "A", "fund": "Determina que ante la realización fáctica de la hipótesis legal se gatilla el efecto punitivo."
+                "ok": "A", "fund": "Determina que ante la realización fáctica de la hipótesis legal se gatilla el efecto punitivo o sanción."
             }
         ]
     },
@@ -73,7 +72,7 @@ ESTRUCTURA_EXAMEN = {
         "preguntas": [
             {
                 "sub": "3.1 a/b", "preg": "¿Qué es la vigencia de una norma y cuándo principia por regla general en Chile?",
-                "opts": ["A) Es el valor ético intrínseco de la norma; principia desde su aprobación unánime por el Senado.", "B) Es la fuerza obligatoria formal de la ley; principia desde su publicación en el Diario Oficial."],
+                "opts": ["A) Es el valor ético de la norma; obliga desde el debate en sala parlamentaria.", "B) Es la fuerza obligatoria formal de la ley; principia desde su publicación en el Diario Oficial."],
                 "ok": "B", "fund": "Establece el marco temporal exacto a partir del cual el precepto positivo obliga a los habitantes."
             },
             {
@@ -88,8 +87,8 @@ ESTRUCTURA_EXAMEN = {
             },
             {
                 "sub": "3.2 b)", "preg": "¿Qué presupuesto sustenta la validez normativa según la doctrina Iuspositivista?",
-                "opts": ["A) La concordancia moral y sintonía intrínseca de los artículos con los ideales de justicia natural.", "B) La regularidad formal de su producción bajo las competencias y procesos que dicta el Estado."],
-                "ok": "B", "fund": "El positivismo opera bajo la separación conceptual tajante entre la validez del Derecho y la Moral."
+                "opts": ["A) La regularidad formal de su producción bajo las competencias y procesos que dicta el Estado.", "B) La concordancia moral y sintonía intrínseca de los artículos con los ideales de justicia natural."],
+                "ok": "A", "fund": "El positivismo opera bajo la separación conceptual tajante entre la validez del Derecho y la Moral."
             },
             {
                 "sub": "3.3", "preg": "¿Qué representa técnicamente la eficacia de las leyes en el orden social?",
@@ -102,23 +101,23 @@ ESTRUCTURA_EXAMEN = {
         "preguntas": [
             {
                 "sub": "4.1", "preg": "¿Qué deber impone el principio de inexcusabilidad a la magistratura (Art. 76 CPR)?",
-                "opts": ["A) Autoriza a rechazar demandas si los códigos sustantivos poseen redacciones confusas o ambiguas.", "B) Obliga a los jueces a resolver conflictos de su competencia, aun ante la falta de ley expresa aplicable."],
+                "opts": ["A) Autoriza a rechazar demandas si los códigos sustantivos poseen redacciones confusas.", "B) Obliga a los jueces a resolver conflictos de su competencia, aun ante la falta de ley expresa aplicable."],
                 "ok": "B", "fund": "El juez no puede negarse a administrar justicia; ante vacíos debe integrar mediante la equidad natural."
             },
             {
-                "sub": "4.2", "preg": "¿Qué postula técnicamente el concepto dogmático de plenitud hermética del ordenamiento?",
+                "sub": "4.2", "preg": "Concepto de plenitud hermética del ordenamiento jurídico.",
                 "opts": ["A) El ordenamiento como un todo es completo y sistemático, proveyendo siempre una solución jurídica.", "B) Los textos legislativos individuales redactados por las cámaras carecen por completo de vacíos."],
                 "ok": "A", "fund": "Distingue las lagunas de la ley (vacíos en códigos) de la autosuficiencia del sistema integral."
             },
             {
                 "sub": "4.3", "preg": "¿Cómo procede judicialmente la solución de una laguna jurídica por vía de integración?",
-                "opts": ["A) El magistrado llena el vacío legal recurriendo a la analogía, principios generales y equidad natural.", "B) Se archivan los expedientes y se suspende el proceso remitiendo los antecedentes al Parlamento."],
-                "ok": "A", "fund": "La integración faculta al juez a extraer la regla de fallo desde las premisas racionales del sistema."
+                "opts": ["A) Se archivan los expedientes y se suspende el proceso remitiendo los antecedentes al Parlamento.", "B) El magistrado llena el vacío legal recurriendo a la analogía, principios generales y equidad natural."],
+                "ok": "B", "fund": "La integración faculta al juez a extraer la regla de fallo desde las premisas racionales del sistema."
             },
             {
-                "sub": "4.4", "preg": "Frente a antinomias normativas vigentes, ¿cuál es el orden clásico de los criterios de solución?",
-                "opts": ["A) Criterio de Jerarquía (norma superior), Especialidad (norma específica) y Temporalidad (posterior).", "B) Ponderación económica del daño patrimonial, antigüedad del tribunal y residencia fiscal."],
-                "ok": "A", "fund": "Reglas lógicas fundamentales de la hermenéutica para mantener la coherencia y unidad del Derecho."
+                "sub": "4.4", "preg": "Conflicto entre normas jurídicas positivas: criterios de solución judicial.",
+                "opts": ["A) Se resuelve mediante los criterios clásicos de: Jerarquía, Especialidad y Temporalidad.", "B) Se soluciona fijando la cuantía económica o la antigüedad de la matrícula judicial."],
+                "ok": "A", "fund": "Jerarquía (superior prevalece), Especialidad (especial prima), Temporalidad (posterior deroga)."
             }
         ]
     },
@@ -126,4 +125,8 @@ ESTRUCTURA_EXAMEN = {
         "preguntas": [
             {
                 "sub": "5.1", "preg": "¿Cuál es la distinción científica entre Fuentes Materiales y Fuentes Formales?",
-                "opts": ["A) Materiales son factores de la realidad social; Formales son los procedimientos obligatorios (ley).", "B) Materiales aluden a libros escritos; Formales a ceremonias y discursos solemnes del Congreso."],
+                "opts": ["A) Materiales: factores sociales; Formales: canales de expresión obligatoria.", "B) Materiales: libros de papel; Formales: discursos del Congreso."],
+                "ok": "A", "fund": "La fuente material es la causa sociopolítica; la formal es el envase dotado de imperio legal vinculante."
+            },
+            {
+                "sub": "5.2", "preg": "Fuentes formales del Derecho: clasificación.",
