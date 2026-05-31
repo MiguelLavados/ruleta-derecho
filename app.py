@@ -56,7 +56,6 @@ if "respuestas_alumno" not in st.session_state:
     st.session_state.respuestas_alumno = {}
 
 # 4. CAPTURA DE TECLADO MEDIANTE INPUT INVISIBLE NATIVO
-# JavaScript inyectará las pulsaciones de teclado en este cuadro de texto oculto, gatillando el refresco de Streamlit al instante
 def procesar_teclado_nativo():
     evento = st.session_state.captura_teclado_secreta
     if evento:
@@ -144,7 +143,7 @@ elif st.session_state.fase == "EVALUACION_TERMINADA":
             buenas += 1
             
     total_p = len(lista_preguntas)
-    malas = total_p - whites = total_p - buenas
+    malas = total_p - buenas
     
     if total_p > 0:
         porcentaje = buenas / total_p
@@ -184,7 +183,6 @@ js_captura_nativa = (
     '    if (comando !== "") {'
     '      const inputTecnico = doc.querySelector("input[data-testid=\'stTextInputInput\']");'
     '      if (inputTecnico) {'
-    '        // Insertar el comando en el input oculto y forzar el evento nativo de Streamlit'
     '        inputTecnico.value = comando;'
     '        inputTecnico.dispatchEvent(new Event("change", { bubbles: true }));'
     '        inputTecnico.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));'
@@ -192,3 +190,8 @@ js_captura_nativa = (
     '    }'
     '  }'
     '};'
+    'doc.addEventListener("keydown", window.parent._keyHandler);'
+    '</script>'
+)
+
+st.components.v1.html(js_captura_nativa, height=0)
