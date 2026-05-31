@@ -1,6 +1,8 @@
 import streamlit as st
 import datetime
+from preguntas import DATOS_EXAMEN
 
+# CONFIGURACIÓN GENERAL
 st.set_page_config(page_title="EXAMINADOR", layout="centered")
 
 if datetime.date.today() > datetime.date(2026, 6, 30):
@@ -16,117 +18,95 @@ with st.sidebar:
 
 st.divider()
 
-TITULOS = {
-    1: "CÉDULA 1.- El Derecho y la Moral. Normas de uso y trato social.",
-    2: "CÉDULA 2.- La norma jurídica.",
-    3: "CÉDULA 3.- Vigencia, validez y eficacia del Derecho positivo.",
-    4: "CÉDULA 4.- La plenitud hermética del ordenamiento jurídico y las lagunas del Derecho.",
-    5: "CÉDULA 5.- Fuentes del ordenamiento jurídico."
-}
+if "sel_cedula" not in st.session_state: st.session_state.sel_cedula = 1
+if "p_idx" not in st.session_state: st.session_state.p_idx = 0
+if "historial_notas" not in st.session_state: st.session_state.historial_notas = {}
 
-ESTRUCTURA_EXAMEN = {
-    1: {
-        "preguntas": [
-            {
-                "sub": "1.1", "preg": "¿Cuáles son las características esenciales que aíslan a la norma moral?",
-                "opts": ["A) Es bilateral, de fuero externo, heterónoma y enteramente coercible por el Estado.", "B) Es unilateral, de fuero interno, autónoma en su origen e incoercible fáctico."],
-                "ok": "B", "fund": "La moral obliga solo la conciencia del sujeto y carece de imperio coactivo institucional."
-            },
-            {
-                "sub": "1.2", "preg": "Derecho y Moral: ¿Cuál es el paralelo formal según su ámbito de aplicación?",
-                "opts": ["A) El Derecho regula actos manifestados (exterior); la Moral regula la pureza de la intención (interior).", "B) La Moral exige la ejecución material del acto; al Derecho le importa la aceptación íntima."],
-                "ok": "A", "fund": "Cumplir un contrato por miedo a la multa es válido para el Derecho, pero carece de mérito moral."
-            },
-            {
-                "sub": "1.3 a)", "preg": "¿Cuál es el concepto doctrinal que define a los usos o normas de trato social?",
-                "opts": ["A) Son pautas de decoro, cortesía y urbanidad establecidas de forma difusa por la colectividad.", "B) Son imperativos categóricos impersonales dictados por los tribunales en lo civil."],
-                "ok": "A", "fund": "Consisten en modales o costumbres de convivencia común que varían según el grupo social."
-            },
-            {
-                "sub": "1.3 b)", "preg": "Normas de uso y trato social: características y diferencias con la norma jurídica.",
-                "opts": ["A) Los usos sociales confieren acciones legales directas ante tribunales para exigir el saludo.", "B) Los usos sociales son heterónomos, exteriores y unilaterales; las jurídicas son coercibles institucionales."],
-                "ok": "B", "fund": "La transgresión jurídica activa multas o prisiones; el uso social solo el reproche o aislamiento del entorno."
-            }
-        ]
-    },
-    2: {
-        "preguntas": [
-            {
-                "sub": "2.1", "preg": "¿Cuáles son las notes características e indispensables de la norma jurídica?",
-                "opts": ["A) Heterónoma legislativa, exterioridad conductual, bilateralidad y coercibilidad potencial.", "B) Autonomía de la conciencia, unilateralidad absoluta e incoercibilidad civil general."],
-                "ok": "A", "fund": "Nace de una potestad externa, rige actos manifestados y confiere facultad correlativa a un tercero."
-            },
-            {
-                "sub": "2.2", "preg": "Frente al margen de la autonomía de la voluntad, ¿cómo operan las normas imperativas y permisivas?",
-                "opts": ["A) Las Imperativas otorgan una opción renunciable; las Permisivas imponen nulidades absolutas directas.", "B) Las Imperativas ordenan o prohíben una conducta; las Permisivas confieren una aptitud legítima."],
-                "ok": "B", "fund": "Es imperativa la prohibición de venta entre cónyuges; permisiva la facultad del dueño de enajenar."
-            },
-            {
-                "sub": "2.3", "preg": "¿Cuál es la estructura lógica interna de una norma jurídica según la teoría tradicional?",
-                "opts": ["A) Se compone como un juicio hipotético estructurado en un Supuesto de Hecho y una Consecuencia.", "B) Consiste en una declaración política abstracta exenta de consecuencias coactivas puntuales."],
-                "ok": "A", "fund": "Determina que ante la realización fáctica de la hipótesis legal se gatilla el efecto punitivo o sanción."
-            }
-        ]
-    },
-    3: {
-        "preguntas": [
-            {
-                "sub": "3.1 a/b", "preg": "¿Qué es la vigencia de una norma y cuándo principia por regla general en Chile?",
-                "opts": ["A) Es el valor ético de la norma; obliga desde el debate en sala parlamentaria.", "B) Es la fuerza obligatoria formal de la ley; principia desde su publicación en el Diario Oficial."],
-                "ok": "B", "fund": "Establece el marco temporal exacto a partir del cual el precepto positivo obliga a los habitantes."
-            },
-            {
-                "sub": "3.1 c)", "preg": "En relación a la pérdida de vigencia, ¿cómo opera la derogación Tácita de una ley?",
-                "opts": ["A) Cuando la nueva ley contiene disposiciones que no pueden conciliarse con las de la ley anterior.", "B) Cuando el nuevo texto legal declara de manera explícita qué artículos del pasado quedan abolidos."],
-                "ok": "A", "fund": "La derogación tácita se fundamenta en la incompatibilidad lógica entre el precepto antiguo y el nuevo."
-            },
-            {
-                "sub": "3.2 a)", "preg": "¿Cómo se conceptualiza de forma técnica la validez dentro del Derecho positivo?",
-                "opts": ["A) Es la existencia formal y obligatoriedad de la norma fundada en su conformidad con las reglas superiores.", "B) Representa el grado material de cumplimiento sociológico que exhibe espontáneamente la calle."],
-                "ok": "A", "fund": "Implica que la norma pertenece legítimamente al orden jerárquico por emanar del órgano competente."
-            },
-            {
-                "sub": "3.2 b)", "preg": "¿Qué presupuesto sustenta la validez normativa según la doctrina Iuspositivista?",
-                "opts": ["A) La regularidad formal de su producción bajo las competencias y procesos que dicta el Estado.", "B) La concordancia moral y sintonía intrínseca de los artículos con los ideales de justicia natural."],
-                "ok": "A", "fund": "El positivismo opera bajo la separación conceptual tajante entre la validez del Derecho y la Moral."
-            },
-            {
-                "sub": "3.3", "preg": "¿Qué representa técnicamente la eficacia de las leyes en el orden social?",
-                "opts": ["A) El grado fáctico de acatamiento por los ciudadanos y de aplicación real por los jueces.", "B) La correcta protocolización y archivo administrativo de los borradores en el Congreso."],
-                "ok": "A", "fund": "Mide el plano del hecho empírico: si la directriz legal es efectivamente obedecida en la práctica."
-            }
-        ]
-    },
-    4: {
-        "preguntas": [
-            {
-                "sub": "4.1", "preg": "¿Qué deber impone el principio de inexcusabilidad a la magistratura (Art. 76 CPR)?",
-                "opts": ["A) Autoriza a rechazar demandas si los códigos sustantivos poseen redacciones confusas.", "B) Obliga a los jueces a resolver conflictos de su competencia, aun ante la falta de ley expresa aplicable."],
-                "ok": "B", "fund": "El juez no puede negarse a administrar justicia; ante vacíos debe integrar mediante la equidad natural."
-            },
-            {
-                "sub": "4.2", "preg": "Concepto de plenitud hermética del ordenamiento jurídico.",
-                "opts": ["A) El ordenamiento como un todo es completo y sistemático, proveyendo siempre una solución jurídica.", "B) Los textos legislativos individuales redactados por las cámaras carecen por completo de vacíos."],
-                "ok": "A", "fund": "Distingue las lagunas de la ley (vacíos en códigos) de la autosuficiencia del sistema integral."
-            },
-            {
-                "sub": "4.3", "preg": "¿Cómo procede judicialmente la solución de una laguna jurídica por vía de integración?",
-                "opts": ["A) Se archivan los expedientes y se suspende el proceso remitiendo los antecedentes al Parlamento.", "B) El magistrado llena el vacío legal recurriendo a la analogía, principios generales y equidad natural."],
-                "ok": "B", "fund": "La integración faculta al juez a extraer la regla de fallo desde las premisas racionales del sistema."
-            },
-            {
-                "sub": "4.4", "preg": "Conflicto entre normas jurídicas positivas: criterios de solución judicial.",
-                "opts": ["A) Se resuelve mediante los criterios clásicos de: Jerarquía, Especialidad y Temporalidad.", "B) Se soluciona fijando la cuantía económica o la antigüedad de la matrícula judicial."],
-                "ok": "A", "fund": "Jerarquía (superior prevalece), Especialidad (especial prima), Temporalidad (posterior deroga)."
-            }
-        ]
-    },
-    5: {
-        "preguntas": [
-            {
-                "sub": "5.1", "preg": "¿Cuál es la distinción científica entre Fuentes Materiales y Fuentes Formales?",
-                "opts": ["A) Materiales: factores sociales; Formales: canales de expresión obligatoria.", "B) Materiales: libros de papel; Formales: discursos del Congreso."],
-                "ok": "A", "fund": "La fuente material es la causa sociopolítica; la formal es el envase dotado de imperio legal vinculante."
-            },
-            {
-                "sub": "5.2", "preg": "Fuentes formales del Derecho: clasificación.",
+st.write("### 👨‍🏫 PANEL DIRECTO DE EVALUACIÓN ORAL (CÉDULAS 1 A 5)")
+
+b1, b2, b3, b4, b5 = st.columns(5)
+with b1:
+    if st.button("Cédula 1", use_container_width=True): st.session_state.sel_cedula = 1; st.session_state.p_idx = 0; st.session_state.rerun()
+with b2:
+    if st.button("Cédula 2", use_container_width=True): st.session_state.sel_cedula = 2; st.session_state.p_idx = 0; st.session_state.rerun()
+with b3:
+    if st.button("Cédula 3", use_container_width=True): st.session_state.sel_cedula = 3; st.session_state.p_idx = 0; st.session_state.rerun()
+with b4:
+    if st.button("Cédula 4", use_container_width=True): st.session_state.sel_cedula = 4; st.session_state.p_idx = 0; st.session_state.rerun()
+with b5:
+    if st.button("Cédula 5", use_container_width=True): st.session_state.sel_cedula = 5; st.session_state.p_idx = 0; st.session_state.rerun()
+
+st.write("---")
+
+c_actual = st.session_state.sel_cedula
+item_c = DATOS_EXAMEN[c_actual]
+total_p = len(item_c["preguntas"])
+idx = st.session_state.p_idx
+p_act = item_c["preguntas"][idx]
+
+st.success(f"### 📍 {item_c['titulo']}")
+st.write(f"**Interrogación del Subpunto {idx + 1} de {total_p}**")
+st.progress((idx + 1) / total_p)
+st.markdown(f"#### Subpunto {p_act['sub']}: {p_act['preg']}")
+
+clave_corr = f"corr_{c_actual}_{idx}"
+if clave_corr not in st.session_state: st.session_state[clave_corr] = None
+
+# ELIMINADA LA REDUNDANCIA REQUERIDA (SE VAN LOS TEXTOS DE OPCIÓN A/B)
+seleccion = st.radio("Seleccione la respuesta del alumno:", options=p_act["opciones"], index=None, key=f"ev_{c_actual}_{idx}")
+
+st.text_area("Anotaciones y comentarios de la comisión:", height=70, key=f"nt_{c_actual}_{idx}")
+
+if st.button("📝 Evaluar Respuesta", use_container_width=True):
+    if seleccion is None:
+        st.warning("Por favor, marque una opción antes de calificar.")
+    else:
+        st.session_state[clave_corr] = seleccion
+        st.rerun()
+
+if st.session_state[clave_corr] is not None:
+    if st.session_state[clave_corr] == p_act["correcta"]:
+        st.success("🎯 ¡CORRECTO!")
+    else:
+        st.error("❌ INCORRECTO.")
+        st.info(f"**Respuesta Correcta Esperada:**\n{p_act['correcta']}")
+    st.warning(f"**Fundamento Técnico (Ratio Iuris):**\n{p_act['explicacion']}")
+
+# CALCULO DE NOTA FINAL AL LLEGAR AL ULTIMO SUBPUNTO DE LA CEDULA
+if idx == total_p - 1:
+    st.write("---")
+    st.write("### 📊 CIERRE DE EVALUACIÓN DE LA CÉDULA")
+    if st.button("🏁 CÁLCULO DE NOTA INSTITUCIONAL", type="primary", use_container_width=True):
+        correctas = 0
+        for i in range(total_p):
+            p_check = item_c["preguntas"][i]
+            if st.session_state.get(f"corr_{c_actual}_{i}") == p_check["correcta"]:
+                correctas += 1
+        
+        porcentaje = (correctas / total_p) * 100
+        if porcentaje >= 60:
+            nota = 4.0 + (porcentaje - 60) * (3.0 / 40)
+        else:
+            nota = 1.0 + porcentaje * (3.0 / 60)
+        st.session_state.historial_notas[c_actual] = round(nota, 1)
+
+if c_actual in st.session_state.historial_notas:
+    n_final = st.session_state.historial_notas[c_actual]
+    if n_final >= 4.0:
+        st.balloons()
+        st.metric(label="⭐⭐ NOTA FINAL CÉDULA ⭐⭐", value=f"{n_final}", delta="APROBADO")
+    else:
+        st.metric(label="❌ NOTA FINAL CÉDULA ❌", value=f"{n_final}", delta="REPROBADO", delta_color="inverse")
+
+st.write("")
+n1, n2 = st.columns(2)
+with n1:
+    if st.button("⬅️ Anterior Subpunto", use_container_width=True):
+        if st.session_state.p_idx > 0:
+            st.session_state.p_idx -= 1
+            st.rerun()
+with n2:
+    if st.button("➡️ Siguiente Subpunto", use_container_width=True):
+        if st.session_state.p_idx < total_p - 1:
+            st.session_state.p_idx += 1
+            st.rerun()
